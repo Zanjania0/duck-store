@@ -10,11 +10,12 @@
     <style>body { font-family: 'Vazirmatn', sans-serif; background-color: #0c0f17; color: #f3f4f6; }</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
+    <!-- فرم لاگین -->
     <div id="loginCard" class="w-full max-w-md bg-[#141722] border border-gray-800 p-6 rounded-3xl shadow-2xl">
         <div class="text-center mb-6">
             <div class="w-12 h-12 rounded-2xl bg-amber-500 text-black text-2xl flex items-center justify-center mx-auto mb-3">🦆</div>
             <h1 class="text-lg font-black text-white">ورود به پنل مدیریت</h1>
-            <p class="text-xs text-gray-400 mt-1">رمز عبور امن کلادفلر</p>
+            <p class="text-xs text-gray-400 mt-1">مدیریت قیمت‌ها و بنرهای Duck Store</p>
         </div>
         <div class="space-y-4">
             <input type="password" id="adminPass" placeholder="رمز عبور..." class="w-full bg-[#0d1017] border border-gray-700 rounded-xl px-4 py-3 text-sm text-center text-white focus:outline-none focus:border-amber-500">
@@ -24,28 +25,61 @@
         </div>
     </div>
 
+    <!-- داشبورد اصلی -->
     <div id="dashboardCard" class="hidden w-full max-w-xl bg-[#141722] border border-gray-800 p-6 rounded-3xl shadow-2xl space-y-5">
         <div class="flex items-center justify-between border-b border-gray-800 pb-4">
             <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <h2 class="text-sm font-black text-white">تغییر نرخ و قیمت‌های فروشگاه</h2>
+                <h2 class="text-sm font-black text-white">تنظیمات و امکانات فروشگاه</h2>
             </div>
             <button onclick="logout()" class="text-xs text-rose-400 hover:underline">خروج</button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-            <div>
-                <label class="block text-gray-400 font-bold mb-1">نرخ هر دانه استارز (تومان):</label>
-                <input type="number" id="ratePerStar" class="w-full bg-[#0d1017] border border-gray-700 rounded-xl px-3 py-2.5 text-white font-bold">
+        <!-- 📢 بخش بنر مناسبتی -->
+        <div class="bg-[#10131d] p-4 rounded-2xl border border-amber-500/20 space-y-3">
+            <div class="flex items-center justify-between">
+                <h3 class="text-xs font-black text-amber-400 flex items-center gap-1.5">
+                    <i class="fa-solid fa-bullhorn"></i> بنر اطلاعیه مناسبتی بالای سایت
+                </h3>
+                <label class="flex items-center gap-2 text-xs text-gray-300 cursor-pointer">
+                    <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded text-amber-500 focus:ring-0">
+                    <span>فعال بودن بنر</span>
+                </label>
             </div>
-            <div>
-                <label class="block text-gray-400 font-bold mb-1">اجاره ماهانه گیفت (تومان):</label>
-                <input type="number" id="giftMonthlyPrice" class="w-full bg-[#0d1017] border border-gray-700 rounded-xl px-3 py-2.5 text-white font-bold">
+            <input type="text" id="announcementText" placeholder="متن بنر را اینجا وارد کنید..." class="w-full bg-[#161a26] border border-gray-700 rounded-xl px-3 py-2 text-xs text-white">
+        </div>
+
+        <!-- 🏷️ بخش کد تخفیف -->
+        <div class="bg-[#10131d] p-4 rounded-2xl border border-blue-500/20 space-y-3">
+            <h3 class="text-xs font-black text-blue-400 flex items-center gap-1.5">
+                <i class="fa-solid fa-ticket"></i> کد تخفیف فعال
+            </h3>
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">کد کوپن:</label>
+                    <input type="text" id="couponCode" placeholder="مثلاً DUCK" class="w-full bg-[#161a26] border border-gray-700 rounded-xl px-3 py-2 text-white font-bold text-center uppercase">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">درصد تخفیف (%):</label>
+                    <input type="number" id="couponPercent" placeholder="مثلاً 10" class="w-full bg-[#161a26] border border-gray-700 rounded-xl px-3 py-2 text-white font-bold text-center">
+                </div>
             </div>
         </div>
 
-        <div class="border-t border-gray-800 pt-4">
-            <h3 class="text-xs font-black text-purple-400 mb-3">اشتراک‌های تلگرام پرمیوم (تومان):</h3>
+        <!-- بخش قیمت‌ها -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+            <div>
+                <label class="block text-gray-400 font-bold mb-1">نرخ هر دانه استارز (تومان):</label>
+                <input type="number" id="ratePerStar" class="w-full bg-[#0d1017] border border-gray-700 rounded-xl px-3 py-2 text-white font-bold">
+            </div>
+            <div>
+                <label class="block text-gray-400 font-bold mb-1">اجاره ماهانه گیفت (تومان):</label>
+                <input type="number" id="giftMonthlyPrice" class="w-full bg-[#0d1017] border border-gray-700 rounded-xl px-3 py-2 text-white font-bold">
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 pt-3">
+            <h3 class="text-xs font-black text-purple-400 mb-2">اشتراک‌های پرمیوم (تومان):</h3>
             <div class="grid grid-cols-3 gap-2 text-xs">
                 <div>
                     <label class="block text-gray-400 mb-1">۳ ماهه:</label>
@@ -63,18 +97,17 @@
         </div>
 
         <div>
-            <label class="block text-gray-400 font-bold mb-1 text-xs">آیدی دریافت سفارش تلگرام (بدون @):</label>
+            <label class="block text-gray-400 font-bold mb-1 text-xs">آیدی دریافت سفارشات تلگرام (بدون @):</label>
             <input type="text" id="adminTg" class="w-full bg-[#0d1017] border border-gray-700 rounded-xl px-3 py-2 text-white font-bold text-left dir-ltr text-xs">
         </div>
 
         <button onclick="saveSettings()" id="saveBtn" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-xl transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>ذخیره آنی در سراسر جهان</span>
+            <span>ذخیره تغییرات در دیتابیس</span>
         </button>
     </div>
 
     <script>
-        // آدرس ورکر کلادفلر خود را اینجا بگذارید
         const WORKER_URL = "https://duck-api.ali-zanjani2007.workers.dev";
 
         let authToken = sessionStorage.getItem("duck_admin_token");
@@ -82,9 +115,9 @@
 
         async function login() {
             const pass = document.getElementById("adminPass").value.trim();
-            if (!pass) return alert("لطفاً رمز عبور را وارد کنید");
+            if (!pass) return alert("لطفاً رمز را وارد کنید");
             const btn = document.getElementById("loginBtn");
-            btn.innerText = "در حال اعتبارسنجی...";
+            btn.innerText = "در حال ورود...";
             try {
                 const res = await fetch(`${WORKER_URL}/api/admin/login`, {
                     method: "POST",
@@ -100,7 +133,7 @@
                     alert(data.error || "رمز اشتباه است");
                 }
             } catch (err) {
-                alert("خطای شبکه در اتصال به سرور کلادفلر");
+                alert("خطا در اتصال به سرور کلادفلر");
             } finally {
                 btn.innerText = "ورود";
             }
@@ -118,20 +151,28 @@
                 document.getElementById("prem6").value = s.prem6 || 950000;
                 document.getElementById("prem12").value = s.prem12 || 1690000;
                 document.getElementById("adminTg").value = s.adminTg || "Zanjani_a";
+                document.getElementById("announcementText").value = s.announcementText || "";
+                document.getElementById("announcementActive").checked = s.announcementActive !== false;
+                document.getElementById("couponCode").value = s.couponCode || "DUCK";
+                document.getElementById("couponPercent").value = s.couponPercent || 10;
             } catch(e) {}
         }
 
         async function saveSettings() {
             const saveBtn = document.getElementById("saveBtn");
             saveBtn.disabled = true;
-            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> در حال ارسال...';
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> در حال ذخیره...';
             const payload = {
                 ratePerStar: parseInt(document.getElementById("ratePerStar").value),
                 giftMonthlyPrice: parseInt(document.getElementById("giftMonthlyPrice").value),
                 prem3: parseInt(document.getElementById("prem3").value),
                 prem6: parseInt(document.getElementById("prem6").value),
                 prem12: parseInt(document.getElementById("prem12").value),
-                adminTg: document.getElementById("adminTg").value.trim().replace("@", "")
+                adminTg: document.getElementById("adminTg").value.trim().replace("@", ""),
+                announcementText: document.getElementById("announcementText").value.trim(),
+                announcementActive: document.getElementById("announcementActive").checked,
+                couponCode: document.getElementById("couponCode").value.trim().toUpperCase(),
+                couponPercent: parseInt(document.getElementById("couponPercent").value) || 0
             };
             try {
                 const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
@@ -142,13 +183,13 @@
                     },
                     body: JSON.stringify(payload)
                 });
-                if (res.ok) alert("✅ تنظیمات جدید با موفقیت اعمال شدند.");
-                else { alert("نشست شما پایان یافته است."); logout(); }
+                if (res.ok) alert("✅ تنظیمات و بنر با موفقیت بروزرسانی شدند!");
+                else { alert("نشست شما منقضی شده است."); logout(); }
             } catch {
-                alert("خطا در ثبت اطلاعات");
+                alert("خطا در ارسال داده‌ها");
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>ذخیره آنی در سراسر جهان</span>';
+                saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>ذخیره تغییرات در دیتابیس</span>';
             }
         }
 
