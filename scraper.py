@@ -77,7 +77,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت فروشگاهی Duck Store بدون خطای سینتکس"""
+    """تولید وب‌سایت فروشگاهی Duck Store با اتصال قطعی دکمه‌ها به تلگرام"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -190,7 +190,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <a id="headerSupportLink" href="https://t.me/Zanjani_a" target="_blank" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#131426] hover:bg-[#1c1e38] text-purple-200 hover:text-amber-300 border border-purple-500/30 transition shadow-sm">
+                <a id="headerSupportLink" href="https://t.me/Zanjani_a" onclick="openTgLink(this.href); return false;" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#131426] hover:bg-[#1c1e38] text-purple-200 hover:text-amber-300 border border-purple-500/30 transition shadow-sm">
                     <i class="fa-brands fa-telegram text-purple-400"></i>
                     <span>پشتیبانی</span>
                 </a>
@@ -300,7 +300,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         </section>
     </main>
 
-    <!-- 🛍️ نوار سبد خرید شناور اختصاصی Duck Store -->
+    <!-- 🛍️ نوار سبد خرید شناور -->
     <div id="floatingCartBar" class="fixed bottom-4 inset-x-4 max-w-lg mx-auto z-40 bg-[#0c0d18]/95 backdrop-blur-xl border border-purple-500/40 p-4 rounded-3xl shadow-[0_10px_35px_rgba(124,58,237,0.25)] transition-all duration-300 transform translate-y-44 opacity-0 space-y-3">
         <div class="flex items-center gap-2 bg-[#06070d] p-1.5 rounded-xl border border-purple-900/40">
             <input type="text" id="couponInput" placeholder="کد تخفیف داری؟ وارد کن..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold placeholder-gray-500">
@@ -392,6 +392,25 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             }
         }
 
+        // 🔗 تابع اختصاصی و تضمینی برای باز کردن چت تلگرام در تمام محیط‌ها (WebView و مرورگر)
+        function openTgLink(url) {
+            const cleanUrl = url.replace('https://t.me/@', 'https://t.me/');
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
+                try {
+                    window.Telegram.WebApp.openTelegramLink(cleanUrl);
+                    return;
+                } catch(e) {}
+            }
+            try {
+                const win = window.open(cleanUrl, '_blank');
+                if (!win || win.closed || typeof win.closed === 'undefined') {
+                    window.location.href = cleanUrl;
+                }
+            } catch(e) {
+                window.location.href = cleanUrl;
+            }
+        }
+
         const DEALS = __DEALS_JSON__;
         const COLLECTIONS = __COLLECTIONS_JSON__;
         const WORKER_URL = "__WORKER_URL__";
@@ -444,7 +463,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         }
 
         function updateUIWithLatestSettings() {
-            const adminUser = SETTINGS.adminTg || 'Zanjani_a';
+            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
             document.getElementById('headerSupportLink').href = `https://t.me/${adminUser}`;
 
             const promo = document.getElementById('promoBanner');
@@ -462,7 +481,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             updateCartUI();
         }
 
-        // 🦆 ترفند ورود مخفی ادمین: ۳ بار کلیک سریع روی لوگوی اردک
         let logoClickCount = 0;
         let logoClickTimer = null;
         function handleLogoSecretClick() {
@@ -610,15 +628,17 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
         function orderStars() {
             triggerHaptic('heavy');
+            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
             const total = (selectedStarsCount * SETTINGS.ratePerStar).toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
+            const nl = String.fromCharCode(10);
             const msg = encodeURIComponent(
-                `سلام، درخواست خرید استارز دارم:\\n\\n` +
-                `${buyerInfo}\\n\\n` +
-                `تعداد: ${selectedStarsCount} Stars\\n` +
-                `مبلغ قابل پرداخت: ${total} تومان`
+                "سلام، درخواست خرید استارز دارم:" + nl + nl +
+                buyerInfo + nl + nl +
+                "تعداد استارز: " + selectedStarsCount + " Stars" + nl +
+                "مبلغ قابل پرداخت: " + total + " تومان"
             );
-            window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
+            openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
         // ================= پرمیوم =================
@@ -666,19 +686,21 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
         function orderPremium() {
             triggerHaptic('heavy');
+            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
             let planName = '1 ساله';
             let price = SETTINGS.prem12;
             if (selectedPremiumMonths === 6) { planName = '6 ماهه'; price = SETTINGS.prem6; }
             if (selectedPremiumMonths === 3) { planName = '3 ماهه'; price = SETTINGS.prem3; }
             const total = price.toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
+            const nl = String.fromCharCode(10);
             const msg = encodeURIComponent(
-                `سلام، درخواست خرید تلگرام پرمیوم دارم:\\n\\n` +
-                `${buyerInfo}\\n\\n` +
-                `نوع اشتراک: ${planName}\\n` +
-                `مبلغ قابل پرداخت: ${total} تومان`
+                "سلام، درخواست خرید تلگرام پرمیوم دارم:" + nl + nl +
+                buyerInfo + nl + nl +
+                "نوع اشتراک: " + planName + nl +
+                "مبلغ قابل پرداخت: " + total + " تومان"
             );
-            window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
+            openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
         // ================= گیفت‌ها و سبد خرید =================
@@ -743,7 +765,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             renderCards(getFilteredDeals());
         }
 
-        // 🧾 مشخصات خریدار ساده و بدون تگ
         function getBuyerDetailsText() {
             if (!tgUser) return "خریدار: کاربر وب";
             const name = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || 'کاربر تلگرام';
@@ -751,26 +772,30 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             return `خریدار: ${name} (${uname} - آیدی: ${tgUser.id})`;
         }
 
-        // 🛍️ پیام ثبت سفارش خلوت و بدون تگ
         function checkoutCart() {
             triggerHaptic('heavy');
-            if (cart.length === 0) return;
+            if (!cart || cart.length === 0) {
+                alert('سبد خرید شما خالی است!');
+                return;
+            }
 
+            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
             const finalTotal = calculateCartFinalPrice().toLocaleString('en-US');
             const buyer = getBuyerDetailsText();
-            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join('\\n');
-            const coupon = appliedCouponCode ? `\\nکد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)` : '';
+            const nl = String.fromCharCode(10);
+            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join(nl);
+            const coupon = appliedCouponCode ? (nl + `کد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)`) : '';
 
             const message = encodeURIComponent(
-                `سلام، درخواست اجاره گیفت دارم:\\n\\n` +
-                `${buyer}\\n\\n` +
-                `اقلام سفارش (${cart.length} عدد):\\n` +
-                `${itemsList}\\n\\n` +
-                `مبلغ نهایی: ${finalTotal} تومان / ماه` +
-                `${coupon}`
+                "سلام، درخواست اجاره گیفت دارم:" + nl + nl +
+                buyer + nl + nl +
+                "اقلام سفارش (" + cart.length + " عدد):" + nl +
+                itemsList + nl + nl +
+                "مبلغ نهایی: " + finalTotal + " تومان / ماه" +
+                coupon
             );
 
-            window.open(`https://t.me/${SETTINGS.adminTg}?text=${message}`, '_blank');
+            openTgLink("https://t.me/" + adminUser + "?text=" + message);
         }
 
         function renderCards(items) {
@@ -1258,7 +1283,7 @@ async def main():
                 )
 
         print(
-            f"\n⚡ فروشگاه Duck Store با موفقیت تولید شد!"
+            f"\n⚡ فروشگاه Duck Store با موفقیت آماده شد!"
         )
         send_telegram_package(sorted_deals)
 
