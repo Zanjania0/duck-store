@@ -77,7 +77,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت فروشگاهی Duck Store با امکانات کامل بومی تلگرام، کد تخفیف و مدیریت تب‌ها"""
+    """تولید وب‌سایت فروشگاهی Duck Store با نوار سبد خرید شناور اختصاصی"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -166,7 +166,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 </head>
 <body class="min-h-screen pb-36">
 
-    <!-- 📢 بنر مناسبتی هدر (مدیریت با Cloudflare) -->
+    <!-- 📢 بنر مناسبتی هدر -->
     <div id="promoBanner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-black text-xs font-black py-2.5 px-4 text-center shadow-md flex items-center justify-center gap-2">
         <i class="fa-solid fa-bullhorn text-sm animate-bounce"></i>
         <span id="promoBannerText"></span>
@@ -195,7 +195,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             </div>
         </div>
 
-        <!-- تب‌های ۳ گانه با پشتیبانی از وضعیت ناموجود -->
+        <!-- تب‌های ۳ گانه -->
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 py-2 border-t border-gray-800/40 overflow-x-auto">
             <button onclick="switchMainTab('gifts')" id="tabBtn-gifts" class="main-tab-btn active px-4 py-2 rounded-xl text-xs font-black bg-amber-500 text-black transition flex items-center gap-1.5 whitespace-nowrap">
                 <i class="fa-solid fa-gift"></i> <span class="tab-label">اجاره گیفت</span>
@@ -298,16 +298,17 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         </section>
     </main>
 
-    <!-- 🛍️ نوار سبد خرید همراه با کد تخفیف -->
-    <div id="floatingCartBar" class="fixed bottom-4 inset-x-4 max-w-lg mx-auto z-40 bg-[#161b26]/95 backdrop-blur-md border border-amber-500/40 p-3.5 rounded-3xl shadow-2xl transition-all duration-300 transform translate-y-40 opacity-0 space-y-2.5">
+    <!-- 🛍️ نوار سبد خرید شناور اختصاصی Duck Store -->
+    <div id="floatingCartBar" class="fixed bottom-4 inset-x-4 max-w-lg mx-auto z-40 bg-[#161b26]/95 backdrop-blur-xl border border-amber-500/40 p-4 rounded-3xl shadow-2xl transition-all duration-300 transform translate-y-44 opacity-0 space-y-3">
+        <!-- کادر کد تخفیف -->
         <div class="flex items-center gap-2 bg-[#0e1118] p-1.5 rounded-xl border border-gray-800">
             <input type="text" id="couponInput" placeholder="کد تخفیف داری؟ وارد کن..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold">
-            <button onclick="applyCoupon()" class="px-3 py-1.5 bg-amber-500 text-black text-xs font-black rounded-lg hover:bg-amber-400 transition">اعمال</button>
+            <button onclick="applyCoupon()" class="px-3.5 py-1.5 bg-amber-500 text-black text-xs font-black rounded-lg hover:bg-amber-400 transition">اعمال</button>
         </div>
 
         <div class="flex items-center justify-between pt-1 border-t border-gray-800/80">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-amber-500 text-black flex items-center justify-center font-black text-sm shadow-md">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-black flex items-center justify-center font-black text-base shadow-lg shadow-orange-500/20">
                     <span id="cartCountBadge">0</span>
                 </div>
                 <div>
@@ -319,10 +320,10 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="clearCart()" class="p-2 text-gray-400 hover:text-rose-400 text-xs transition" title="خالی کردن سبد">
-                    <i class="fa-solid fa-trash-can"></i>
+                <button onclick="clearCart()" class="p-2.5 text-gray-400 hover:text-rose-400 text-xs transition" title="خالی کردن سبد">
+                    <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
-                <button onclick="checkoutCart()" class="py-2.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 text-white text-xs font-black transition shadow-lg shadow-blue-500/25 flex items-center gap-1.5">
+                <button onclick="checkoutCart()" class="py-3 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 text-white text-xs font-black transition shadow-lg shadow-blue-500/30 flex items-center gap-2">
                     <span>ثبت سفارش</span>
                     <i class="fa-solid fa-arrow-left text-[11px]"></i>
                 </button>
@@ -369,11 +370,14 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
     </div>
 
     <script>
-        // 📱 پشتیبانی بومی از Telegram WebApp
         let tgUser = null;
         if (window.Telegram && window.Telegram.WebApp) {
             window.Telegram.WebApp.ready();
             window.Telegram.WebApp.expand();
+            // غیرفعال‌سازی قطعی دکمه رسمی تلگرام
+            if (window.Telegram.WebApp.MainButton) {
+                window.Telegram.WebApp.MainButton.hide();
+            }
             tgUser = window.Telegram.WebApp.initDataUnsafe?.user || null;
             if (tgUser) {
                 const name = tgUser.first_name || tgUser.username || "کاربر عزیز";
@@ -443,7 +447,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             const adminUser = SETTINGS.adminTg || 'Zanjani_a';
             document.getElementById('headerSupportLink').href = `https://t.me/${adminUser}`;
 
-            // تنظیم بنر مناسبتی
             const promo = document.getElementById('promoBanner');
             if (SETTINGS.announcementActive && SETTINGS.announcementText) {
                 document.getElementById('promoBannerText').innerText = SETTINGS.announcementText;
@@ -452,16 +455,13 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 promo.classList.add('hidden');
             }
 
-            // 🔘 اعمال وضعیت موجودی / ناموجودی تب‌ها
             updateTabAvailability();
-
             renderCards(getFilteredDeals());
             renderStarsPackages();
             renderPremiumOptions();
             updateCartUI();
         }
 
-        // بررسی و مدیریت ناموجود بودن تب‌ها
         function updateTabAvailability() {
             const tabs = [
                 { id: 'gifts', active: SETTINGS.tabGiftsActive !== false, label: 'اجاره گیفت' },
@@ -483,7 +483,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 }
             });
 
-            // هدایت خودکار اگر تب جاری غیرفعال شده باشد
             if (currentMainTab === 'gifts' && SETTINGS.tabGiftsActive === false) {
                 if (SETTINGS.tabStarsActive !== false) switchMainTab('stars');
                 else if (SETTINGS.tabPremiumActive !== false) switchMainTab('premium');
@@ -496,7 +495,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             }
         }
 
-        // اعمال کد تخفیف
         function applyCoupon() {
             triggerHaptic('medium');
             const input = document.getElementById('couponInput').value.trim().toUpperCase();
@@ -507,7 +505,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 appliedDiscountPercent = SETTINGS.couponPercent || 10;
                 document.getElementById('discountTag').innerText = `${appliedDiscountPercent}٪ تخفیف`;
                 document.getElementById('discountTag').classList.remove('hidden');
-                alert(`✅ کد تخفیف با موفقیت اعمال شد (${appliedDiscountPercent}٪ تخفیف)`);
+                alert(`✅ کد تخفیف اعمال شد (${appliedDiscountPercent}٪ تخفیف روی کل سبد)`);
             } else {
                 alert('❌ کد تخفیف نامعتبر است');
             }
@@ -515,7 +513,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         }
 
         function switchMainTab(tab) {
-            // جلوگیری از ورود به تب‌های ناموجود
             if (tab === 'gifts' && SETTINGS.tabGiftsActive === false) return alert('⚠️ بخش اجاره گیفت موقتاً غیرفعال است.');
             if (tab === 'stars' && SETTINGS.tabStarsActive === false) return alert('⚠️ بخش استارز موقتاً غیرفعال است.');
             if (tab === 'premium' && SETTINGS.tabPremiumActive === false) return alert('⚠️ بخش پرمیوم موقتاً غیرفعال است.');
@@ -590,7 +587,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             triggerHaptic('heavy');
             const total = (selectedStarsCount * SETTINGS.ratePerStar).toLocaleString('fa-IR');
             const buyerInfo = getBuyerDetailsText();
-            const msg = encodeURIComponent(`⭐ سفارش استارز تلگرام - Duck Store:\\n${buyerInfo}\\n\\n✨ تعداد: ${selectedStarsCount} Stars\\n💳 مبلغ قابل پرداخت: ${total} تومان`);
+            const msg = encodeURIComponent(`⭐ سفارش استارز تلگرام - Duck Store:\\n${buyerInfo}\\n\\n✨ تعداد: ${selectedStarsCount} Stars\\n💳 مبلغ: ${total} تومان`);
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
         }
 
@@ -649,7 +646,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
         }
 
-        // ================= گیفت‌ها، سبد خرید و فاکتور =================
+        // ================= گیفت‌ها و سبد خرید =================
         function updateFavCount() {
             document.getElementById('favCount').innerText = favorites.length;
         }
@@ -690,25 +687,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             const finalTotal = calculateCartFinalPrice().toLocaleString('fa-IR');
             document.getElementById('cartTotalPrice').innerText = `${finalTotal} تومان / ماه`;
 
-            // دکمه رسمی و بومی MainButton تلگرام
-            if (window.Telegram?.WebApp?.MainButton) {
-                const mb = window.Telegram.WebApp.MainButton;
-                if (count > 0 && currentMainTab === 'gifts') {
-                    mb.setText(`🛒 ثبت سفارش (${count}) - ${finalTotal} ت`);
-                    mb.show();
-                    mb.enable();
-                    mb.onClick(checkoutCart);
-                } else {
-                    mb.hide();
-                }
-            }
-
             if (count > 0 && currentMainTab === 'gifts') {
-                bar.classList.remove('translate-y-40', 'opacity-0');
+                bar.classList.remove('translate-y-44', 'opacity-0');
                 bar.classList.add('translate-y-0', 'opacity-100');
             } else {
                 bar.classList.remove('translate-y-0', 'opacity-100');
-                bar.classList.add('translate-y-40', 'opacity-0');
+                bar.classList.add('translate-y-44', 'opacity-0');
             }
         }
 
@@ -725,7 +709,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         }
 
         function getBuyerDetailsText() {
-            if (!tgUser) return "👤 خریدار: ناشناس (ورود از مرورگر وب)";
+            if (!tgUser) return "👤 خریدار: ناشناس (ورود از وب)";
             return `👤 خریدار: ${tgUser.first_name || ''} ${tgUser.last_name || ''}\\n🆔 شناسه کاربری: <code>${tgUser.id}</code>\\n📱 یوزرنیم: @${tgUser.username || 'ندارد'}`;
         }
 
@@ -818,7 +802,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             }).join('');
         }
 
-        // ================= مدیریت کالکشن‌ها =================
         function updateModalBadge() {
             const badge = document.getElementById('modalSelectedCountBadge');
             if (badge) {
@@ -1246,7 +1229,7 @@ async def main():
                 )
 
         print(
-            f"\n⚡ فروشگاه Duck Store با موفقیت به‌روزرسانی و ساخته شد!"
+            f"\n⚡ فروشگاه Duck Store با موفقیت به‌روزرسانی شد!"
         )
         send_telegram_package(sorted_deals)
 
