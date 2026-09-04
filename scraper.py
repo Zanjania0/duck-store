@@ -77,7 +77,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت فروشگاهی Duck Store با تم مشکی زرد بنفش و نمایش جدیدترین‌ها"""
+    """تولید وب‌سایت فروشگاهی Duck Store بدون خطای سینتکس"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -227,9 +227,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                         <span id="selectedColText">کالکشن‌ها</span>
                         <i class="fa-solid fa-chevron-down text-[9px] text-purple-400 mr-0.5"></i>
                     </button>
-                    <button onclick="filterType('all')" class="type-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-black transition whitespace-nowrap shadow-md">همه (__TOTAL_COUNT__)</button>
-                    <button onclick="filterType('rare')" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#141629] text-gray-300 hover:text-purple-300 border border-purple-500/20 transition whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
-                    <button onclick="filterType('favs')" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#141629] text-gray-300 hover:text-rose-400 border border-purple-500/20 transition whitespace-nowrap flex items-center gap-1.5">
+                    <button onclick="filterType('all', this)" class="type-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-black transition whitespace-nowrap shadow-md">همه (__TOTAL_COUNT__)</button>
+                    <button onclick="filterType('rare', this)" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#141629] text-gray-300 hover:text-purple-300 border border-purple-500/20 transition whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
+                    <button onclick="filterType('favs', this)" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#141629] text-gray-300 hover:text-rose-400 border border-purple-500/20 transition whitespace-nowrap flex items-center gap-1.5">
                         <i class="fa-solid fa-heart text-rose-500 text-xs"></i> (<span id="favCount">0</span>)
                     </button>
                 </div>
@@ -613,9 +613,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             const total = (selectedStarsCount * SETTINGS.ratePerStar).toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
             const msg = encodeURIComponent(
-                `سلام، درخواست خرید استارز دارم:\n\n` +
-                `${buyerInfo}\n\n` +
-                `تعداد استارز: ${selectedStarsCount} Stars\n` +
+                `سلام، درخواست خرید استارز دارم:\\n\\n` +
+                `${buyerInfo}\\n\\n` +
+                `تعداد: ${selectedStarsCount} Stars\\n` +
                 `مبلغ قابل پرداخت: ${total} تومان`
             );
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
@@ -673,9 +673,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             const total = price.toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
             const msg = encodeURIComponent(
-                `سلام، درخواست خرید تلگرام پرمیوم دارم:\n\n` +
-                `${buyerInfo}\n\n` +
-                `نوع اشتراک: ${planName}\n` +
+                `سلام، درخواست خرید تلگرام پرمیوم دارم:\\n\\n` +
+                `${buyerInfo}\\n\\n` +
+                `نوع اشتراک: ${planName}\\n` +
                 `مبلغ قابل پرداخت: ${total} تومان`
             );
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
@@ -743,7 +743,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             renderCards(getFilteredDeals());
         }
 
-        // 🧾 مشخصات خریدار کاملاً تمیز و بدون تگ
+        // 🧾 مشخصات خریدار ساده و بدون تگ
         function getBuyerDetailsText() {
             if (!tgUser) return "خریدار: کاربر وب";
             const name = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || 'کاربر تلگرام';
@@ -751,21 +751,21 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             return `خریدار: ${name} (${uname} - آیدی: ${tgUser.id})`;
         }
 
-        // 🛍️ پیام ثبت سفارش خلوت، کاملاً خوانا و بدون تگ‌های HTML
+        // 🛍️ پیام ثبت سفارش خلوت و بدون تگ
         function checkoutCart() {
             triggerHaptic('heavy');
             if (cart.length === 0) return;
 
             const finalTotal = calculateCartFinalPrice().toLocaleString('en-US');
             const buyer = getBuyerDetailsText();
-            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join('\n');
-            const coupon = appliedCouponCode ? `\nکد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)` : '';
+            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join('\\n');
+            const coupon = appliedCouponCode ? `\\nکد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)` : '';
 
             const message = encodeURIComponent(
-                `سلام، درخواست اجاره گیفت دارم:\n\n` +
-                `${buyer}\n\n` +
-                `اقلام سفارش (${cart.length} عدد):\n` +
-                `${itemsList}\n\n` +
+                `سلام، درخواست اجاره گیفت دارم:\\n\\n` +
+                `${buyer}\\n\\n` +
+                `اقلام سفارش (${cart.length} عدد):\\n` +
+                `${itemsList}\\n\\n` +
                 `مبلغ نهایی: ${finalTotal} تومان / ماه` +
                 `${coupon}`
             );
@@ -927,15 +927,17 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             if (e.target.id === 'collectionModal') closeModal();
         });
 
-        function filterType(type) {
+        function filterType(type, btnElement) {
             triggerHaptic('selection');
             selectedType = type;
             document.querySelectorAll('.type-btn').forEach(btn => {
                 btn.classList.remove('bg-amber-400', 'text-black');
                 btn.classList.add('bg-[#141629]', 'text-gray-300');
             });
-            event.target.classList.remove('bg-[#141629]', 'text-gray-300');
-            event.target.classList.add('bg-amber-400', 'text-black');
+            if (btnElement) {
+                btnElement.classList.remove('bg-[#141629]', 'text-gray-300');
+                btnElement.classList.add('bg-amber-400', 'text-black');
+            }
             applyFilters();
         }
 
@@ -1220,7 +1222,7 @@ async def main():
 
         await browser.close()
 
-        # 🎯 مرتب‌سازی بر اساس جدیدترین گیفت‌های کشف‌شده در مارکت (Newest First)
+        # 🎯 مرتب‌سازی جدیدترین‌ها در بالای فروشگاه
         sorted_deals = list(reversed(deals_found))
 
         generate_duck_store_html(sorted_deals)
@@ -1256,7 +1258,7 @@ async def main():
                 )
 
         print(
-            f"\n⚡ فروشگاه Duck Store با مرتب‌سازی جدیدترین‌ها و تم مشکی-زرد-بنفش آماده شد!"
+            f"\n⚡ فروشگاه Duck Store با موفقیت تولید شد!"
         )
         send_telegram_package(sorted_deals)
 
