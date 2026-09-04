@@ -1,0 +1,37 @@
+name: Run Duck Scraper
+
+on:
+  schedule:
+    - cron: '0 */4 * * *' # اجرای خودکار هر ۴ ساعت
+  workflow_dispatch:      # قابلیت اجرای دستی با دکمه
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install --with-deps chromium
+
+      - name: Run Scraper
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scraper.py
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "DuckScraperBot"
+          git config --global user.email "bot@users.noreply.github.com"
+          git add index.html discounts.json discounts.csv
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update deals [skip ci]" && git push)
