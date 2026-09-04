@@ -77,7 +77,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت فروشگاهی Duck Store با تمام اعداد انگلیسی"""
+    """تولید وب‌سایت فروشگاهی Duck Store با تم مدرن مشکی-زرد-بنفش"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -111,100 +111,101 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
     <style>
         body {
             font-family: 'Vazirmatn', sans-serif;
-            background-color: #0c0f17;
+            background-color: #07080f;
             color: #f3f4f6;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
         }
         .stars-card {
-            background: #141722;
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: #0e0f1a;
+            border: 1px solid rgba(139, 92, 246, 0.15);
             border-radius: 24px;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .stars-card:hover {
             transform: translateY(-4px);
-            border-color: rgba(255, 184, 46, 0.35);
+            border-color: rgba(245, 158, 11, 0.45);
+            box-shadow: 0 10px 25px -5px rgba(124, 58, 237, 0.2);
         }
         .price-badge-gold {
-            background: #382404;
-            color: #ffb82e;
-            border: 1px solid rgba(255, 184, 46, 0.25);
+            background: #1f1704;
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
         }
         .modal-bg {
-            background: #12141a;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: #0b0c16;
+            border: 1px solid rgba(139, 92, 246, 0.25);
         }
         .collection-item {
-            background: #1a1d26;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: #121324;
+            border: 1px solid rgba(139, 92, 246, 0.1);
             transition: all 0.2s ease;
         }
         .collection-item:hover {
-            background: #232733;
+            background: #181a30;
             border-color: rgba(245, 158, 11, 0.4);
         }
         .select-row {
-            background: #151924;
-            border: 1px solid rgba(255, 255, 255, 0.07);
+            background: #101222;
+            border: 1px solid rgba(139, 92, 246, 0.12);
             transition: all 0.2s ease;
         }
         .select-row.active {
-            border-color: #3b82f6;
-            background: #1b2234;
+            border-color: #fbbf24;
+            background: #18192c;
         }
         ::-webkit-scrollbar {
             width: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #0c0f17;
+            background: #07080f;
         }
         ::-webkit-scrollbar-thumb {
-            background: #222738;
+            background: #1e1b38;
             border-radius: 4px;
         }
     </style>
 </head>
 <body class="min-h-screen pb-36 select-none">
 
-    <!-- 📢 بنر مناسبتی هدر -->
-    <div id="promoBanner" class="hidden bg-gradient-to-r from-amber-500 via-orange-500 to-amber-500 text-black text-xs font-black py-2.5 px-4 text-center shadow-md flex items-center justify-center gap-2">
-        <i class="fa-solid fa-bullhorn text-sm animate-bounce"></i>
-        <span id="promoBannerText"></span>
+    <!-- 📢 بنر مناسبتی هدر (گرادیانت بنفش و زرد طلایی) -->
+    <div id="promoBanner" class="hidden bg-gradient-to-r from-purple-800 via-amber-500 to-purple-800 text-black text-xs font-black py-2.5 px-4 text-center shadow-lg shadow-purple-900/20 flex items-center justify-center gap-2">
+        <i class="fa-solid fa-bullhorn text-sm text-black animate-bounce"></i>
+        <span id="promoBannerText" class="text-black font-extrabold"></span>
     </div>
 
     <!-- هدر سایت -->
-    <header class="sticky top-0 z-40 bg-[#10131d]/95 backdrop-blur-md border-b border-gray-800/80">
+    <header class="sticky top-0 z-40 bg-[#090a14]/95 backdrop-blur-md border-b border-purple-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div onclick="handleLogoSecretClick()" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center text-xl shadow-lg shadow-orange-500/20 cursor-pointer active:scale-95 transition">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-400 via-amber-500 to-purple-600 flex items-center justify-center text-xl shadow-lg shadow-amber-500/20">
                     🦆
                 </div>
                 <div>
-                    <h1 class="text-base sm:text-lg font-black text-white">Duck Store</h1>
+                    <h1 class="text-base sm:text-lg font-black text-white flex items-center gap-1.5">
+                        <span>Duck Store</span>
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    </h1>
                     <p id="tgUserGreeting" class="text-[11px] text-amber-400 font-bold">مرجع گیفت، استارز و پرمیوم</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button id="adminBtn" onclick="openAdminSecurely()" oncontextmenu="return false;" class="hidden w-9 h-9 rounded-xl bg-[#1d2232] hover:bg-[#272e44] text-gray-300 hover:text-amber-400 flex items-center justify-center border border-gray-700/60 transition shadow-sm" style="-webkit-touch-callout: none;">
-                    <i class="fa-solid fa-gear text-sm"></i>
-                </button>
-                <a id="headerSupportLink" href="https://t.me/Zanjani_a" target="_blank" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1d2232] hover:bg-[#272e44] text-gray-200 border border-gray-700/60 transition shadow-sm">
-                    <i class="fa-brands fa-telegram text-blue-400"></i>
+                <a id="headerSupportLink" href="https://t.me/Zanjani_a" target="_blank" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#131426] hover:bg-[#1c1e38] text-purple-200 hover:text-amber-300 border border-purple-500/30 transition shadow-sm">
+                    <i class="fa-brands fa-telegram text-purple-400"></i>
                     <span>پشتیبانی</span>
                 </a>
             </div>
         </div>
 
-        <!-- تب‌های ۳ گانه -->
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 py-2 border-t border-gray-800/40 overflow-x-auto">
-            <button onclick="switchMainTab('gifts')" id="tabBtn-gifts" class="main-tab-btn active px-4 py-2 rounded-xl text-xs font-black bg-amber-500 text-black transition flex items-center gap-1.5 whitespace-nowrap">
+        <!-- تب‌های ۳ گانه با تم جدید -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-2 py-2 border-t border-purple-900/20 overflow-x-auto">
+            <button onclick="switchMainTab('gifts')" id="tabBtn-gifts" class="px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 whitespace-nowrap bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/20">
                 <i class="fa-solid fa-gift"></i> <span class="tab-label">اجاره گیفت</span>
             </button>
-            <button onclick="switchMainTab('stars')" id="tabBtn-stars" class="main-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#171b26] text-gray-300 hover:bg-[#22283a] transition flex items-center gap-1.5 whitespace-nowrap">
+            <button onclick="switchMainTab('stars')" id="tabBtn-stars" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap bg-[#121324] text-gray-400 hover:text-purple-300 border border-purple-500/10">
                 <i class="fa-solid fa-star text-amber-400"></i> <span class="tab-label">استارز تلگرام</span>
             </button>
-            <button onclick="switchMainTab('premium')" id="tabBtn-premium" class="main-tab-btn px-4 py-2 rounded-xl text-xs font-bold bg-[#171b26] text-gray-300 hover:bg-[#22283a] transition flex items-center gap-1.5 whitespace-nowrap">
+            <button onclick="switchMainTab('premium')" id="tabBtn-premium" class="px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap bg-[#121324] text-gray-400 hover:text-purple-300 border border-purple-500/10">
                 <i class="fa-solid fa-crown text-purple-400"></i> <span class="tab-label">تلگرام پرمیوم</span>
             </button>
         </div>
@@ -213,22 +214,22 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         <!-- تب گیفت -->
         <section id="section-gifts" class="block">
-            <div class="bg-[#141722] p-3 rounded-2xl border border-gray-800/80 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="bg-[#0e0f1a] p-3 rounded-2xl border border-purple-900/30 mb-6 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="relative w-full sm:w-80">
-                    <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-gray-500 text-xs"></i>
+                    <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-3 text-purple-400 text-xs"></i>
                     <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره گیفت..." 
-                           class="w-full bg-[#0d1017] border border-gray-800 rounded-xl pr-10 pl-4 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition">
+                           class="w-full bg-[#07080f] border border-purple-900/40 rounded-xl pr-10 pl-4 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-400 transition">
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                    <button onclick="openModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#1d2232] hover:bg-[#272e44] text-gray-200 border border-gray-700/60 transition whitespace-nowrap">
+                    <button onclick="openModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-[#141629] hover:bg-[#1e203a] text-purple-200 border border-purple-500/30 transition whitespace-nowrap">
                         <i class="fa-solid fa-layer-group text-amber-400 text-xs"></i>
                         <span id="selectedColText">کالکشن‌ها</span>
-                        <i class="fa-solid fa-chevron-down text-[9px] text-gray-400 mr-0.5"></i>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-purple-400 mr-0.5"></i>
                     </button>
-                    <button onclick="filterType('all')" class="type-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-500 text-black transition whitespace-nowrap">همه (__TOTAL_COUNT__)</button>
-                    <button onclick="filterType('rare')" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1d2232] text-gray-300 hover:bg-[#272e44] transition whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
-                    <button onclick="filterType('favs')" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#1d2232] text-gray-300 hover:bg-[#272e44] transition whitespace-nowrap flex items-center gap-1.5">
+                    <button onclick="filterType('all')" class="type-btn active px-3.5 py-2 rounded-xl text-xs font-bold bg-amber-400 text-black transition whitespace-nowrap shadow-md">همه (__TOTAL_COUNT__)</button>
+                    <button onclick="filterType('rare')" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#141629] text-gray-300 hover:text-purple-300 border border-purple-500/20 transition whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
+                    <button onclick="filterType('favs')" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#141629] text-gray-300 hover:text-rose-400 border border-purple-500/20 transition whitespace-nowrap flex items-center gap-1.5">
                         <i class="fa-solid fa-heart text-rose-500 text-xs"></i> (<span id="favCount">0</span>)
                     </button>
                 </div>
@@ -239,31 +240,31 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
         <!-- تب استارز -->
         <section id="section-stars" class="hidden max-w-xl mx-auto space-y-6">
-            <div class="bg-[#141722] p-5 rounded-3xl border border-gray-800">
+            <div class="bg-[#0e0f1a] p-5 rounded-3xl border border-purple-900/30">
                 <h3 class="text-sm font-bold text-gray-200 mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-star text-amber-400"></i> تعداد استارز دلخواه
                 </h3>
                 <div class="relative">
                     <div class="absolute right-3.5 top-3.5 text-amber-400 text-base">⭐</div>
                     <input type="number" id="customStarsInput" min="50" max="10000000" placeholder="تعداد استارز (از 50 تا 10,000,000)..." 
-                           class="w-full bg-[#0d1017] border border-gray-700/80 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-500 transition font-bold">
+                           class="w-full bg-[#07080f] border border-purple-900/40 rounded-2xl pr-11 pl-4 py-3.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 transition font-bold">
                 </div>
-                <div id="customStarsCalcBox" class="mt-3 p-3.5 rounded-2xl bg-[#1b202e] border border-gray-700/50 flex items-center justify-between hidden">
-                    <span class="text-xs text-gray-400">مبلغ نهایی:</span>
+                <div id="customStarsCalcBox" class="mt-3 p-3.5 rounded-2xl bg-[#15172b] border border-purple-500/30 flex items-center justify-between hidden">
+                    <span class="text-xs text-purple-300">مبلغ نهایی:</span>
                     <span id="customStarsPrice" class="text-sm font-black text-amber-400">0 تومان</span>
                 </div>
             </div>
 
-            <div class="bg-[#141722] p-5 rounded-3xl border border-gray-800 space-y-3">
-                <h3 class="text-xs font-bold text-gray-400 mb-2">یا انتخاب پکیج آماده:</h3>
+            <div class="bg-[#0e0f1a] p-5 rounded-3xl border border-purple-900/30 space-y-3">
+                <h3 class="text-xs font-bold text-purple-300 mb-2">یا انتخاب پکیج آماده:</h3>
                 <div id="starsPackagesList" class="space-y-2.5"></div>
 
-                <div class="pt-4 border-t border-gray-800/80 flex items-center justify-between">
+                <div class="pt-4 border-t border-purple-900/30 flex items-center justify-between">
                     <div>
                         <p class="text-xs text-gray-400">مبلغ قابل پرداخت:</p>
                         <p id="selectedStarsFinalToman" class="text-lg font-black text-amber-400">0 تومان</p>
                     </div>
-                    <button onclick="orderStars()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black font-black text-xs transition shadow-lg shadow-orange-500/20 flex items-center gap-2">
+                    <button onclick="orderStars()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black font-black text-xs transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
                         <span>خرید استارز</span>
                         <i class="fa-solid fa-bolt text-xs"></i>
                     </button>
@@ -273,24 +274,24 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
         <!-- تب پرمیوم -->
         <section id="section-premium" class="hidden max-w-xl mx-auto space-y-6">
-            <div class="bg-[#141722] p-6 rounded-3xl border border-gray-800 space-y-4">
+            <div class="bg-[#0e0f1a] p-6 rounded-3xl border border-purple-900/30 space-y-4">
                 <div class="flex items-center justify-between">
                     <h3 class="text-sm font-bold text-gray-200 flex items-center gap-2">
                         <i class="fa-solid fa-crown text-purple-400"></i> انتخاب مدت زمان اشتراک
                     </h3>
-                    <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    <span class="px-2.5 py-0.5 rounded-lg text-[11px] font-extrabold bg-amber-400/20 text-amber-300 border border-amber-400/30">
                         تخفیف ویژه
                     </span>
                 </div>
 
                 <div class="space-y-3" id="premiumOptionsList"></div>
 
-                <div class="pt-4 border-t border-gray-800/80 flex items-center justify-between">
+                <div class="pt-4 border-t border-purple-900/30 flex items-center justify-between">
                     <div>
                         <p class="text-xs text-gray-400">مبلغ اشتراک پرمیوم:</p>
                         <p id="selectedPremiumFinalToman" class="text-lg font-black text-purple-400">0 تومان</p>
                     </div>
-                    <button onclick="orderPremium()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs transition shadow-lg shadow-purple-600/25 flex items-center gap-2">
+                    <button onclick="orderPremium()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-black text-xs transition shadow-lg shadow-purple-600/30 flex items-center gap-2">
                         <span>خرید پرمیوم</span>
                         <i class="fa-solid fa-crown text-xs"></i>
                     </button>
@@ -299,22 +300,22 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         </section>
     </main>
 
-    <!-- 🛍️ نوار سبد خرید شناور اختصاصی Duck Store -->
-    <div id="floatingCartBar" class="fixed bottom-4 inset-x-4 max-w-lg mx-auto z-40 bg-[#161b26]/95 backdrop-blur-xl border border-amber-500/40 p-4 rounded-3xl shadow-2xl transition-all duration-300 transform translate-y-44 opacity-0 space-y-3">
-        <div class="flex items-center gap-2 bg-[#0e1118] p-1.5 rounded-xl border border-gray-800">
-            <input type="text" id="couponInput" placeholder="کد تخفیف داری؟ وارد کن..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold">
-            <button onclick="applyCoupon()" class="px-3.5 py-1.5 bg-amber-500 text-black text-xs font-black rounded-lg hover:bg-amber-400 transition">اعمال</button>
+    <!-- 🛍️ نوار سبد خرید شناور با تم مشکی، بنفش و زرد -->
+    <div id="floatingCartBar" class="fixed bottom-4 inset-x-4 max-w-lg mx-auto z-40 bg-[#0c0d18]/95 backdrop-blur-xl border border-purple-500/40 p-4 rounded-3xl shadow-[0_10px_35px_rgba(124,58,237,0.25)] transition-all duration-300 transform translate-y-44 opacity-0 space-y-3">
+        <div class="flex items-center gap-2 bg-[#06070d] p-1.5 rounded-xl border border-purple-900/40">
+            <input type="text" id="couponInput" placeholder="کد تخفیف داری؟ وارد کن..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold placeholder-gray-500">
+            <button onclick="applyCoupon()" class="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-purple-500 text-white text-xs font-black rounded-lg hover:from-purple-500 hover:to-purple-400 transition shadow-md shadow-purple-600/30">اعمال</button>
         </div>
 
-        <div class="flex items-center justify-between pt-1 border-t border-gray-800/80">
+        <div class="flex items-center justify-between pt-1 border-t border-purple-900/30">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 text-black flex items-center justify-center font-black text-base shadow-lg shadow-orange-500/20">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-400 to-yellow-500 text-black flex items-center justify-center font-black text-base shadow-lg shadow-amber-500/25">
                     <span id="cartCountBadge">0</span>
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
                         <p class="text-xs font-bold text-white">سبد اجاره گیفت</p>
-                        <span id="discountTag" class="hidden px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">تخفیف اعمال شد</span>
+                        <span id="discountTag" class="hidden px-2 py-0.5 rounded text-[10px] font-black bg-amber-400/20 text-amber-300 border border-amber-400/30">تخفیف اعمال شد</span>
                     </div>
                     <p id="cartTotalPrice" class="text-xs text-amber-400 font-black">0 تومان</p>
                 </div>
@@ -323,7 +324,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 <button onclick="clearCart()" class="p-2.5 text-gray-400 hover:text-rose-400 text-xs transition" title="خالی کردن سبد">
                     <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
-                <button onclick="checkoutCart()" class="py-3 px-5 rounded-2xl bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 text-white text-xs font-black transition shadow-lg shadow-blue-500/30 flex items-center gap-2">
+                <button onclick="checkoutCart()" class="py-3 px-5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-xs font-black transition shadow-lg shadow-amber-500/30 flex items-center gap-2">
                     <span>ثبت سفارش</span>
                     <i class="fa-solid fa-arrow-left text-[11px]"></i>
                 </button>
@@ -332,27 +333,27 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
     </div>
 
     <!-- 📦 مودال انتخاب چندتایی کالکشن -->
-    <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
+    <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden">
         <div class="modal-bg w-full max-w-md rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="px-6 py-4 flex items-center justify-between border-b border-gray-800">
-                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white flex items-center justify-center transition">
+            <div class="px-6 py-4 flex items-center justify-between border-b border-purple-900/30">
+                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-[#17192e] hover:bg-[#222544] text-purple-300 hover:text-white flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
                 <h3 class="text-sm font-black text-white">انتخاب کالکشن‌ها</h3>
                 <div class="w-7"></div>
             </div>
 
-            <div class="p-3.5 border-b border-gray-800/50 space-y-2.5">
+            <div class="p-3.5 border-b border-purple-900/30 space-y-2.5">
                 <div class="relative">
                     <input type="text" id="modalSearchInput" placeholder="جستجوی کالکشن..." 
-                           class="w-full bg-[#1a1d26] border border-gray-700 rounded-xl pr-4 pl-9 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-500 transition">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-gray-400 text-xs"></i>
+                           class="w-full bg-[#07080f] border border-purple-900/40 rounded-xl pr-4 pl-9 py-2 text-xs text-gray-200 placeholder-gray-500 focus:outline-none focus:border-amber-400 transition">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-2.5 text-purple-400 text-xs"></i>
                 </div>
                 <div class="flex items-center justify-between px-1 text-xs">
                     <button onclick="selectAllCollections()" class="text-amber-400 hover:underline text-[11px] font-bold">
                         <i class="fa-solid fa-check-double ml-1"></i> انتخاب همه
                     </button>
-                    <button onclick="clearCollectionSelection()" class="text-gray-400 hover:text-rose-400 text-[11px]">
+                    <button onclick="clearCollectionSelection()" class="text-purple-300 hover:text-rose-400 text-[11px]">
                         <i class="fa-solid fa-rotate-left ml-1"></i> پاک کردن
                     </button>
                 </div>
@@ -360,8 +361,8 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
             <div id="modalCollectionsList" class="p-3.5 space-y-2 overflow-y-auto flex-1"></div>
 
-            <div class="p-3.5 border-t border-gray-800 bg-[#0f121a]">
-                <button onclick="applyCollectionModal()" class="w-full py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-black text-xs font-black rounded-xl transition shadow-lg shadow-orange-500/20 flex items-center justify-center gap-2">
+            <div class="p-3.5 border-t border-purple-900/30 bg-[#080912]">
+                <button onclick="applyCollectionModal()" class="w-full py-3 bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black text-xs font-black rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
                     <span>اعمال فیلتر کالکشن‌ها</span>
                     <span id="modalSelectedCountBadge" class="bg-black/20 px-2 py-0.5 rounded-full text-[11px]">0</span>
                 </button>
@@ -454,7 +455,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 promo.classList.add('hidden');
             }
 
-            checkAdminVisibility();
             updateTabAvailability();
             renderCards(getFilteredDeals());
             renderStarsPackages();
@@ -462,35 +462,36 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             updateCartUI();
         }
 
-        function checkAdminVisibility() {
-            const adminBtn = document.getElementById('adminBtn');
-            if (!adminBtn) return;
-            const currentAdminTg = (SETTINGS.adminTg || 'Zanjani_a').toLowerCase().replace('@', '');
-            if (tgUser && tgUser.username) {
-                if (tgUser.username.toLowerCase() === currentAdminTg) {
-                    adminBtn.classList.remove('hidden');
-                    return;
+        // ================= نویگیشن تب‌ها با تم مشکی زرد بنفش =================
+        function switchMainTab(tab) {
+            if (tab === 'gifts' && SETTINGS.tabGiftsActive === false) return alert('بخش اجاره گیفت موقتاً غیرفعال است.');
+            if (tab === 'stars' && SETTINGS.tabStarsActive === false) return alert('بخش استارز موقتاً غیرفعال است.');
+            if (tab === 'premium' && SETTINGS.tabPremiumActive === false) return alert('بخش پرمیوم موقتاً غیرفعال است.');
+
+            triggerHaptic('selection');
+            currentMainTab = tab;
+
+            const tabIds = ['gifts', 'stars', 'premium'];
+            tabIds.forEach(t => {
+                const sec = document.getElementById(`section-${t}`);
+                const btn = document.getElementById(`tabBtn-${t}`);
+                if (!sec || !btn) return;
+
+                if (t === tab) {
+                    sec.classList.remove('hidden');
+                    // تب فعال: گرادیانت زرد-طلایی با نوشته مشکی و سایه
+                    btn.className = "px-4 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 whitespace-nowrap bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-lg shadow-amber-500/20";
+                } else {
+                    sec.classList.add('hidden');
+                    // تب غیرفعال: مشکی تیره بنفش
+                    const isTabLocked = (t === 'gifts' && SETTINGS.tabGiftsActive === false) ||
+                                        (t === 'stars' && SETTINGS.tabStarsActive === false) ||
+                                        (t === 'premium' && SETTINGS.tabPremiumActive === false);
+                    btn.className = `px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 whitespace-nowrap bg-[#121324] text-gray-400 hover:text-purple-300 border border-purple-500/10 ${isTabLocked ? 'opacity-40 cursor-not-allowed' : ''}`;
                 }
-            }
-            adminBtn.classList.add('hidden');
-        }
+            });
 
-        function openAdminSecurely() {
-            triggerHaptic('light');
-            window.location.href = 'admin.html';
-        }
-
-        let logoClickCount = 0;
-        let logoClickTimer = null;
-        function handleLogoSecretClick() {
-            logoClickCount++;
-            clearTimeout(logoClickTimer);
-            logoClickTimer = setTimeout(() => { logoClickCount = 0; }, 1000);
-            if (logoClickCount >= 3) {
-                triggerHaptic('heavy');
-                logoClickCount = 0;
-                window.location.href = 'admin.html';
-            }
+            updateCartUI();
         }
 
         function updateTabAvailability() {
@@ -509,7 +510,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                         labelSpan.innerHTML = `${t.label} <span class="text-[9px] bg-rose-500/20 text-rose-400 border border-rose-500/30 px-1.5 py-0.5 rounded mr-1">ناموجود</span>`;
                     }
                 } else {
-                    btn.classList.remove('opacity-40', 'cursor-not-allowed');
+                    if (t.id !== currentMainTab) {
+                        btn.classList.remove('opacity-40', 'cursor-not-allowed');
+                    }
                     if (labelSpan) labelSpan.innerText = t.label;
                 }
             });
@@ -543,26 +546,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             updateCartUI();
         }
 
-        function switchMainTab(tab) {
-            if (tab === 'gifts' && SETTINGS.tabGiftsActive === false) return alert('⚠️ بخش اجاره گیفت موقتاً غیرفعال است.');
-            if (tab === 'stars' && SETTINGS.tabStarsActive === false) return alert('⚠️ بخش استارز موقتاً غیرفعال است.');
-            if (tab === 'premium' && SETTINGS.tabPremiumActive === false) return alert('⚠️ بخش پرمیوم موقتاً غیرفعال است.');
-
-            triggerHaptic('selection');
-            currentMainTab = tab;
-            ['gifts', 'stars', 'premium'].forEach(t => {
-                document.getElementById(`section-${t}`).classList.add('hidden');
-                document.getElementById(`tabBtn-${t}`).classList.remove('active', 'bg-amber-500', 'text-black');
-                document.getElementById(`tabBtn-${t}`).classList.add('bg-[#171b26]', 'text-gray-300');
-            });
-
-            document.getElementById(`section-${tab}`).classList.remove('hidden');
-            const btn = document.getElementById(`tabBtn-${tab}`);
-            btn.classList.add('active', 'bg-amber-500', 'text-black');
-            btn.classList.remove('bg-[#171b26]', 'text-gray-300');
-            updateCartUI();
-        }
-
         // ================= استارز =================
         function renderStarsPackages() {
             const container = document.getElementById('starsPackagesList');
@@ -572,7 +555,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 return `
                 <div onclick="selectStarsPackage(${qty})" class="select-row p-3.5 rounded-2xl flex items-center justify-between cursor-pointer ${isSelected ? 'active' : ''}">
                     <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-amber-400 bg-amber-400' : 'border-gray-600'}">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-amber-400 bg-amber-400' : 'border-purple-400/40'}">
                             ${isSelected ? '<div class="w-2 h-2 rounded-full bg-black"></div>' : ''}
                         </div>
                         <div class="flex items-center gap-2">
@@ -618,7 +601,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             triggerHaptic('heavy');
             const total = (selectedStarsCount * SETTINGS.ratePerStar).toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
-            const msg = encodeURIComponent(`⭐ سفارش استارز تلگرام - Duck Store:\\n${buyerInfo}\\n\\n✨ تعداد: ${selectedStarsCount} Stars\\n💳 مبلغ قابل پرداخت: ${total} تومان`);
+            const msg = encodeURIComponent(
+                `سلام، درخواست خرید استارز دارم:\n\n` +
+                `${buyerInfo}\n\n` +
+                `⭐ تعداد استارز: ${selectedStarsCount} Stars\n` +
+                `💳 مبلغ قابل پرداخت: ${total} تومان`
+            );
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
         }
 
@@ -637,12 +625,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 return `
                 <div onclick="selectPremiumPlan(${opt.months})" class="select-row p-4 rounded-2xl flex items-center justify-between cursor-pointer ${isSelected ? 'active' : ''}">
                     <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-purple-400 bg-purple-400' : 'border-gray-600'}">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${isSelected ? 'border-purple-400 bg-purple-400' : 'border-purple-400/40'}">
                             ${isSelected ? '<div class="w-2 h-2 rounded-full bg-black"></div>' : ''}
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-sm font-black text-white">${opt.label}</span>
-                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-blue-500/20 text-blue-400 border border-blue-500/30">${opt.discount}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-black bg-purple-500/20 text-purple-300 border border-purple-500/30">${opt.discount}</span>
                         </div>
                     </div>
                     <span class="text-xs font-black text-purple-400">${totalToman} t</span>
@@ -673,7 +661,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             if (selectedPremiumMonths === 3) { planName = '3 ماهه'; price = SETTINGS.prem3; }
             const total = price.toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
-            const msg = encodeURIComponent(`👑 سفارش تلگرام پرمیوم - Duck Store:\\n${buyerInfo}\\n\\n💎 نوع: ${planName}\\n💳 مبلغ: ${total} تومان`);
+            const msg = encodeURIComponent(
+                `سلام، درخواست خرید تلگرام پرمیوم دارم:\n\n` +
+                `${buyerInfo}\n\n` +
+                `👑 نوع اشتراک: ${planName}\n` +
+                `💳 مبلغ قابل پرداخت: ${total} تومان`
+            );
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${msg}`, '_blank');
         }
 
@@ -740,31 +733,28 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         }
 
         function getBuyerDetailsText() {
-            if (!tgUser) return "👤 خریدار: ناشناس (ورود از وب)";
-            return `👤 خریدار: ${tgUser.first_name || ''} ${tgUser.last_name || ''}\\n🆔 شناسه کاربری: <code>${tgUser.id}</code>\\n📱 یوزرنیم: @${tgUser.username || 'ندارد'}`;
+            if (!tgUser) return "خریدار: کاربر مهمان (وب)";
+            const fullName = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || 'کاربر تلگرام';
+            const uname = tgUser.username ? `@${tgUser.username}` : 'بدون یوزرنیم';
+            return `خریدار: ${fullName} (${uname} | آیدی: ${tgUser.id})`;
         }
 
         function checkoutCart() {
             triggerHaptic('heavy');
             if (cart.length === 0) return;
 
-            const rawTotal = (cart.length * SETTINGS.giftMonthlyPrice).toLocaleString('en-US');
             const finalTotal = calculateCartFinalPrice().toLocaleString('en-US');
             const buyerDetails = getBuyerDetailsText();
-            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join('\\n');
-            const couponText = appliedCouponCode ? `\\n🏷️ کد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)` : '';
+            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join('\n');
+            const couponText = appliedCouponCode ? `\n🏷️ کد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)` : '';
 
             const message = encodeURIComponent(
-                `🛍️ <b>فاکتور اجاره گیفت - Duck Store</b>\\n` +
-                `━━━━━━━━━━━━━━━━━━\\n` +
-                `${buyerDetails}\\n` +
-                `📅 تاریخ: ${new Date().toLocaleString('en-GB')}\\n` +
-                `━━━━━━━━━━━━━━━━━━\\n` +
-                `📦 اقلام سفارش (${cart.length} عدد):\\n${itemsList}\\n` +
-                `━━━━━━━━━━━━━━━━━━\\n` +
-                `💰 مبلغ کل: ${rawTotal} تومان` +
-                `${couponText}\\n` +
-                `💳 مبلغ نهایی قابل پرداخت: ${finalTotal} تومان / ماه`
+                `سلام، درخواست اجاره گیفت دارم:\n\n` +
+                `${buyerDetails}\n\n` +
+                `اقلام سفارش (${cart.length} عدد):\n` +
+                `${itemsList}\n\n` +
+                `💳 مبلغ نهایی قابل پرداخت: ${finalTotal} تومان / ماه` +
+                `${couponText}`
             );
 
             window.open(`https://t.me/${SETTINGS.adminTg}?text=${message}`, '_blank');
@@ -773,28 +763,28 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         function renderCards(items) {
             const container = document.getElementById('dealsGrid');
             if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full py-16 text-center text-gray-400">گیفتی با این مشخصات پیدا نشد.</div>';
+                container.innerHTML = '<div class="col-span-full py-16 text-center text-purple-300/60">گیفتی با این مشخصات پیدا نشد.</div>';
                 return;
             }
 
             const giftPriceFormatted = SETTINGS.giftMonthlyPrice.toLocaleString('en-US');
 
             container.innerHTML = items.map((deal) => {
-                const rarityBadge = deal.rarity ? `<span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 backdrop-blur-md">${deal.rarity}</span>` : '';
+                const rarityBadge = deal.rarity ? `<span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-lg text-[10px] font-bold bg-purple-600/25 text-purple-300 border border-purple-500/40 backdrop-blur-md">${deal.rarity}</span>` : '';
                 const isFav = favorites.includes(deal.name);
                 const isInCart = cart.some(c => c.name === deal.name);
 
                 return `
-                <div class="stars-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-amber-500 bg-[#171b28]' : ''}">
+                <div class="stars-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-amber-400 bg-[#141525]' : ''}">
                     <div>
-                        <div class="relative w-full h-48 bg-gradient-to-b from-[#22283a] to-[#161a26] flex items-center justify-center overflow-hidden border-b border-gray-800/60 rounded-t-3xl">
+                        <div class="relative w-full h-48 bg-gradient-to-b from-[#18192c] to-[#0e0f1a] flex items-center justify-center overflow-hidden border-b border-purple-900/30 rounded-t-3xl">
                             ${rarityBadge}
                             
-                            <button onclick="toggleFavorite('${deal.name}')" class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/50 backdrop-blur-md flex items-center justify-center text-sm transition hover:scale-110 ${isFav ? 'text-rose-500' : 'text-gray-400 hover:text-white'}">
+                            <button onclick="toggleFavorite('${deal.name}')" class="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/60 backdrop-blur-md flex items-center justify-center text-sm transition hover:scale-110 ${isFav ? 'text-rose-500' : 'text-purple-300/60 hover:text-white'}">
                                 <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
                             </button>
 
-                            <img src="${deal.image_url}" alt="${deal.name}" class="w-32 h-32 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.6)] transform hover:scale-108 transition duration-300" onerror="this.src='https://marketapp.org/favicon.ico'">
+                            <img src="${deal.image_url}" alt="${deal.name}" class="w-32 h-32 object-contain filter drop-shadow-[0_10px_20px_rgba(0,0,0,0.7)] transform hover:scale-108 transition duration-300" onerror="this.src='https://marketapp.org/favicon.ico'">
                         </div>
 
                         <div class="p-4">
@@ -806,13 +796,13 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                                 </span>
                             </div>
 
-                            <div class="space-y-2 text-xs text-gray-400 bg-[#0d1017]/80 p-3 rounded-xl border border-gray-800/60">
+                            <div class="space-y-2 text-xs text-purple-200/70 bg-[#07080f]/90 p-3 rounded-xl border border-purple-900/30">
                                 <div class="flex justify-between items-center text-[11px]">
-                                    <span class="text-gray-500">کالکشن:</span>
+                                    <span class="text-purple-400">کالکشن:</span>
                                     <span class="font-semibold text-gray-200">${deal.gift_title}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-[11px]">
-                                    <span class="text-gray-500">مدت اجاره:</span>
+                                    <span class="text-purple-400">مدت اجاره:</span>
                                     <span class="font-semibold text-gray-200">${deal.days_range} روز</span>
                                 </div>
                             </div>
@@ -820,10 +810,10 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                     </div>
 
                     <div class="p-4 pt-0 grid grid-cols-2 gap-2">
-                        <a href="${deal.tg_link}" target="_blank" onclick="triggerHaptic('light')" class="py-2.5 px-3 rounded-xl bg-[#1e2330] hover:bg-[#282f42] text-gray-300 text-xs font-bold text-center transition border border-gray-700/50 flex items-center justify-center gap-1">
+                        <a href="${deal.tg_link}" target="_blank" onclick="triggerHaptic('light')" class="py-2.5 px-3 rounded-xl bg-[#141629] hover:bg-[#1f223d] text-purple-200 text-xs font-bold text-center transition border border-purple-500/20 flex items-center justify-center gap-1">
                             مشاهده
                         </a>
-                        <button onclick='toggleCart(${JSON.stringify(deal)})' class="py-2.5 px-3 rounded-xl ${isInCart ? 'bg-amber-500 text-black font-black' : 'bg-white hover:bg-gray-100 text-black font-black'} text-xs text-center transition shadow-md flex items-center justify-center gap-1">
+                        <button onclick='toggleCart(${JSON.stringify(deal)})' class="py-2.5 px-3 rounded-xl ${isInCart ? 'bg-amber-400 text-black font-black' : 'bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-black font-black'} text-xs text-center transition shadow-md shadow-amber-500/10 flex items-center justify-center gap-1">
                             <i class="fa-solid ${isInCart ? 'fa-check' : 'fa-plus'} text-xs"></i>
                             ${isInCart ? 'انتخاب شد' : 'اجاره'}
                         </button>
@@ -847,16 +837,16 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             container.innerHTML = filtered.map(col => {
                 const isSelected = tempSelectedCollections.has(col.name);
                 return `
-                <div onclick="toggleModalCollection('${col.name}')" class="collection-item p-3 rounded-2xl flex items-center justify-between cursor-pointer ${isSelected ? 'border-amber-500/80 bg-[#232733]' : ''}">
+                <div onclick="toggleModalCollection('${col.name}')" class="collection-item p-3 rounded-2xl flex items-center justify-between cursor-pointer ${isSelected ? 'border-amber-400/80 bg-[#181a30]' : ''}">
                     <div class="flex items-center gap-3">
-                        <div class="w-5 h-5 rounded-lg border-2 flex items-center justify-center transition ${isSelected ? 'border-amber-400 bg-amber-400 text-black' : 'border-gray-600 bg-[#12141c]'}">
+                        <div class="w-5 h-5 rounded-lg border-2 flex items-center justify-center transition ${isSelected ? 'border-amber-400 bg-amber-400 text-black' : 'border-purple-400/40 bg-[#090a14]'}">
                             ${isSelected ? '<i class="fa-solid fa-check text-[11px] font-black"></i>' : ''}
                         </div>
                         <span class="text-xs font-bold text-gray-200">${col.name}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <span class="text-[11px] text-gray-400 bg-gray-900 px-2 py-0.5 rounded-md">${col.count}</span>
-                        <img src="${col.image}" alt="${col.name}" class="w-8 h-8 rounded-full object-contain p-1 bg-gray-900 border border-gray-700/60 shadow" onerror="this.src='https://marketapp.org/favicon.ico'">
+                        <span class="text-[11px] text-purple-300 bg-black/40 px-2 py-0.5 rounded-md border border-purple-500/20">${col.count}</span>
+                        <img src="${col.image}" alt="${col.name}" class="w-8 h-8 rounded-full object-contain p-1 bg-black/50 border border-purple-500/30 shadow" onerror="this.src='https://marketapp.org/favicon.ico'">
                     </div>
                 </div>
                 `;
@@ -928,11 +918,11 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             triggerHaptic('selection');
             selectedType = type;
             document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-500', 'text-black');
-                btn.classList.add('bg-[#1d2232]', 'text-gray-300');
+                btn.classList.remove('bg-amber-400', 'text-black');
+                btn.classList.add('bg-[#141629]', 'text-gray-300');
             });
-            event.target.classList.remove('bg-[#1d2232]', 'text-gray-300');
-            event.target.classList.add('bg-amber-500', 'text-black');
+            event.target.classList.remove('bg-[#141629]', 'text-gray-300');
+            event.target.classList.add('bg-amber-400', 'text-black');
             applyFilters();
         }
 
@@ -1260,7 +1250,7 @@ async def main():
                 )
 
         print(
-            f"\n⚡ فروشگاه Duck Store با موفقیت آماده شد (تمام اعداد انگلیسی)!"
+            f"\n⚡ فروشگاه Duck Store با تم جدید مشکی-زرد-بنفش با موفقیت آماده شد!"
         )
         send_telegram_package(sorted_deals)
 
