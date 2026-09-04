@@ -77,7 +77,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت فروشگاهی Duck Store با اتصال قطعی دکمه‌ها به تلگرام"""
+    """تولید وب‌سایت Duck Store با صفحه لودینگ نئونی قبل از رندر کامل"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -167,6 +167,21 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
     </style>
 </head>
 <body class="min-h-screen pb-36 select-none">
+
+    <!-- ⏳ صفحه لودینگ نئونی تمام‌صفحه -->
+    <div id="loadingScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#07080f] transition-opacity duration-500 ease-out">
+        <div class="relative flex items-center justify-center">
+            <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-amber-400 via-amber-500 to-purple-600 flex items-center justify-center text-4xl shadow-xl shadow-purple-900/30 animate-pulse">
+                🦆
+            </div>
+            <div class="absolute -inset-2.5 rounded-[30px] border-2 border-amber-400/30 border-t-purple-500 animate-spin"></div>
+        </div>
+        <h2 class="text-white font-black text-base mt-6 tracking-wide flex items-center gap-2">
+            <span>Duck Store</span>
+            <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+        </h2>
+        <p class="text-purple-300/60 text-xs mt-2 font-bold">در حال آماده‌سازی فروشگاه...</p>
+    </div>
 
     <!-- 📢 بنر مناسبتی هدر -->
     <div id="promoBanner" class="hidden bg-gradient-to-r from-purple-800 via-amber-500 to-purple-800 text-black text-xs font-black py-2.5 px-4 text-center shadow-lg shadow-purple-900/20 flex items-center justify-center gap-2">
@@ -392,7 +407,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             }
         }
 
-        // 🔗 تابع اختصاصی و تضمینی برای باز کردن چت تلگرام در تمام محیط‌ها (WebView و مرورگر)
+        // 🔗 متد باز کردن چت بدون بلاک شدن در تلگرام
         function openTgLink(url) {
             const cleanUrl = url.replace('https://t.me/@', 'https://t.me/');
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
@@ -408,6 +423,15 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 }
             } catch(e) {
                 window.location.href = cleanUrl;
+            }
+        }
+
+        // ⏳ محو کردن نرم صفحه لودینگ پس از پایان رندر
+        function hideLoadingScreen() {
+            const loader = document.getElementById('loadingScreen');
+            if (loader && loader.style.display !== 'none') {
+                loader.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => { loader.style.display = 'none'; }, 500);
             }
         }
 
@@ -479,6 +503,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             renderStarsPackages();
             renderPremiumOptions();
             updateCartUI();
+
+            // پس از اتمام رندر، صفحه لودینگ حذف می‌شود
+            hideLoadingScreen();
         }
 
         let logoClickCount = 0;
@@ -987,6 +1014,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         updateFavCount();
         fetchCloudSettings();
+
+        // 🛡️ تایمر ایمنی: لودینگ حداکثر پس از ۱.۵ ثانیه حتی در صورت کندی اینترنت محو شود
+        setTimeout(hideLoadingScreen, 1500);
     </script>
 </body>
 </html>"""
@@ -1247,7 +1277,7 @@ async def main():
 
         await browser.close()
 
-        # 🎯 مرتب‌سازی جدیدترین‌ها در بالای فروشگاه
+        # 🎯 مرتب‌سازی بر اساس جدیدترین‌ها در بالای فروشگاه
         sorted_deals = list(reversed(deals_found))
 
         generate_duck_store_html(sorted_deals)
@@ -1283,7 +1313,7 @@ async def main():
                 )
 
         print(
-            f"\n⚡ فروشگاه Duck Store با موفقیت آماده شد!"
+            f"\n⚡ فروشگاه Duck Store همراه با صفحه لودینگ آماده شد!"
         )
         send_telegram_package(sorted_deals)
 
