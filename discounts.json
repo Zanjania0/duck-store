@@ -325,6 +325,19 @@
     "rarity": ""
   },
   {
+    "name": "Fine Pen #9316",
+    "gift_title": "Fine Pen",
+    "number": "9316",
+    "discount": "-50.0%",
+    "discount_num": 50.0,
+    "price_per_day": "0.01",
+    "days_range": "1 – 180",
+    "tg_link": "https://t.me/nft/FinePen-9316",
+    "market_link": "https://marketapp.org/nft/EQCJJxqOnE9l9Kxh_Zw7DkyrQdMBT__Pi3Gg-kn6IpZuQZmd/?to=rent",
+    "image_url": "https://i2.anton.market/CMlNZc2sV3v-KWskNA_kl-Gh0N0PKloVI8hipBNRTeA/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJDd0ZuYWxOMGFHem9KZ1ZpaHRNTFRlWHVLT190SEl4cTdiZGRObG5IMkpvVkIvbi80NWFhYzQxZGFhMzU4ZjczZDA5ODUzZDgwNzBiYTMwYy53ZWJw",
+    "rarity": ""
+  },
+  {
     "name": "Fine Pen #9389",
     "gift_title": "Fine Pen",
     "number": "9389",
@@ -767,19 +780,6 @@
     "rarity": ""
   },
   {
-    "name": "Ice Cream #248289",
-    "gift_title": "Ice Cream",
-    "number": "248289",
-    "discount": "-50.0%",
-    "discount_num": 50.0,
-    "price_per_day": "0.01",
-    "days_range": "1 – 180",
-    "tg_link": "https://t.me/nft/IceCream-248289",
-    "market_link": "https://marketapp.org/nft/EQAfVYVEqNXzx9lt-FXDsfAWIAEoitNys2PtCl1T7YR796Su/?to=rent",
-    "image_url": "https://i2.anton.market/n6-hZtuOqz6QKALfJFZ3zzAn1wqkfMOx1l21WkKefg0/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJVdnNrRXZtV2RwX1Y2SFgtMlR5ZnA0bUZTek16ZGc5VGFVejZ6S1Z6Nk92M2Yvbi80MTk3MTJiZGUwYWEzNTg2NmU5MWI2YmZmNjM5YTU5ZS53ZWJw",
-    "rarity": ""
-  },
-  {
     "name": "Ice Cream #259598",
     "gift_title": "Ice Cream",
     "number": "259598",
@@ -842,19 +842,6 @@
     "tg_link": "https://t.me/nft/IceCream-261146",
     "market_link": "https://marketapp.org/nft/EQCyuELnfYGuoSQBwMoNerDb4TbEjzVImRwVcUqy4pPUYkvF/?to=rent",
     "image_url": "https://i2.anton.market/8c4NLo8MtcLd5T-gdUamR7PmBgx-R9Z9Do0gsROv30Y/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJVdnNrRXZtV2RwX1Y2SFgtMlR5ZnA0bUZTek16ZGc5VGFVejZ6S1Z6Nk92M2Yvbi83MDgwYjQwZjQwYTZmMTU2NDFmMThlYmI5M2VhMjQ1MC53ZWJw",
-    "rarity": ""
-  },
-  {
-    "name": "Ice Cream #276661",
-    "gift_title": "Ice Cream",
-    "number": "276661",
-    "discount": "-50.0%",
-    "discount_num": 50.0,
-    "price_per_day": "0.01",
-    "days_range": "1 – 180",
-    "tg_link": "https://t.me/nft/IceCream-276661",
-    "market_link": "https://marketapp.org/nft/EQDpSufxRRP_0f9jUl41lLRhXdYAOIW4b_Aj7uaDlhZPoy4w/?to=rent",
-    "image_url": "https://i2.anton.market/zsd8FeNiKUinrYThNjBK4Ww08zbbUDTwuUcjJ86ltPY/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJVdnNrRXZtV2RwX1Y2SFgtMlR5ZnA0bUZTek16ZGc5VGFVejZ6S1Z6Nk92M2Yvbi9kYjNkYWM4ZGJlNWE4NjVlMjY5ZDhkN2EyZjNkM2Y0NS53ZWJw",
     "rarity": ""
   },
   {
@@ -1014,19 +1001,6 @@
     "rarity": ""
   },
   {
-    "name": "Ice Cream #311437",
-    "gift_title": "Ice Cream",
-    "number": "311437",
-    "discount": "-50.0%",
-    "discount_num": 50.0,
-    "price_per_day": "0.01",
-    "days_range": "1 – 180",
-    "tg_link": "https://t.me/nft/IceCream-311437",
-    "market_link": "https://marketapp.org/nft/EQDyJ2LhaItEViqFEjbBROHRIyarvpD1i2EW97qTCE0SAgMc/?to=rent",
-    "image_url": "https://i2.anton.market/miuni9YRz6NhEafSLXpGq34jtoXIm6Plwc0KSGaPIfs/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJVdnNrRXZtV2RwX1Y2SFgtMlR5ZnA0bUZTek16ZGc5VGFVejZ6S1Z6Nk92M2Yvbi85OGRlYjE1ODQyMDRkZjNiZGFkOWU2Njc4MGUyOTBjNy53ZWJw",
-    "rarity": ""
-  },
-  {
     "name": "Instant Ramen #143914",
     "gift_title": "Instant Ramen",
     "number": "143914",
@@ -1167,6 +1141,19 @@
     "tg_link": "https://t.me/nft/JellyBunny-61442",
     "market_link": "https://marketapp.org/nft/EQCXkINR90lwC-TcbBsLnvutm_FrY_AUJO9LeQdsZ87aGS8a/?to=rent",
     "image_url": "https://i2.anton.market/cPc2MQb-9ljonq3ddCF37ivOFw_Z4EU8B5ICPVNXigs/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUF3enViZW9Kd25xbW1CdVRQcG5VU3VyUnpXUEI4RVJ6Y2Z6eDU1WjJZakUwangvbi81ODY1YzBkYmUxMWI0NmU5ODc0ZDYxNTA2NzZhNjg0YS53ZWJw",
+    "rarity": ""
+  },
+  {
+    "name": "Jester Hat #25454",
+    "gift_title": "Jester Hat",
+    "number": "25454",
+    "discount": "-50.0%",
+    "discount_num": 50.0,
+    "price_per_day": "0.01",
+    "days_range": "1 – 180",
+    "tg_link": "https://t.me/nft/JesterHat-25454",
+    "market_link": "https://marketapp.org/nft/EQAlCCsQbFRNkLAgGUXzG6F607TCqEID5yrMbxx84I13j6-N/?to=rent",
+    "image_url": "https://i2.anton.market/SoWl85L3n82ESwcs3U_OSKYgSqjbEfNmLYcHrFMh-1M/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUNCS19KQkFTQUE1WFZ6MUQxN1BuLS1rUWFNV20wYjl3UmVWdHNFZFJPNFRneTkvbi85ZDIwNDU5MmI1OWY1ODQ2ODIyNTc4NTJhYTJhZmNhMC53ZWJw",
     "rarity": ""
   },
   {
@@ -1534,6 +1521,19 @@
     "rarity": ""
   },
   {
+    "name": "Mad Pumpkin #1586",
+    "gift_title": "Mad Pumpkin",
+    "number": "1586",
+    "discount": "-50.0%",
+    "discount_num": 50.0,
+    "price_per_day": "0.01",
+    "days_range": "1 – 180",
+    "tg_link": "https://t.me/nft/MadPumpkin-1586",
+    "market_link": "https://marketapp.org/nft/EQANOn15oZ53FfmbvmlGCw5TYkGkW3Sp-w7RHyz0xegN6Rv4/?to=rent",
+    "image_url": "https://i2.anton.market/ZtVS9GP2RoLE2M-iVwTMPnjARz-FE8TUBxaEN8aNWyM/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJkbEtoTHplellGTUNXU1dUQ25ocEtDMXV5Y3phQlVPajNFdFBqY2F0VXNUckMvbi80NzdkMmZlYzNhYjU3ZDMxZjdlMDJmNjRmYjQ5YWRiMC53ZWJw",
+    "rarity": ""
+  },
+  {
     "name": "Money Pot #181",
     "gift_title": "Money Pot",
     "number": "181",
@@ -1872,6 +1872,19 @@
     "rarity": ""
   },
   {
+    "name": "Record Player #11699",
+    "gift_title": "Record Player",
+    "number": "11699",
+    "discount": "-50.0%",
+    "discount_num": 50.0,
+    "price_per_day": "0.01",
+    "days_range": "1 – 180",
+    "tg_link": "https://t.me/nft/RecordPlayer-11699",
+    "market_link": "https://marketapp.org/nft/EQC1LXuvaDj_UBxNYZh8R-RvN1IvslO9gfXybEycogEiHuae/?to=rent",
+    "image_url": "https://i2.anton.market/Q7AiU8WYKxvmsZktJAqfW8v7XqlglLu0DLnAn5Y1oys/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURyNHhuNV9Hb0N6RHhoR0pNZWs3ZnYzbm02VzdiaFJ2bERTQmpjTlp1bDUydFovbi82YjA4NDk4NGRlMmEyMTQ2MDgxODAzYjM5MjlkMmZkZi53ZWJw",
+    "rarity": ""
+  },
+  {
     "name": "Sakura Flower #2425",
     "gift_title": "Sakura Flower",
     "number": "2425",
@@ -2090,6 +2103,19 @@
     "tg_link": "https://t.me/nft/SpicedWine-35680",
     "market_link": "https://marketapp.org/nft/EQDA1yFOhZx_ZkrQTu_idSAdcDr5esLQQJIVhee2UlZ-3THJ/?to=rent",
     "image_url": "https://i2.anton.market/QlF7IYRRgCUgUbSnNkkZy5wWactl2H8ag9ubH-ySWkE/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUE4RENXeUNXeXl3Z09LWU9SZXJSb1NWZXZXclVRX0ZqS1FnTmloeFkxMjI3eDcvbi83ZTViOGNkYmIyM2Y5YWY4Nzc0MmY0YWJhMGQ2MjFhZS53ZWJw",
+    "rarity": ""
+  },
+  {
+    "name": "Star Notepad #54693",
+    "gift_title": "Star Notepad",
+    "number": "54693",
+    "discount": "-50.0%",
+    "discount_num": 50.0,
+    "price_per_day": "0.01",
+    "days_range": "1 – 180",
+    "tg_link": "https://t.me/nft/StarNotepad-54693",
+    "market_link": "https://marketapp.org/nft/EQCgRyVdSf4f5zZZJAYdQvsaQT_fSEkNqe7v_bWdypJwFnp0/?to=rent",
+    "image_url": "https://i2.anton.market/DuJS4mVyGWJi6jnQ11W8zuXYRQSxCLTAOWT0ZEKMpIQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJBWFI2OGYxVWdSaFRvRlJfYlhZMXpQSnk1TzZzbTJTdDBDUlRvOTJCVHhHaUgvbi83ZGM4NGFhZmIxZGMyZWVjMDUyMGYyZjBlYWZmY2YxZi53ZWJw",
     "rarity": ""
   },
   {
@@ -2535,19 +2561,6 @@
     "rarity": ""
   },
   {
-    "name": "Vice Cream #359257",
-    "gift_title": "Vice Cream",
-    "number": "359257",
-    "discount": "-50.0%",
-    "discount_num": 50.0,
-    "price_per_day": "0.01",
-    "days_range": "1 – 180",
-    "tg_link": "https://t.me/nft/ViceCream-359257",
-    "market_link": "https://marketapp.org/nft/EQDYCsQ2rlRZxDBAQlhfW9q8N3x19SBYXpjnxYkB__U8fDmR/?to=rent",
-    "image_url": "https://i2.anton.market/hRFu97JjvlxbHLAZFYWUhYDOhTLYLjNjay0Qt07lyCE/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vbi9iMjllN2M2NDFkMDZhMjE1YTNlNzljZGEzYzU5Njc3Yy53ZWJw",
-    "rarity": ""
-  },
-  {
     "name": "Vice Cream #359291",
     "gift_title": "Vice Cream",
     "number": "359291",
@@ -2558,19 +2571,6 @@
     "tg_link": "https://t.me/nft/ViceCream-359291",
     "market_link": "https://marketapp.org/nft/EQAitIHokcyGpjbk2HsfxDbFNnvVpdYgGfiy5X9e7F8f658r/?to=rent",
     "image_url": "https://i2.anton.market/JtDnYlepzgByQNkO2tvB0fmYO9Sp8z4vRTih0ANX2uo/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vbi9mZDk1OWRmODNmODVlYmU1YzY3ZTE5Nzk0MTAyMzQzMS53ZWJw",
-    "rarity": ""
-  },
-  {
-    "name": "Vice Cream #359307",
-    "gift_title": "Vice Cream",
-    "number": "359307",
-    "discount": "-50.0%",
-    "discount_num": 50.0,
-    "price_per_day": "0.01",
-    "days_range": "1 – 180",
-    "tg_link": "https://t.me/nft/ViceCream-359307",
-    "market_link": "https://marketapp.org/nft/EQAOKD0H7NE77bSx5jXf1xKkVtWHvb9G9DpgB96D6E2Bdq6Q/?to=rent",
-    "image_url": "https://i2.anton.market/3cY6PIB_glbRkXFyw7kNDrl9Tlwf-8x8Y1xcLGOiwyo/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vbi9hZTZmODRiMjBmNGY5ZTE2NGU1ZjJhYmMwODU5MTBlNi53ZWJw",
     "rarity": ""
   },
   {
