@@ -2,159 +2,159 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>پنل مدیریت جامع Duck Store</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>مدیریت Pearl Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Vazirmatn', sans-serif; background: #08090e; color: #f3f4f6; }
-        .admin-card { background: #10121a; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; }
-        .input-dark { background: #090a0f; border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; }
-        .input-dark:focus { outline: none; border-color: #f59e0b; }
+        body { font-family: 'Vazirmatn', sans-serif; background: #e9edf3; color: #1e293b; }
+        .neo-card { background: #ffffff; border-radius: 26px; box-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.25); border: 1px solid rgba(255, 255, 255, 0.8); }
+        .input-soft { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 16px; color: #0f172a; }
+        .input-soft:focus { outline: none; border-color: #0f172a; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-8">
 
     <!-- فرم لاگین -->
-    <div id="loginCard" class="admin-card w-full max-w-md p-6 space-y-5">
-        <div class="text-center space-y-1">
-            <div class="w-14 h-14 rounded-2xl bg-amber-400 text-black flex items-center justify-center text-2xl font-black mx-auto">🦆</div>
-            <h1 class="text-base font-black text-white pt-2">ورود به مدیریت Duck Store</h1>
-            <p class="text-xs text-gray-400">رمز عبور خود را وارد کنید</p>
+    <div id="loginCard" class="neo-card w-full max-w-md p-6 sm:p-8 space-y-6">
+        <div class="text-center space-y-2">
+            <div class="w-16 h-16 rounded-[22px] bg-[#181d28] text-white flex items-center justify-center text-3xl mx-auto shadow-md">🦆</div>
+            <h1 class="text-base font-black text-slate-900">پنل مدیریت Pearl Store</h1>
+            <p class="text-xs text-slate-500">برای ورود رمز عبور خود را وارد کنید</p>
         </div>
-        <div class="space-y-3">
-            <input type="password" id="adminPass" placeholder="رمز عبور..." class="input-dark w-full rounded-xl px-4 py-3 text-center text-sm font-bold">
-            <button onclick="login()" id="loginBtn" class="w-full py-3 bg-amber-400 text-black font-black text-xs rounded-xl shadow-lg shadow-amber-400/20">ورود</button>
+        <div class="space-y-4">
+            <input type="password" id="adminPass" placeholder="رمز عبور..." class="input-soft w-full px-4 py-3.5 text-center text-sm font-bold">
+            <button onclick="login()" id="loginBtn" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl transition shadow-md">ورود به مدیریت</button>
         </div>
     </div>
 
     <!-- داشبورد اصلی -->
-    <div id="dashboardCard" class="hidden admin-card w-full max-w-2xl p-6 space-y-6">
-        <div class="flex items-center justify-between border-b border-white/5 pb-4">
-            <h2 class="text-sm font-black text-white flex items-center gap-2">
-                <span>مدیریت پیشرفته خدمات</span>
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    <div id="dashboardCard" class="hidden neo-card w-full max-w-2xl p-6 sm:p-8 space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <h2 class="text-sm font-black text-slate-900 flex items-center gap-2">
+                <span>مدیریت محصولات و تعرفه‌ها</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             </h2>
             <div class="flex items-center gap-2">
-                <a href="index.html" target="_blank" class="px-3 py-1.5 rounded-xl bg-white/5 text-gray-300 text-xs font-bold">مشاهده سایت</a>
-                <button onclick="logout()" class="px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 text-xs font-bold">خروج</button>
+                <a href="index.html" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition">مشاهده سایت</a>
+                <button onclick="logout()" class="px-3.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100 transition">خروج</button>
             </div>
         </div>
 
-        <!-- تب‌های کنترل پنل ادمین -->
-        <div class="flex items-center gap-2 border-b border-white/5 pb-3 overflow-x-auto">
-            <button onclick="switchAdminTab('prices')" id="atab-prices" class="px-4 py-2 rounded-xl text-xs font-black bg-amber-400 text-black">تعرفه‌های پایه</button>
-            <button onclick="switchAdminTab('custom')" id="atab-custom" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#161926] text-gray-300">مدیریت خدمات سفارشی (بوست، اکانت، ممبر)</button>
-            <button onclick="switchAdminTab('marketing')" id="atab-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-[#161926] text-gray-300">بنر و کد تخفیف</button>
+        <!-- منوی تب‌های پنل -->
+        <div class="flex items-center gap-2 border-b border-slate-100 pb-3 overflow-x-auto">
+            <button onclick="switchAdminTab('prices')" id="atab-prices" class="px-4 py-2 rounded-xl text-xs font-black bg-[#181d28] text-white">تعرفه‌های پایه</button>
+            <button onclick="switchAdminTab('custom')" id="atab-custom" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600">افزودن خدمات جدید (بوست، اکانت، ممبر)</button>
+            <button onclick="switchAdminTab('marketing')" id="atab-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600">بنر و تخفیف</button>
         </div>
 
-        <!-- بخش اول: تعرفه‌های پایه -->
+        <!-- بخش تعرفه‌ها -->
         <div id="asec-prices" class="space-y-4">
             <div class="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                    <label class="block text-gray-400 mb-1 font-bold">نرخ هر ۱ استارز (تومان):</label>
-                    <input type="number" id="ratePerStar" class="input-dark w-full rounded-xl p-2.5 font-bold">
+                    <label class="block text-slate-600 mb-1 font-bold">نرخ هر ۱ استارز (تومان):</label>
+                    <input type="number" id="ratePerStar" class="input-soft w-full p-2.5 font-bold">
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1 font-bold">اجاره ماهانه هر گیفت (تومان):</label>
-                    <input type="number" id="giftMonthlyPrice" class="input-dark w-full rounded-xl p-2.5 font-bold">
+                    <label class="block text-slate-600 mb-1 font-bold">اجاره ماهانه گیفت (تومان):</label>
+                    <input type="number" id="giftMonthlyPrice" class="input-soft w-full p-2.5 font-bold">
                 </div>
             </div>
 
-            <div class="border-t border-white/5 pt-3">
-                <label class="block text-gray-400 mb-2 font-bold text-xs">قیمت‌های تلگرام پرمیوم (تومان):</label>
+            <div class="pt-3 border-t border-slate-100">
+                <label class="block text-slate-700 mb-2 font-bold text-xs">قیمت‌های تلگرام پرمیوم (تومان):</label>
                 <div class="grid grid-cols-3 gap-2 text-xs">
                     <div>
-                        <span class="block text-gray-400 text-[11px] mb-1">۳ ماهه:</span>
-                        <input type="number" id="prem3" class="input-dark w-full rounded-xl p-2 font-bold text-center">
+                        <span class="block text-slate-500 text-[11px] mb-1">۳ ماهه</span>
+                        <input type="number" id="prem3" class="input-soft w-full p-2 font-bold text-center">
                     </div>
                     <div>
-                        <span class="block text-gray-400 text-[11px] mb-1">۶ ماهه:</span>
-                        <input type="number" id="prem6" class="input-dark w-full rounded-xl p-2 font-bold text-center">
+                        <span class="block text-slate-500 text-[11px] mb-1">۶ ماهه</span>
+                        <input type="number" id="prem6" class="input-soft w-full p-2 font-bold text-center">
                     </div>
                     <div>
-                        <span class="block text-gray-400 text-[11px] mb-1">۱۲ ماهه:</span>
-                        <input type="number" id="prem12" class="input-dark w-full rounded-xl p-2 font-bold text-center">
+                        <span class="block text-slate-500 text-[11px] mb-1">۱۲ ماهه</span>
+                        <input type="number" id="prem12" class="input-soft w-full p-2 font-bold text-center">
                     </div>
                 </div>
             </div>
 
             <div>
-                <label class="block text-gray-400 mb-1 font-bold text-xs">آیدی تلگرام پشتیبانی (بدون @):</label>
-                <input type="text" id="adminTg" class="input-dark w-full rounded-xl p-2.5 text-xs font-bold dir-ltr text-left">
+                <label class="block text-slate-600 mb-1 font-bold text-xs">آیدی تلگرام پشتیبانی (بدون @):</label>
+                <input type="text" id="adminTg" class="input-soft w-full p-2.5 text-xs font-bold dir-ltr text-left">
             </div>
         </div>
 
-        <!-- بخش دوم: خدمات سفارشی (افزودن بوست، اکانت و ممبر با دلخواه خودتان) -->
+        <!-- بخش افزودن خدمات دلخواه (بوست، اکانت، کانال) -->
         <div id="asec-custom" class="hidden space-y-4">
-            <div class="p-4 rounded-2xl bg-[#090a0f] border border-white/5 space-y-3">
-                <h4 class="text-xs font-black text-amber-400 flex items-center gap-1.5">
-                    <i class="fa-solid fa-plus-circle"></i>
-                    <span>افزودن محصول / پلن جدید به فروشگاه</span>
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+                <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
+                    <i class="fa-solid fa-plus-circle text-slate-700"></i>
+                    <span>افزودن پلن جدید (بوست، اکانت یا کانال)</span>
                 </h4>
                 <div class="grid grid-cols-2 gap-2.5 text-xs">
                     <div>
-                        <label class="block text-gray-400 mb-1">دسته‌بندی:</label>
-                        <select id="newCat" class="input-dark w-full rounded-xl p-2 text-xs font-bold">
+                        <label class="block text-slate-600 mb-1">دسته‌بندی:</label>
+                        <select id="newCat" class="input-soft w-full p-2 text-xs font-bold">
                             <option value="boost">بوست کانال (Boost)</option>
                             <option value="account">اکانت مجازی (Account)</option>
                             <option value="channel">خدمات کانال / ممبر (Channel)</option>
                         </select>
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">عنوان محصول (مثلاً: بوست ۷ روزه لول ۴):</label>
-                        <input type="text" id="newTitle" placeholder="عنوان محصول..." class="input-dark w-full rounded-xl p-2 text-xs">
+                        <label class="block text-slate-600 mb-1">عنوان (مثلاً: بوست ۷ روزه لول ۲):</label>
+                        <input type="text" id="newTitle" placeholder="نام سرویس..." class="input-soft w-full p-2 text-xs">
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">قیمت به تومان:</label>
-                        <input type="number" id="newPrice" placeholder="مثلاً: 50000" class="input-dark w-full rounded-xl p-2 text-xs font-bold">
+                        <label class="block text-slate-600 mb-1">قیمت به تومان:</label>
+                        <input type="number" id="newPrice" placeholder="50000" class="input-soft w-full p-2 text-xs font-bold">
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">توضیح کوتاه:</label>
-                        <input type="text" id="newDesc" placeholder="مثلاً: تحویل فوری با لینک" class="input-dark w-full rounded-xl p-2 text-xs">
+                        <label class="block text-slate-600 mb-1">توضیح کوتاه:</label>
+                        <input type="text" id="newDesc" placeholder="توضیحات کوتاه..." class="input-soft w-full p-2 text-xs">
                     </div>
                 </div>
-                <button onclick="addNewCustomService()" class="w-full py-2.5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition">
-                    + ثبت این محصول در لیست
+                <button onclick="addNewCustomService()" class="w-full py-2.5 bg-[#181d28] hover:bg-black text-white font-bold text-xs rounded-xl transition">
+                    + اضافه کردن به لیست
                 </button>
             </div>
 
             <div class="space-y-2">
-                <h4 class="text-xs font-bold text-gray-300">محصولات ثبت‌شده فعال:</h4>
+                <h4 class="text-xs font-bold text-slate-700">پلن‌های فعال فعلی:</h4>
                 <div id="customListAdmin" class="space-y-2 max-h-56 overflow-y-auto"></div>
             </div>
         </div>
 
-        <!-- بخش سوم: بنر و کد تخفیف -->
+        <!-- بخش بنر و کد تخفیف -->
         <div id="asec-marketing" class="hidden space-y-4">
-            <div class="p-3.5 rounded-2xl bg-[#090a0f] border border-white/5 space-y-2">
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
                 <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-gray-200">بنر اطلاعیه بالای سایت:</span>
+                    <span class="font-bold text-slate-800">بنر اطلاعیه بالای سایت:</span>
                     <label class="flex items-center gap-1.5 cursor-pointer">
-                        <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded text-amber-400">
-                        <span class="text-amber-400 font-bold text-[11px]">فعال باشد</span>
+                        <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded text-slate-800">
+                        <span class="text-slate-800 font-bold text-[11px]">فعال باشد</span>
                     </label>
                 </div>
-                <input type="text" id="announcementText" placeholder="متن بنر..." class="input-dark w-full rounded-xl p-2 text-xs">
+                <input type="text" id="announcementText" placeholder="متن بنر..." class="input-soft w-full p-2.5 text-xs">
             </div>
 
             <div class="grid grid-cols-2 gap-3 text-xs">
                 <div>
-                    <label class="block text-gray-400 mb-1 font-bold">کد کوپن:</label>
-                    <input type="text" id="couponCode" placeholder="DUCK" class="input-dark w-full rounded-xl p-2.5 text-center font-black uppercase">
+                    <label class="block text-slate-600 mb-1 font-bold">کد کوپن تخفیف:</label>
+                    <input type="text" id="couponCode" placeholder="PEARL" class="input-soft w-full p-2.5 text-center font-black uppercase">
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1 font-bold">درصد تخفیف (%):</label>
-                    <input type="number" id="couponPercent" placeholder="10" class="input-dark w-full rounded-xl p-2.5 text-center font-black">
+                    <label class="block text-slate-600 mb-1 font-bold">درصد تخفیف (%):</label>
+                    <input type="number" id="couponPercent" placeholder="10" class="input-soft w-full p-2.5 text-center font-black">
                 </div>
             </div>
         </div>
 
-        <!-- دکمه ذخیره کلی -->
-        <button onclick="saveAllSettings()" id="saveBtn" class="w-full py-3.5 bg-gradient-to-r from-amber-400 to-yellow-500 text-black font-black text-xs rounded-2xl shadow-xl shadow-amber-400/25 flex items-center justify-center gap-2">
+        <!-- دکمه ذخیره نهایی -->
+        <button onclick="saveAllSettings()" id="saveBtn" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>ذخیره آنی تمام تنظیمات و محصولات در دیتابیس ابری</span>
+            <span>ذخیره نهایی در دیتابیس ابری</span>
         </button>
     </div>
 
@@ -168,19 +168,19 @@
         function switchAdminTab(t) {
             ['prices', 'custom', 'marketing'].forEach(tab => {
                 document.getElementById(`asec-${tab}`).classList.add('hidden');
-                document.getElementById(`atab-${tab}`).classList.remove('bg-amber-400', 'text-black', 'font-black');
-                document.getElementById(`atab-${tab}`).classList.add('bg-[#161926]', 'text-gray-300', 'font-bold');
+                document.getElementById(`atab-${tab}`).classList.remove('bg-[#181d28]', 'text-white');
+                document.getElementById(`atab-${tab}`).classList.add('bg-slate-100', 'text-slate-600');
             });
             document.getElementById(`asec-${t}`).classList.remove('hidden');
-            document.getElementById(`atab-${t}`).classList.add('bg-amber-400', 'text-black', 'font-black');
-            document.getElementById(`atab-${t}`).classList.remove('bg-[#161926]', 'text-gray-300');
+            document.getElementById(`atab-${t}`).classList.add('bg-[#181d28]', 'text-white');
+            document.getElementById(`atab-${t}`).classList.remove('bg-slate-100', 'text-slate-600');
         }
 
         async function login() {
             const pass = document.getElementById("adminPass").value.trim();
             if (!pass) return alert("رمز را وارد کنید");
             const btn = document.getElementById("loginBtn");
-            btn.innerText = "در حال ورود...";
+            btn.innerText = "در حال بررسی...";
 
             try {
                 const res = await fetch(`${WORKER_URL}/api/admin/login`, {
@@ -199,7 +199,7 @@
             } catch(e) {
                 alert("خطا در شبکه");
             } finally {
-                btn.innerText = "ورود";
+                btn.innerText = "ورود به مدیریت";
             }
         }
 
@@ -219,7 +219,7 @@
                     document.getElementById("adminTg").value = s.adminTg || "Zanjani_a";
                     document.getElementById("announcementText").value = s.announcementText || "";
                     document.getElementById("announcementActive").checked = s.announcementActive !== false;
-                    document.getElementById("couponCode").value = s.couponCode || "DUCK";
+                    document.getElementById("couponCode").value = s.couponCode || "PEARL";
                     document.getElementById("couponPercent").value = s.couponPercent || 10;
                     activeAdminCustomServices = s.customServices || [];
                     renderAdminCustomList();
@@ -230,18 +230,18 @@
         function renderAdminCustomList() {
             const container = document.getElementById("customListAdmin");
             if (activeAdminCustomServices.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-500 py-3 text-center">محصولی وجود ندارد.</p>';
+                container.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">محصول سفارشی ثبت نشده است.</p>';
                 return;
             }
 
             container.innerHTML = activeAdminCustomServices.map((item, idx) => `
-                <div class="p-2.5 rounded-xl bg-[#090a0f] border border-white/5 flex items-center justify-between text-xs">
+                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
                     <div>
-                        <span class="font-bold text-white">${item.title}</span>
-                        <span class="text-[10px] text-amber-400 mr-2 font-bold">${Number(item.price).toLocaleString('en-US')} تومان</span>
-                        <span class="text-[10px] text-gray-500 bg-white/5 px-2 py-0.5 rounded mr-1">${item.category}</span>
+                        <span class="font-bold text-slate-800">${item.title}</span>
+                        <span class="text-[11px] text-slate-900 mr-2 font-black">${Number(item.price).toLocaleString('en-US')} تومان</span>
+                        <span class="text-[10px] text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-1">${item.category}</span>
                     </div>
-                    <button onclick="removeAdminCustomService(${idx})" class="text-rose-400 hover:text-rose-300 text-xs px-2">
+                    <button onclick="removeAdminCustomService(${idx})" class="text-rose-500 hover:text-rose-700 text-xs px-2">
                         <i class="fa-solid fa-trash"></i>
                     </button>
                 </div>
@@ -267,7 +267,6 @@
             document.getElementById("newTitle").value = "";
             document.getElementById("newPrice").value = "";
             document.getElementById("newDesc").value = "";
-
             renderAdminCustomList();
         }
 
@@ -290,7 +289,7 @@
                 adminTg: document.getElementById("adminTg").value.trim().replace("@", "") || "Zanjani_a",
                 announcementText: document.getElementById("announcementText").value.trim(),
                 announcementActive: document.getElementById("announcementActive").checked,
-                couponCode: document.getElementById("couponCode").value.trim().toUpperCase() || "DUCK",
+                couponCode: document.getElementById("couponCode").value.trim().toUpperCase() || "PEARL",
                 couponPercent: parseInt(document.getElementById("couponPercent").value) || 0,
                 customServices: activeAdminCustomServices
             };
@@ -305,7 +304,7 @@
                     body: JSON.stringify(payload)
                 });
                 if (res.ok) {
-                    alert("✅ تمامی تغییرات، قیمت‌ها و محصولات جدید با موفقیت ذخیره شدند!");
+                    alert("✅ تنظیمات و محصولات جدید با موفقیت ذخیره شدند!");
                 } else {
                     alert("نشست منقضی شده است.");
                     logout();
@@ -314,7 +313,7 @@
                 alert("خطا در ارسال اطلاعات");
             } finally {
                 btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>ذخیره آنی تمام تنظیمات و محصولات در دیتابیس ابری</span>';
+                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>ذخیره نهایی در دیتابیس ابری</span>';
             }
         }
 
