@@ -36,20 +36,19 @@ CONFIG = {
 
 
 # ==========================================
-# 📈 موتور استعلام زنده قیمت ارز و محاسبه نرخ پرمیوم
+# 📈 موتور هوشمند محاسبه خودکار نرخ پرمیوم در بک‌اند
 # ==========================================
 async def calculate_live_pricing(page) -> Dict[str, Any]:
     print("\n" + "═" * 60)
-    print("📈 در حال استعلام لحظه‌ای ارز و محاسبه قیمت تلگرام پرمیوم...")
+    print("📈 محاسبه خودکار قیمت پرمیوم بر اساس بازار و سود ادمین...")
     print("═" * 60)
 
-    # مقادیر استاندارد پایه فرگمنت (TON)
     ton_tiers = {"prem3": 3.8, "prem6": 5.8, "prem12": 9.9}
     ton_usd = 5.3
     usdt_toman = 60000
     profit_margin = 15.0
 
-    # ۱. دریافت درصد سود ادمین از Cloudflare Worker
+    # ۱. واکشی درصد سود ادمین از Cloudflare Worker
     try:
         req = urllib.request.Request(
             f"{CONFIG['WORKER_URL']}/api/settings",
@@ -58,11 +57,11 @@ async def calculate_live_pricing(page) -> Dict[str, Any]:
         with urllib.request.urlopen(req, timeout=5) as res:
             cloud_settings = json.loads(res.read().decode())
             profit_margin = float(cloud_settings.get("profitMargin", 15.0))
-            print(f"💰 درصد سود ادمین دریافت شد: {profit_margin}%")
+            print(f"💰 درصد سود ادمین اعمال شد: {profit_margin}%")
     except Exception:
-        print(f"ℹ️ استفاده از درصد سود پیش‌فرض: {profit_margin}%")
+        print(f"ℹ️ درصد سود پیش‌فرض: {profit_margin}%")
 
-    # ۲. استعلام زنده نرخ TON از CoinGecko
+    # ۲. استعلام زنده نرخ جهانی TON از CoinGecko
     try:
         req = urllib.request.Request(
             "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
@@ -71,11 +70,10 @@ async def calculate_live_pricing(page) -> Dict[str, Any]:
         with urllib.request.urlopen(req, timeout=6) as res:
             cg_data = json.loads(res.read().decode())
             ton_usd = float(cg_data["the-open-network"]["usd"])
-            print(f"💎 قیمت جهانی TON: {ton_usd}$")
     except Exception:
-        print(f"ℹ️ نرخ TON پیش‌فرض: {ton_usd}$")
+        pass
 
-    # ۳. استعلام نرخ تتر از نوبیتکس (Nobitex API)
+    # ۳. استعلام نرخ تتر از نوبیتکس
     try:
         req = urllib.request.Request(
             "https://api.nobitex.ir/v2/orderbook/USDTIRT",
@@ -84,11 +82,10 @@ async def calculate_live_pricing(page) -> Dict[str, Any]:
         with urllib.request.urlopen(req, timeout=6) as res:
             nobi = json.loads(res.read().decode())
             usdt_toman = float(nobi.get("lastTradePrice", 600000)) / 10
-            print(f"💵 نرخ تتر نوبیتکس: {usdt_toman:,.0f} تومان")
     except Exception:
-        print(f"ℹ️ نرخ تتر پیش‌فرض: {usdt_toman:,.0f} تومان")
+        pass
 
-    # ۴. محاسبه دقیق به تومان با سود ادمین
+    # ۴. محاسبه مبالغ نهایی به تومان با سود ادمین
     ton_toman = ton_usd * usdt_toman
     profit_factor = 1.0 + (profit_margin / 100.0)
 
@@ -96,12 +93,9 @@ async def calculate_live_pricing(page) -> Dict[str, Any]:
         "prem3": int(round(ton_tiers["prem3"] * ton_toman * profit_factor, -3)),
         "prem6": int(round(ton_tiers["prem6"] * ton_toman * profit_factor, -3)),
         "prem12": int(round(ton_tiers["prem12"] * ton_toman * profit_factor, -3)),
-        "ton_rate": round(ton_usd, 2),
-        "usdt_rate": int(usdt_toman),
-        "profit_margin": profit_margin
     }
 
-    print(f"✅ قیمت‌های محاسبه‌شده پرمیوم: ۳ ماهه={computed['prem3']:,} | ۶ ماهه={computed['prem6']:,} | ۱ ساله={computed['prem12']:,}\n")
+    print(f"🎯 مبالغ پرمیوم به تومان: ۳ ماهه={computed['prem3']:,} | ۶ ماهه={computed['prem6']:,} | ۱ ساله={computed['prem12']:,}\n")
     return computed
 
 
@@ -127,7 +121,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any]):
-    """تولید اپلیکیشن Duck Store با معماری و یوزر فلوی کامل iOS"""
+    """تولید وب‌سایت با معماری نهایی iOS و حفظ کامل محرمانگی قیمت‌گذاری"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -143,6 +137,10 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
 
     collections_list = sorted(list(collections_map.values()), key=lambda x: x["name"])
     rare_count = sum(1 for d in deals if d.get("rarity"))
+
+    # تعریف متغیرهای جیسون برای جلوگیری قطعی از NameError
+    deals_json = json.dumps(deals, ensure_ascii=False)
+    collections_json = json.dumps(collections_list, ensure_ascii=False)
 
     html_template = """<!DOCTYPE html>
 <html lang="fa" dir="rtl">
@@ -204,10 +202,10 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
         }
     </style>
 </head>
-<body class="min-h-screen pb-32 select-none">
+<body class="min-h-screen pb-36 select-none">
 
-    <!-- ۱. هدر اپلیکیشنی آیفونی با وضعیت کاربر و قیمت زنده ارز -->
-    <header class="sticky top-0 z-30 bg-[#060913]/85 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-3">
+    <!-- ۱. هدر اپلیکیشن به سبک iOS -->
+    <header class="sticky top-0 z-30 bg-[#060913]/85 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-3.5">
         <div class="max-w-5xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/20">
@@ -216,13 +214,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                 <div>
                     <h1 class="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
                         <span>Duck Store</span>
-                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">Live</span>
+                        <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
                     </h1>
                     <p id="userGreetingText" class="text-[11px] text-slate-400 font-medium">خوش آمدید</p>
                 </div>
             </div>
 
-            <!-- دکمه پشتیبانی اختصاصی تلگرام -->
             <a id="headerSupportLink" href="https://t.me/Zanjani_a" onclick="openTgLink(this.href); return false;" class="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10 text-xs font-bold transition flex items-center gap-2">
                 <i class="fa-brands fa-telegram text-sky-400 text-sm"></i>
                 <span>پشتیبانی</span>
@@ -230,30 +227,24 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
         </div>
     </header>
 
-    <!-- ۲. محفظه اصلی صفحات (Multi-View Flow) -->
+    <!-- ۲. محفظه صفحات اصلی (User Flow Tab Views) -->
     <main class="max-w-5xl mx-auto px-4 sm:px-6 mt-4">
 
-        <!-- 🏠 تب شماره ۱: صفحه اصلی داشبورد و فرصت‌ها -->
+        <!-- 🏠 تب ۱: داشبورد اصلی فروشگاه -->
         <section id="view-dashboard" class="space-y-4">
-            <!-- ویجت نرخ لحظه‌ای بازار ارز و فرگمنت -->
-            <div class="ios-card p-4 sm:p-5 flex items-center justify-between border-blue-500/20 bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent">
+            <!-- بنر خوش‌آمدگویی VIP -->
+            <div class="ios-card p-5 border-blue-500/20 bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent flex items-center justify-between">
                 <div>
-                    <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">بازار زنده کریپتو</span>
-                    <h3 class="text-xs sm:text-sm font-black text-white mt-0.5">نرخ مبنای خرید پرمیوم</h3>
-                    <p class="text-[11px] text-slate-400 mt-1">
-                        هر TON: <b class="text-slate-200 font-bold">__TON_RATE__$</b> | 
-                        تتر نوبیتکس: <b class="text-slate-200 font-bold">__USDT_RATE__</b> تومان
-                    </p>
+                    <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">Duck Store VIP</span>
+                    <h3 class="text-xs sm:text-sm font-black text-white mt-1">مرجع رسمی خدمات تلگرام</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">تحویل فوری استارز، اجاره گیفت‌های نایاب و پرمیوم قانونی</p>
                 </div>
-                <div class="text-left">
-                    <span class="text-[10px] px-2.5 py-1 rounded-full font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        سود ادمین: __PROFIT_MARGIN__%
-                    </span>
-                    <p class="text-[10px] text-slate-500 mt-2">آپدیت خودکار با فرگمنت</p>
+                <div class="w-12 h-12 rounded-2xl bg-cyan-400/10 border border-cyan-400/20 flex items-center justify-center text-2xl shadow-inner">
+                    ⚡
                 </div>
             </div>
 
-            <!-- بنر مناسبتی هدر (در صورت فعال بودن) -->
+            <!-- بنر اطلاعیه مناسبتی -->
             <div id="promoBanner" class="hidden ios-card p-4 border-amber-500/20 bg-amber-500/5 flex items-center justify-between">
                 <div class="flex items-center gap-2.5">
                     <i class="fa-solid fa-bullhorn text-amber-400 text-sm"></i>
@@ -262,7 +253,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                 <button onclick="switchView('gifts')" class="text-xs font-black text-amber-400 hover:underline">مشاهده &larr;</button>
             </div>
 
-            <!-- کارت‌های میانبر خدمات سریع -->
+            <!-- کارت‌های میانبر دسترسی سریع -->
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 <div onclick="switchView('gifts')" class="ios-card p-4 cursor-pointer flex flex-col justify-between space-y-2">
                     <span class="text-2xl">🎁</span>
@@ -275,24 +266,24 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                     <span class="text-2xl">👑</span>
                     <div>
                         <h4 class="text-xs font-black text-white">تلگرام پرمیوم</h4>
-                        <p class="text-[10px] text-purple-300 mt-0.5">استعلام آنی از فرگمنت</p>
+                        <p class="text-[10px] text-purple-300 mt-0.5">فعال‌سازی بدون پسورد اکانت</p>
                     </div>
                 </div>
                 <div onclick="switchView('stars')" class="ios-card p-4 cursor-pointer flex flex-col justify-between space-y-2 col-span-2 sm:col-span-1 border-amber-500/20">
                     <span class="text-2xl">⭐</span>
                     <div>
                         <h4 class="text-xs font-black text-white">استارز تلگرام</h4>
-                        <p class="text-[10px] text-amber-300 mt-0.5">تحویل سریع بدون نیاز به پسورد</p>
+                        <p class="text-[10px] text-amber-300 mt-0.5">تحویل سریع با بهترین نرخ</p>
                     </div>
                 </div>
             </div>
 
-            <!-- پیش‌نمایش جدیدترین گیفت‌های ویژه -->
+            <!-- پیش‌نمایش جدیدترین فرصت‌ها -->
             <div class="pt-2">
                 <div class="flex items-center justify-between mb-3">
                     <h3 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
                         <i class="fa-solid fa-fire text-amber-400"></i>
-                        <span>تازه‌ترین فرصت‌های کشف‌شده</span>
+                        <span>تازه‌ترین گیفت‌های کشف‌شده</span>
                     </h3>
                     <button onclick="switchView('gifts')" class="text-[11px] font-bold text-cyan-400 hover:underline">مشاهده همه &larr;</button>
                 </div>
@@ -300,12 +291,11 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             </div>
         </section>
 
-        <!-- 🎁 تب شماره ۲: مارکت و فروشگاه گیفت‌ها -->
+        <!-- 🎁 تب ۲: کاتالوگ کامل گیفت‌ها -->
         <section id="view-gifts" class="hidden space-y-4">
-            <!-- ابزار جستجو و فیلترها -->
             <div class="ios-card p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div class="relative w-full sm:w-72">
-                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-3 text-slate-500 text-xs"></i>
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-500 text-xs"></i>
                     <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره..." 
                            class="w-full bg-[#050711] border border-white/10 rounded-2xl pr-10 pl-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
                 </div>
@@ -324,11 +314,10 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                 </div>
             </div>
 
-            <!-- گرید کارت‌های گیفت -->
             <div id="dealsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
         </section>
 
-        <!-- 👑 تب شماره ۳: تلگرام پرمیوم (کاملاً خودکار با فرگمنت) -->
+        <!-- 👑 تب ۳: پرمیوم تلگرام -->
         <section id="view-premium" class="hidden max-w-xl mx-auto space-y-4">
             <div class="ios-card p-6 space-y-4 border-purple-500/20">
                 <div class="flex items-center justify-between">
@@ -337,18 +326,18 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                             👑
                         </div>
                         <div>
-                            <h3 class="text-sm font-black text-white">اشتراک پرمیوم تلگرام</h3>
-                            <p class="text-[11px] text-slate-400">محاسبه خودکار با نرخ فرگمنت و سود مشخص</p>
+                            <h3 class="text-sm font-black text-white">اشتراک تلگرام پرمیوم</h3>
+                            <p class="text-[11px] text-slate-400">فعال‌سازی قانونی بدون نیاز به ورود به اکانت</p>
                         </div>
                     </div>
-                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">نرخ زنده</span>
+                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-purple-500/10 text-purple-300 border border-purple-500/20">تخفیف ویژه</span>
                 </div>
 
                 <div class="space-y-3" id="premiumOptionsList"></div>
 
                 <div class="pt-4 border-t border-white/5 flex items-center justify-between">
                     <div>
-                        <p class="text-[11px] text-slate-400">مبلغ نهایی اشتراک:</p>
+                        <p class="text-[11px] text-slate-400">مبلغ قابل پرداخت:</p>
                         <p id="selectedPremiumFinalToman" class="text-base sm:text-lg font-black text-purple-400">0 تومان</p>
                     </div>
                     <button onclick="orderPremium()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-black text-xs transition shadow-lg shadow-purple-600/25 flex items-center gap-2">
@@ -359,7 +348,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             </div>
         </section>
 
-        <!-- ⭐ تب شماره ۴: استارز تلگرام -->
+        <!-- ⭐ تب ۴: استارز تلگرام -->
         <section id="view-stars" class="hidden max-w-xl mx-auto space-y-4">
             <div class="ios-card p-6 space-y-3 border-amber-500/20">
                 <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2">
@@ -369,13 +358,13 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                 <input type="number" id="customStarsInput" min="50" max="10000000" placeholder="حداقل ۵۰ استارز..." 
                        class="w-full bg-[#050711] border border-white/10 rounded-2xl px-4 py-3 text-sm text-white font-bold placeholder-slate-600 focus:outline-none focus:border-amber-400 transition">
                 <div id="customStarsCalcBox" class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between hidden">
-                    <span class="text-xs text-slate-400">مبلغ محاسبه‌شده:</span>
+                    <span class="text-xs text-slate-400">مبلغ نهایی:</span>
                     <span id="customStarsPrice" class="text-sm font-black text-amber-400">0 تومان</span>
                 </div>
             </div>
 
             <div class="ios-card p-6 space-y-3">
-                <h3 class="text-xs font-bold text-slate-400">پکیج‌های سریع:</h3>
+                <h3 class="text-xs font-bold text-slate-400">پکیج‌های سریع استارز:</h3>
                 <div id="starsPackagesList" class="space-y-2.5"></div>
 
                 <div class="pt-4 border-t border-white/5 flex items-center justify-between">
@@ -391,7 +380,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             </div>
         </section>
 
-        <!-- 🛍️ تب شماره ۵: سبد خرید و فاکتور نهایی -->
+        <!-- 🛍️ تب ۵: سبد خرید و فاکتور -->
         <section id="view-cart" class="hidden max-w-xl mx-auto space-y-4">
             <div class="ios-card p-6 space-y-4">
                 <div class="flex items-center justify-between border-b border-white/5 pb-3">
@@ -402,10 +391,8 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                     <button onclick="clearCart()" class="text-xs text-rose-400 hover:underline">خالی کردن سبد</button>
                 </div>
 
-                <!-- لیست اقلام سبد خرید -->
                 <div id="cartItemsList" class="space-y-2.5 max-h-60 overflow-y-auto"></div>
 
-                <!-- کادر کوپن تخفیف -->
                 <div class="flex items-center gap-2 bg-[#050711] p-1.5 rounded-2xl border border-white/5">
                     <input type="text" id="couponInput" placeholder="کد تخفیف (مثلاً DUCK)..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold placeholder-slate-600">
                     <button onclick="applyCoupon()" class="px-4 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition">اعمال</button>
@@ -414,7 +401,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                 <div class="pt-2 border-t border-white/5 flex items-center justify-between">
                     <div>
                         <div class="flex items-center gap-2">
-                            <p class="text-[11px] text-slate-400">مبلغ کل قابل پرداخت:</p>
+                            <p class="text-[11px] text-slate-400">مبلغ قابل پرداخت:</p>
                             <span id="discountTag" class="hidden text-[9px] px-2 py-0.5 rounded font-black bg-emerald-500/20 text-emerald-400">تخفیف فعال</span>
                         </div>
                         <p id="cartTotalPrice" class="text-lg font-black text-cyan-400">0 تومان</p>
@@ -429,7 +416,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
 
     </main>
 
-    <!-- ۳. منوی شناور پایینی به سبک نوار اصلی آیفون (iOS Bottom Navigation Dock) -->
+    <!-- ۳. نوار ناوبری شناور پایینی آیفون (Bottom Navigation Dock) -->
     <nav class="fixed bottom-3 inset-x-4 max-w-md mx-auto z-40 ios-bottom-dock px-3 py-2 flex items-center justify-around shadow-2xl">
         <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item active flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
             <i class="fa-solid fa-house nav-icon text-sm"></i>
@@ -520,7 +507,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             prem12: LIVE_PRICING.prem12,
             giftMonthlyPrice: 160000,
             adminTg: 'Zanjani_a',
-            announcementText: 'تخفیف ویژه پرمیوم محاسبه‌شده زنده با فرگمنت',
+            announcementText: 'تخفیف ویژه سفارشات فعال شد',
             announcementActive: true,
             couponCode: 'DUCK',
             couponPercent: 10,
@@ -544,7 +531,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
         let favorites = JSON.parse(localStorage.getItem('duck_favs') || '[]');
         let cart = JSON.parse(localStorage.getItem('duck_cart') || '[]');
 
-        // 🔄 تغییر صفحه اختصاصی بر اساس یوزر فلو جدید
         function switchView(viewName) {
             triggerHaptic('selection');
             currentView = viewName;
@@ -568,7 +554,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
                 if (res.ok) {
                     const parsed = await res.json();
                     if (parsed && typeof parsed === 'object') {
-                        // ادغام هوشمند: حفظ قیمت زنده فرگمنت در اولویت
                         SETTINGS = { ...DEFAULT_SETTINGS, ...parsed, prem3: LIVE_PRICING.prem3, prem6: LIVE_PRICING.prem6, prem12: LIVE_PRICING.prem12 };
                     }
                 }
@@ -595,7 +580,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             updateCartBadges();
         }
 
-        // رندر پیش‌نمایش در صفحه اصلی
         function renderHomeDeals() {
             const container = document.getElementById('homeRecentDeals');
             if (!container) return;
@@ -616,7 +600,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             `).join('');
         }
 
-        // ================= استارز =================
         function renderStarsPackages() {
             const container = document.getElementById('starsPackagesList');
             container.innerHTML = STARS_PACKAGES.map(qty => {
@@ -665,15 +648,14 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             const buyerInfo = getBuyerDetailsText();
             const nl = String.fromCharCode(10);
             const msg = encodeURIComponent(
-                "سلام، متقاضی خرید استارز تلگرام هستم:" + nl + nl +
+                "سلام، درخواست خرید استارز تلگرام دارم:" + nl + nl +
                 buyerInfo + nl + nl +
                 "تعداد استارز: " + selectedStarsCount + " Stars" + nl +
-                "مبلغ: " + total + " تومان"
+                "مبلغ قابل پرداخت: " + total + " تومان"
             );
             openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
-        // ================= پرمیوم هوشمند =================
         function renderPremiumOptions() {
             const container = document.getElementById('premiumOptionsList');
             const options = [
@@ -722,15 +704,14 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             const buyerInfo = getBuyerDetailsText();
             const nl = String.fromCharCode(10);
             const msg = encodeURIComponent(
-                "سلام، متقاضی خرید تلگرام پرمیوم هستم:" + nl + nl +
+                "سلام، درخواست خرید اشتراک تلگرام پرمیوم دارم:" + nl + nl +
                 buyerInfo + nl + nl +
                 "نوع اشتراک: " + planName + nl +
-                "مبلغ محاسبه‌شده با فرگمنت: " + total + " تومان"
+                "مبلغ قابل پرداخت: " + total + " تومان"
             );
             openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
-        // ================= سبد خرید اختصاصی =================
         function toggleCart(item) {
             triggerHaptic('selection');
             const idx = cart.findIndex(c => c.name === item.name);
@@ -756,14 +737,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             const container = document.getElementById('cartItemsList');
             document.getElementById('cartViewCount').innerText = `${cart.length} مورد`;
             if (cart.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center font-bold">سبد خرید شما در حال حاضر خالی است.</p>';
+                container.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center font-bold">سبد خرید شما خالی است.</p>';
             } else {
                 container.innerHTML = cart.map((item, i) => `
                     <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs font-bold text-slate-200">${i + 1}. ${item.name}</span>
-                        </div>
-                        <button onclick="toggleCart(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
+                        <span class="text-xs font-bold text-slate-200">${i + 1}. ${item.name}</span>
+                        <button onclick="toggleCart(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="text-rose-400 text-xs px-2 py-1">
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                     </div>
@@ -829,7 +808,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
-        // ================= رندر گیفت‌ها =================
         function renderCards(items) {
             const container = document.getElementById('dealsGrid');
             if (items.length === 0) {
@@ -873,7 +851,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
             document.getElementById('favCount').innerText = favorites.length;
         }
 
-        // کالکشن‌ها
         function openModal() {
             triggerHaptic('light');
             tempSelectedCollections = new Set(selectedCollections);
@@ -963,9 +940,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any
         .replace("__DEALS_JSON__", deals_json)
         .replace("__COLLECTIONS_JSON__", collections_json)
         .replace("__LIVE_PRICING_JSON__", json.dumps(pricing))
-        .replace("__TON_RATE__", str(pricing["ton_rate"]))
-        .replace("__USDT_RATE__", f"{pricing['usdt_rate']:,}")
-        .replace("__PROFIT_MARGIN__", str(pricing["profit_margin"]))
         .replace("__WORKER_URL__", CONFIG["WORKER_URL"])
     )
 
@@ -995,11 +969,10 @@ def send_telegram_package(deals: List[Dict[str, Any]], pricing: Dict[str, Any]):
         f"🦆 <b>گزارش جدید فروشگاه Duck Store</b>\n"
         f"📅 <i>{timestamp}</i>\n\n"
         f"🌐 <b>لینک ورود به مینی‌اپ:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n\n"
-        f"📊 <b>نرخ‌های محاسبه‌شده پرمیوم (زنده از فرگمنت):</b>\n"
+        f"📊 <b>نرخ‌های محاسبه‌شده پرمیوم:</b>\n"
         f"🔹 ۳ ماهه: <code>{pricing['prem3']:,}</code> تومان\n"
         f"🔹 ۶ ماهه: <code>{pricing['prem6']:,}</code> تومان\n"
         f"🔹 ۱ ساله: <code>{pricing['prem12']:,}</code> تومان\n"
-        f"💵 نرخ تتر: {pricing['usdt_rate']:,} ت | 💎 نرخ TON: {pricing['ton_rate']}$\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
         f"🎯 موجودی کل گیفت‌ها: {len(deals)} مورد (کمیاب: {rare_count})\n"
     )
@@ -1102,7 +1075,7 @@ async def main():
 
         page = await browser.new_page()
 
-        # ۱. محاسبه زنده و تضمینی قیمت‌های پرمیوم از کریپتو و نوبیتکس با درصد سود ادمین
+        # ۱. محاسبه زنده قیمت پرمیوم در بک‌اند
         live_pricing = await calculate_live_pricing(page)
 
         # ۲. اسکرپ ۲۰۰ گیفت از مارکت‌اپ
@@ -1182,7 +1155,7 @@ async def main():
 
         await browser.close()
 
-        # چیدمان بر اساس جدیدترین‌ها
+        # سورت بر اساس جدیدترین‌ها
         sorted_deals = list(reversed(deals_found))
 
         # ساخت صفحه با قیمت‌های زنده و دیزاین جدید
@@ -1194,7 +1167,7 @@ async def main():
             for idx, d in enumerate(sorted_deals, 1):
                 writer.writerow([idx, d["gift_title"], d["name"], d["number"], d["discount"], d["rarity"] or "معمولی", d["tg_link"], d["market_link"]])
 
-        print("\n⚡ فروشگاه با معماری کامل iOS و قیمت‌های آپدیت‌شده منتشر شد!")
+        print("\n⚡ فروشگاه Duck Store با موفقیت بدون ارور بیلد شد!")
         send_telegram_package(sorted_deals, live_pricing)
 
 
