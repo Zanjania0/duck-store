@@ -20,6 +20,7 @@ CONFIG = {
     ),
     "MIN_DISCOUNT_PERCENT": 50.0,
     "TARGET_DEALS_COUNT": 200,
+    "MAX_SCROLL_ATTEMPTS": 80,
     "BASE_DOMAIN": "https://marketapp.org",
     "EXPORT_CSV": "discounts.csv",
     "EXPORT_HTML": "index.html",
@@ -55,7 +56,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت با معماری ماژولار، پروفایل کاربری و خدمات سفارشی ادمین"""
+    """تولید وب‌سایت با دیزاین فوق مدرن مینیمال مرواریدی/نقره‌ای (Soft Neumorphic Luxury)"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -80,66 +81,148 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>فروشگاه خدمات تلگرام</title>
+    <title>Pearl Store | خدمات پرمیوم تلگرام</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #090a0f;
-            --card-base: #11131c;
-            --card-border: rgba(255, 255, 255, 0.06);
-            --gold-accent: #f59e0b;
+            --bg-canvas: #e9edf3;
+            --card-surface: #ffffff;
+            --text-main: #191f2c;
+            --text-muted: #64748b;
+            --neo-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.3), 0 4px 12px -2px rgba(148, 163, 184, 0.15);
+            --neo-convex: 0 8px 20px -3px rgba(148, 163, 184, 0.25);
+            --dark-btn: #181d28;
         }
         body {
             font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-base);
-            color: #f3f4f6;
+            background-color: var(--bg-canvas);
+            background-image: 
+                radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
+                radial-gradient(circle at 85% 25%, rgba(226, 232, 240, 0.6) 0%, transparent 50%),
+                radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 50%);
+            color: var(--text-main);
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
         }
-        .store-card {
-            background: var(--card-base);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            transition: all 0.25s ease;
-        }
-        .store-card:hover {
-            border-color: rgba(245, 158, 11, 0.35);
-        }
-        .dock-bar {
-            background: rgba(14, 17, 26, 0.92);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .neo-card {
+            background: var(--card-surface);
             border-radius: 28px;
+            box-shadow: var(--neo-shadow);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .nav-btn.active {
-            background: #1e2233;
-            color: #f59e0b;
+        .neo-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 16px 36px -6px rgba(148, 163, 184, 0.38);
+        }
+        .neo-pill {
+            background: #ffffff;
+            border-radius: 9999px;
+            box-shadow: var(--neo-convex);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+        .neo-well {
+            background: #e2e8f0;
+            border-radius: 20px;
+            box-shadow: inset 2px 2px 5px rgba(148, 163, 184, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
+        }
+        .bottom-dock {
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-radius: 34px;
+            box-shadow: 0 12px 40px -8px rgba(100, 116, 139, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.9);
+        }
+        .nav-tab.active {
+            background: var(--dark-btn);
+            color: #ffffff;
+            box-shadow: 0 8px 18px -2px rgba(24, 29, 40, 0.3);
         }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #222638; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
     </style>
 </head>
 <body class="min-h-screen pb-36 select-none">
 
-    <!-- هدر سایت -->
-    <header class="sticky top-0 z-30 bg-[#090a0f]/90 backdrop-blur-md border-b border-white/5 px-4 py-3">
-        <div class="max-w-xl mx-auto flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-amber-500 to-yellow-400 text-black flex items-center justify-center font-black text-xl shadow-lg shadow-amber-500/20">
-                    👑
+    <!-- ⏳ اسپلش اسکرین نقره‌ای لوکس -->
+    <div id="loadingScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#e9edf3] transition-all duration-500 px-6">
+        <div class="w-20 h-20 rounded-[28px] bg-white flex items-center justify-center text-4xl shadow-[0_15px_35px_rgba(148,163,184,0.35)] border border-white animate-pulse">
+            🦆
+        </div>
+        <h2 class="text-slate-800 font-black text-base mt-6 tracking-wide flex items-center gap-2">
+            <span>PEARL STORE</span>
+            <span class="w-2 h-2 rounded-full bg-slate-800 animate-ping"></span>
+        </h2>
+        <p class="text-slate-500 text-xs mt-1.5 font-medium">در حال همگام‌سازی خدمات تلگرام...</p>
+        <div class="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden mt-5 shadow-inner">
+            <div id="loadingProgressBar" class="h-full bg-slate-800 transition-all duration-150" style="width: 5%"></div>
+        </div>
+        <span id="loadingPercent" class="text-[11px] font-bold text-slate-400 mt-2">0%</span>
+    </div>
+
+    <!-- 🚀 صفحه Onboarding / معرفی شبیه عکس ارسالی -->
+    <div id="welcomeScreen" class="fixed inset-0 z-40 hidden flex items-center justify-center bg-[#e9edf3]/90 backdrop-blur-xl transition-all duration-500 p-5 opacity-0 scale-95">
+        <div class="w-full max-w-sm neo-card p-6 flex flex-col items-center text-center space-y-5">
+            <div class="w-16 h-16 rounded-2xl bg-white shadow-md flex items-center justify-center text-3xl border border-slate-100">
+                🦆
+            </div>
+            <div>
+                <span class="text-[10px] font-black tracking-widest text-slate-400 uppercase">PEARL STORE</span>
+                <h2 class="text-base font-black text-slate-900 mt-0.5">به فروشگاه خدمات تلگرام خوش آمدید</h2>
+                <p class="text-xs text-slate-500 mt-1">سریع‌ترین مرجع استارز، پرمیوم، بوست و گیفت</p>
+            </div>
+
+            <div class="w-full space-y-2 text-right text-xs">
+                <div class="p-3 rounded-2xl bg-[#f4f7fb] border border-slate-200/60 flex items-center gap-3">
+                    <span class="text-xl">🎁</span>
+                    <div>
+                        <p class="font-bold text-slate-800">اجاره گیفت‌های ارزشمند</p>
+                        <p class="text-[10px] text-slate-500">تخفیف‌های بالای ۵۰٪ با شماره‌های خاص</p>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-xs text-gray-400 font-bold uppercase tracking-wider">DUCK STORE</h1>
-                    <p id="topGreeting" class="text-sm font-black text-white">مرجع خدمات تلگرام</p>
+                <div class="p-3 rounded-2xl bg-[#f4f7fb] border border-slate-200/60 flex items-center gap-3">
+                    <span class="text-xl">💎</span>
+                    <div>
+                        <p class="font-bold text-slate-800">اشتراک پرمیوم و استارز</p>
+                        <p class="text-[10px] text-slate-500">تحویل فوری با بهترین نرخ بازار</p>
+                    </div>
+                </div>
+                <div class="p-3 rounded-2xl bg-[#f4f7fb] border border-slate-200/60 flex items-center gap-3">
+                    <span class="text-xl">🚀</span>
+                    <div>
+                        <p class="font-bold text-slate-800">خدمات بوست، اکانت و کانال</p>
+                        <p class="text-[10px] text-slate-500">ارتقای سطح و پایداری کانال‌های تلگرامی</p>
+                    </div>
                 </div>
             </div>
 
-            <a id="headerSupportLink" href="https://t.me/Zanjani_a" class="px-3 py-1.5 rounded-xl bg-[#161926] text-gray-200 border border-white/10 text-xs font-bold transition flex items-center gap-1.5">
-                <i class="fa-brands fa-telegram text-blue-400"></i>
+            <button id="enterStoreBtn" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl transition shadow-[0_10px_25px_rgba(24,29,40,0.3)] flex items-center justify-center gap-2">
+                <span>بزن بریم</span>
+                <i class="fa-solid fa-arrow-left text-xs"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- هدر سایت -->
+    <header class="sticky top-0 z-30 bg-[#e9edf3]/80 backdrop-blur-xl border-b border-slate-200/60 px-4 py-3">
+        <div class="max-w-xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-2xl bg-white text-slate-800 flex items-center justify-center text-xl font-black shadow-[0_6px_16px_rgba(148,163,184,0.3)] border border-white">
+                    🦆
+                </div>
+                <div>
+                    <h1 class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">PEARL STORE</h1>
+                    <p id="topGreeting" class="text-sm font-black text-slate-800">مرجع خدمات تلگرام</p>
+                </div>
+            </div>
+
+            <a id="headerSupportLink" href="https://t.me/Zanjani_a" class="px-3.5 py-1.5 rounded-full bg-white text-slate-700 text-xs font-bold border border-slate-200 shadow-sm transition hover:bg-slate-50 flex items-center gap-1.5">
+                <i class="fa-brands fa-telegram text-sky-500"></i>
                 <span>پشتیبانی</span>
             </a>
         </div>
@@ -148,106 +231,145 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
     <!-- محفظه صفحات اصلی (Views) -->
     <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
 
-        <!-- 🏠 تب اول: خانه و دسته‌بندی خدمات -->
+        <!-- 🏠 ۱. تب خانه (ویترین و دسته‌بندی‌ها شبیه عکس ۲ و ۳) -->
         <section id="view-home" class="space-y-4">
-            <!-- بنر مناسبتی -->
-            <div id="promoBanner" class="hidden store-card p-4 border-amber-500/30 bg-gradient-to-r from-amber-500/10 to-transparent flex items-center justify-between">
+            
+            <!-- بنر مناسبتی (در صورت فعال بودن) -->
+            <div id="promoBanner" class="hidden neo-card p-4 bg-gradient-to-r from-amber-50 to-white border-amber-200 flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn text-amber-400 text-xs"></i>
-                    <span id="promoBannerText" class="text-xs font-bold text-amber-200"></span>
+                    <i class="fa-solid fa-bullhorn text-amber-500 text-sm"></i>
+                    <span id="promoBannerText" class="text-xs font-bold text-slate-700"></span>
                 </div>
             </div>
 
-            <!-- گرید دسته‌بندی خدمات -->
+            <!-- دسته‌بندی خدمات (Services Grid شبیه عکس دوم) -->
             <div>
-                <h3 class="text-sm font-black text-white mb-3 flex items-center gap-2">
-                    <span>دسته‌بندی خدمات</span>
-                </h3>
-                <div class="grid grid-cols-3 gap-2.5">
-                    <div onclick="openCategoryTab('gift')" class="store-card p-3.5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500/50">
+                <div class="flex items-center justify-between mb-3 px-1">
+                    <h3 class="text-sm font-black text-slate-800">دسته‌بندی خدمات</h3>
+                    <span class="text-[10px] font-bold text-slate-400">PEARL STORE</span>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div onclick="openCategoryTab('gift')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                         <span class="text-3xl mb-1.5">🎁</span>
-                        <span class="text-xs font-bold text-white">Gift</span>
+                        <span class="text-xs font-black text-slate-800">Gift</span>
                     </div>
-                    <div onclick="openCategoryTab('stars')" class="store-card p-3.5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500/50">
+                    <div onclick="openCategoryTab('stars')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                         <span class="text-3xl mb-1.5">⭐</span>
-                        <span class="text-xs font-bold text-white">Stars</span>
+                        <span class="text-xs font-black text-slate-800">Stars</span>
                     </div>
-                    <div onclick="openCategoryTab('premium')" class="store-card p-3.5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500/50">
+                    <div onclick="openCategoryTab('premium')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                         <span class="text-3xl mb-1.5">💎</span>
-                        <span class="text-xs font-bold text-white">Premium</span>
+                        <span class="text-xs font-black text-slate-800">Premium</span>
                     </div>
-                    <div onclick="openCategoryTab('boost')" class="store-card p-3.5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500/50">
+                    <div onclick="openCategoryTab('boost')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                         <span class="text-3xl mb-1.5">🚀</span>
-                        <span class="text-xs font-bold text-white">Boost</span>
+                        <span class="text-xs font-black text-slate-800">Boost</span>
                     </div>
-                    <div onclick="openCategoryTab('account')" class="store-card p-3.5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500/50">
+                    <div onclick="openCategoryTab('account')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                         <span class="text-3xl mb-1.5">📲</span>
-                        <span class="text-xs font-bold text-white">Account</span>
+                        <span class="text-xs font-black text-slate-800">Account</span>
                     </div>
-                    <div onclick="openCategoryTab('channel')" class="store-card p-3.5 flex flex-col items-center justify-center text-center cursor-pointer hover:border-amber-500/50">
+                    <div onclick="openCategoryTab('channel')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
                         <span class="text-3xl mb-1.5">📢</span>
-                        <span class="text-xs font-bold text-white">Channel</span>
+                        <span class="text-xs font-black text-slate-800">Channel</span>
                     </div>
                 </div>
             </div>
 
-            <!-- خدمات ویژه -->
-            <div class="space-y-2.5 pt-1">
-                <h3 class="text-sm font-black text-white mb-2">خدمات ویژه</h3>
+            <!-- خدمات ویژه (Featured Services شبیه عکس سوم) -->
+            <div class="space-y-2.5 pt-2">
+                <div class="flex items-center justify-between px-1 mb-1">
+                    <h3 class="text-sm font-black text-slate-800">خدمات ویژه</h3>
+                    <span class="text-[10px] font-bold text-slate-400">PEARL SHOP</span>
+                </div>
                 
-                <div class="store-card p-3.5 flex items-center justify-between">
+                <div class="neo-card p-3.5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#181b26] flex items-center justify-center text-xl">💎</div>
+                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">💎</div>
                         <div>
-                            <h4 class="text-xs font-black text-white">Telegram Premium</h4>
-                            <p class="text-[10px] text-gray-400">اشتراک رسمی ۳، ۶ و ۱۲ ماهه</p>
+                            <h4 class="text-xs font-black text-slate-800">Telegram Premium</h4>
+                            <p class="text-[10px] text-slate-500 font-medium">انتخاب و مشاهده قیمت</p>
                         </div>
                     </div>
-                    <button onclick="openCategoryTab('premium')" class="px-3.5 py-1.5 rounded-xl bg-amber-400 text-black font-black text-xs">مشاهده</button>
+                    <button onclick="openCategoryTab('premium')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
                 </div>
 
-                <div class="store-card p-3.5 flex items-center justify-between">
+                <div class="neo-card p-3.5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#181b26] flex items-center justify-center text-xl">⭐</div>
+                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">⭐</div>
                         <div>
-                            <h4 class="text-xs font-black text-white">Telegram Stars</h4>
-                            <p class="text-[10px] text-gray-400">تحویل سریع استارز تلگرام</p>
+                            <h4 class="text-xs font-black text-slate-800">Telegram Stars</h4>
+                            <p class="text-[10px] text-slate-500 font-medium">انتخاب تعداد استارز</p>
                         </div>
                     </div>
-                    <button onclick="openCategoryTab('stars')" class="px-3.5 py-1.5 rounded-xl bg-amber-400 text-black font-black text-xs">مشاهده</button>
+                    <button onclick="openCategoryTab('stars')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
                 </div>
 
-                <div class="store-card p-3.5 flex items-center justify-between">
+                <div class="neo-card p-3.5 flex items-center justify-between">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#181b26] flex items-center justify-center text-xl">🎁</div>
+                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">🎁</div>
                         <div>
-                            <h4 class="text-xs font-black text-white">Telegram Gift</h4>
-                            <p class="text-[10px] text-gray-400">اجاره گیفت با تخفیف ۵۰٪</p>
+                            <h4 class="text-xs font-black text-slate-800">Telegram Gift</h4>
+                            <p class="text-[10px] text-slate-500 font-medium">انتخاب و اجاره هدیه</p>
                         </div>
                     </div>
-                    <button onclick="openCategoryTab('gift')" class="px-3.5 py-1.5 rounded-xl bg-amber-400 text-black font-black text-xs">مشاهده</button>
+                    <button onclick="openCategoryTab('gift')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
+                </div>
+
+                <div class="neo-card p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">🚀</div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800">Channel Boost</h4>
+                            <p class="text-[10px] text-slate-500 font-medium">بوست اختصاصی برای کانال</p>
+                        </div>
+                    </div>
+                    <button onclick="openCategoryTab('boost')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
+                </div>
+
+                <div class="neo-card p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">📲</div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800">Virtual Account</h4>
+                            <p class="text-[10px] text-slate-500 font-medium">خدمات اکانت مجازی</p>
+                        </div>
+                    </div>
+                    <button onclick="openCategoryTab('account')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
+                </div>
+
+                <div class="neo-card p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">📢</div>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-800">Channel Services</h4>
+                            <p class="text-[10px] text-slate-500 font-medium">ممبر، سین و خدمات اختصاصی</p>
+                        </div>
+                    </div>
+                    <button onclick="openCategoryTab('channel')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
                 </div>
             </div>
         </section>
 
-        <!-- 🎁 تب دوم: مارکت گیفت‌ها -->
+        <!-- 🎁 ۲. تب مارکت گیفت‌ها -->
         <section id="view-gifts" class="hidden space-y-3">
-            <div class="store-card p-3 flex items-center justify-between gap-2">
+            <div class="neo-card p-3 flex items-center justify-between gap-2">
                 <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-gray-500 text-xs"></i>
-                    <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره..." 
-                           class="w-full bg-[#090a0f] border border-white/5 rounded-xl pr-8 pl-3 py-1.5 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400">
+                    <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-slate-400 text-xs"></i>
+                    <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره گیفت..." 
+                           class="w-full bg-[#f1f5f9] border border-slate-200 rounded-xl pr-8 pl-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400">
                 </div>
-                <button onclick="openModal()" class="px-3 py-1.5 rounded-xl bg-[#161926] text-xs font-bold text-gray-200 border border-white/5 flex items-center gap-1 whitespace-nowrap">
+                <button onclick="openModal()" class="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-700 border border-slate-200 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
                     <span id="selectedColText">کالکشن‌ها</span>
-                    <i class="fa-solid fa-chevron-down text-[9px] text-gray-400"></i>
+                    <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                 </button>
             </div>
 
             <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                <button onclick="filterType('all', this)" class="type-btn active px-3.5 py-1.5 rounded-xl text-xs font-black bg-amber-400 text-black whitespace-nowrap">همه (__TOTAL_COUNT__)</button>
-                <button onclick="filterType('rare', this)" class="type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-[#161926] text-gray-300 whitespace-nowrap">💎 کمیاب‌ها</button>
-                <button onclick="filterType('favs', this)" class="type-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-[#161926] text-gray-300 whitespace-nowrap flex items-center gap-1">
+                <button onclick="filterType('all', this)" class="type-btn active px-4 py-1.5 rounded-full text-xs font-black bg-[#181d28] text-white whitespace-nowrap shadow-sm">همه (__TOTAL_COUNT__)</button>
+                <button onclick="filterType('rare', this)" class="type-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">💎 کمیاب‌ها</button>
+                <button onclick="filterType('favs', this)" class="type-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm flex items-center gap-1.5">
                     <i class="fa-solid fa-heart text-rose-500 text-[10px]"></i> (<span id="favCount">0</span>)
                 </button>
             </div>
@@ -255,73 +377,74 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
         </section>
 
-        <!-- ⚡ تب سوم: خدمات اختصاصی و سفارشی ادمین -->
+        <!-- ⚡ ۳. تب خدمات و محصولات سفارشی (Stars, Premium, Boost, Account, Channel) -->
         <section id="view-services" class="hidden space-y-4">
             <!-- زیرتب‌های خدمات -->
-            <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn px-3.5 py-2 rounded-xl text-xs font-black bg-amber-400 text-black whitespace-nowrap">استارز</button>
-                <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#161926] text-gray-300 whitespace-nowrap">پرمیوم</button>
-                <button onclick="switchServiceSubTab('boost')" id="subtab-boost" class="service-subtab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#161926] text-gray-300 whitespace-nowrap">بوست کانال</button>
-                <button onclick="switchServiceSubTab('account')" id="subtab-account" class="service-subtab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#161926] text-gray-300 whitespace-nowrap">اکانت مجازی</button>
-                <button onclick="switchServiceSubTab('channel')" id="subtab-channel" class="service-subtab-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-[#161926] text-gray-300 whitespace-nowrap">خدمات کانال</button>
+            <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
+                <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-black bg-[#181d28] text-white whitespace-nowrap shadow-sm">استارز</button>
+                <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">پرمیوم</button>
+                <button onclick="switchServiceSubTab('boost')" id="subtab-boost" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">بوست کانال</button>
+                <button onclick="switchServiceSubTab('account')" id="subtab-account" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">اکانت مجازی</button>
+                <button onclick="switchServiceSubTab('channel')" id="subtab-channel" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">خدمات کانال</button>
             </div>
 
             <!-- بخش استارز -->
             <div id="subview-stars" class="space-y-3">
-                <div class="store-card p-4 space-y-3">
-                    <h4 class="text-xs font-bold text-gray-300">⭐ خرید استارز به تعداد دلخواه:</h4>
-                    <input type="number" id="customStarsInput" min="50" placeholder="تعداد استارز (حداقل ۵۰)..." class="w-full bg-[#090a0f] border border-white/5 rounded-xl px-3 py-2.5 text-xs text-white font-bold">
-                    <div id="customStarsCalcBox" class="p-2.5 rounded-xl bg-white/[0.03] flex items-center justify-between hidden">
-                        <span class="text-xs text-gray-400">مبلغ نهایی:</span>
-                        <span id="customStarsPrice" class="text-xs font-black text-amber-400">0 تومان</span>
+                <div class="neo-card p-4 space-y-3">
+                    <h4 class="text-xs font-bold text-slate-700">⭐ تعداد دلخواه استارز:</h4>
+                    <input type="number" id="customStarsInput" min="50" placeholder="تعداد استارز (از ۵۰ به بالا)..." class="w-full bg-[#f1f5f9] border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none">
+                    <div id="customStarsCalcBox" class="p-3 rounded-xl bg-slate-100 flex items-center justify-between hidden">
+                        <span class="text-xs text-slate-500 font-medium">مبلغ قابل پرداخت:</span>
+                        <span id="customStarsPrice" class="text-xs font-black text-slate-900">0 تومان</span>
                     </div>
                 </div>
                 <div id="starsPackagesList" class="space-y-2"></div>
-                <button onclick="orderStars()" class="w-full py-3 bg-amber-400 text-black font-black text-xs rounded-xl shadow-lg shadow-amber-400/20">خرید استارز</button>
+                <button onclick="orderStars()" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl shadow-md transition">خرید استارز</button>
             </div>
 
             <!-- بخش پرمیوم -->
             <div id="subview-premium" class="hidden space-y-3">
                 <div id="premiumOptionsList" class="space-y-2.5"></div>
-                <button onclick="orderPremium()" class="w-full py-3 bg-amber-400 text-black font-black text-xs rounded-xl shadow-lg shadow-amber-400/20">خرید تلگرام پرمیوم</button>
+                <button onclick="orderPremium()" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl shadow-md transition">خرید تلگرام پرمیوم</button>
             </div>
 
-            <!-- بخش محصولات داینامیک ادمین (بوست، اکانت، ممبر) -->
+            <!-- بخش محصولات داینامیک ادمین (بوست، اکانت مجازی، خدمات کانال) -->
             <div id="subview-custom" class="hidden space-y-2.5">
                 <div id="customServicesContainer" class="space-y-2.5"></div>
             </div>
         </section>
 
-        <!-- 👤 تب چهارم: پروفایل کاربری (مطابق عکس اول) -->
+        <!-- 👤 ۴. تب پروفایل کاربری (دقیقاً مطابق عکس اول ارسالی) -->
         <section id="view-profile" class="hidden space-y-4">
-            <div class="store-card p-6 flex flex-col items-center text-center space-y-4">
-                <!-- آواتار نشان شطرنج / پروفایل -->
-                <div class="w-24 h-24 rounded-full bg-gradient-to-b from-[#e5c07b] to-[#b38938] flex items-center justify-center shadow-xl shadow-amber-500/10 border-2 border-amber-400/20">
-                    <span id="profileAvatarIcon" class="text-4xl">♟️</span>
+            <div class="neo-card p-6 flex flex-col items-center text-center space-y-4">
+                
+                <!-- آواتار نشان شطرنج با هاله مرواریدی و طلایی -->
+                <div class="w-24 h-24 rounded-full bg-gradient-to-b from-[#e8cf9b] to-[#c7a969] flex items-center justify-center shadow-lg border-4 border-white">
+                    <span id="profileAvatarIcon" class="text-4xl filter drop-shadow">♟️</span>
                 </div>
 
                 <div>
-                    <h2 id="profileName" class="text-lg font-black text-white">کاربر مهمان</h2>
-                    <p id="profileUsername" class="text-xs text-gray-400 dir-ltr mt-0.5">@Guest</p>
+                    <h2 id="profileName" class="text-base font-black text-slate-900">Ali</h2>
+                    <p id="profileUsername" class="text-xs text-slate-500 font-semibold dir-ltr mt-0.5">@Zanjani_a</p>
                 </div>
 
-                <div class="w-full pt-4 border-t border-white/5 space-y-3 text-xs">
+                <div class="w-full pt-4 border-t border-slate-100 space-y-3.5 text-xs">
                     <div class="flex items-center justify-between">
-                        <span class="text-gray-400">شناسه کاربر:</span>
-                        <span id="profileUserId" class="font-bold text-white font-mono">000000000</span>
+                        <span class="text-slate-700 font-bold">شناسه کاربر</span>
+                        <span id="profileUserId" class="font-bold text-slate-900 font-mono tracking-wider">649632759</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-gray-400">وضعیت حساب:</span>
-                        <span class="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">فعال</span>
+                        <span class="text-slate-700 font-bold">وضعیت حساب</span>
+                        <span class="font-bold text-emerald-600">فعال</span>
                     </div>
                     <div class="flex items-center justify-between">
-                        <span class="text-gray-400">سفارش‌های من:</span>
-                        <span id="profileCartCount" class="font-bold text-amber-400">0 قلم در سبد</span>
+                        <span class="text-slate-700 font-bold">سبد خرید</span>
+                        <span id="profileCartCount" class="font-bold text-slate-900">0 قلم در سبد</span>
                     </div>
                 </div>
 
-                <a id="profileSupportBtn" href="https://t.me/Zanjani_a" class="w-full py-3 rounded-xl bg-[#161926] text-gray-200 border border-white/5 font-bold text-xs flex items-center justify-center gap-2">
-                    <i class="fa-brands fa-telegram text-blue-400"></i>
+                <a id="profileSupportBtn" href="https://t.me/Zanjani_a" class="w-full py-3 rounded-2xl bg-[#f1f5f9] hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 transition">
+                    <i class="fa-brands fa-telegram text-sky-500 text-sm"></i>
                     <span>ارتباط با پشتیبانی</span>
                 </a>
             </div>
@@ -329,65 +452,65 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
     </main>
 
-    <!-- 🛍️ نوار پاپ‌آپ شناور سبد خرید -->
-    <div id="floatingCartBar" class="fixed bottom-20 inset-x-4 max-w-xl mx-auto z-40 bg-[#121520]/95 backdrop-blur-xl border border-amber-500/40 p-3.5 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-36 opacity-0 space-y-2.5">
+    <!-- 🛍️ نوار پاپ‌آپ خودکار سبد خرید -->
+    <div id="floatingCartBar" class="fixed bottom-20 inset-x-4 max-w-xl mx-auto z-40 bg-white/95 backdrop-blur-xl border border-slate-200 p-3.5 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-36 opacity-0 space-y-2">
         <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-xl bg-amber-400 text-black flex items-center justify-center font-black text-xs">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-[#181d28] text-white flex items-center justify-center font-black text-xs shadow-md">
                     <span id="cartCountBadge">0</span>
                 </div>
                 <div>
-                    <span class="text-[11px] text-gray-400 block">سبد خرید شما:</span>
-                    <span id="cartTotalPrice" class="text-xs font-black text-amber-400">0 تومان</span>
+                    <span class="text-[10px] text-slate-400 font-bold block">سبد خرید شما</span>
+                    <span id="cartTotalPrice" class="text-xs font-black text-slate-900">0 تومان</span>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="clearCart()" class="p-2 text-gray-400 hover:text-rose-400 text-xs">
+                <button onclick="clearCart()" class="p-2 text-slate-400 hover:text-rose-500 text-xs">
                     <i class="fa-solid fa-trash-can"></i>
                 </button>
-                <button onclick="checkoutCart()" class="py-2 px-4 rounded-xl bg-gradient-to-r from-amber-400 to-yellow-500 text-black text-xs font-black flex items-center gap-1.5 shadow-md shadow-amber-500/20">
-                    <span>ثبت نهایی</span>
+                <button onclick="checkoutCart()" class="py-2.5 px-4 rounded-xl bg-[#181d28] hover:bg-black text-white text-xs font-black flex items-center gap-1.5 shadow-md">
+                    <span>ثبت سفارش</span>
                     <i class="fa-solid fa-arrow-left text-[10px]"></i>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- منوی پایینی داگ استور (Bottom Navigation Dock) -->
-    <nav class="fixed bottom-3 inset-x-4 max-w-xl mx-auto z-40 dock-bar px-2 py-1.5 flex items-center justify-around">
-        <button onclick="switchView('home')" id="nav-home" class="nav-btn active px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 transition">
+    <!-- منوی شناور پایینی (Bottom Dock شبیه عکس سوم) -->
+    <nav class="fixed bottom-3 inset-x-4 max-w-xl mx-auto z-40 bottom-dock px-3 py-2 flex items-center justify-around">
+        <button onclick="switchView('home')" id="nav-home" class="nav-tab active px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
             <i class="fa-solid fa-house text-sm"></i>
             <span>خانه</span>
         </button>
-        <button onclick="switchView('gifts')" id="nav-gifts" class="nav-btn px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 transition">
+        <button onclick="switchView('gifts')" id="nav-gifts" class="nav-tab px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
             <i class="fa-solid fa-gift text-sm"></i>
             <span>گیفت‌ها</span>
         </button>
-        <button onclick="switchView('services')" id="nav-services" class="nav-btn px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 transition">
+        <button onclick="switchView('services')" id="nav-services" class="nav-tab px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
             <i class="fa-solid fa-bolt text-sm"></i>
-            <span>خدمات</span>
+            <span>سفارش‌ها</span>
         </button>
-        <button onclick="switchView('profile')" id="nav-profile" class="nav-btn px-4 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-gray-400 transition">
-            <i class="fa-solid fa-user text-sm"></i>
+        <button onclick="switchView('profile')" id="nav-profile" class="nav-tab px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
+            <i class="fa-solid fa-chess-pawn text-sm"></i>
             <span>حساب</span>
         </button>
     </nav>
 
-    <!-- مودال کالکشن -->
-    <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden">
-        <div class="store-card w-full max-w-md rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
-            <div class="px-5 py-3.5 flex items-center justify-between border-b border-white/5">
-                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-white/5 text-gray-400 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
-                <h3 class="text-xs font-black text-white">انتخاب کالکشن‌ها</h3>
+    <!-- مودال انتخاب کالکشن -->
+    <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
+        <div class="neo-card w-full max-w-md rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
+            <div class="px-5 py-3.5 flex items-center justify-between border-b border-slate-100">
+                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+                <h3 class="text-xs font-black text-slate-800">کالکشن‌های گیفت</h3>
                 <div class="w-7"></div>
             </div>
-            <div class="p-3 border-b border-white/5 flex items-center justify-between text-xs">
-                <button onclick="selectAllCollections()" class="text-amber-400 font-bold">انتخاب همه</button>
-                <button onclick="clearCollectionSelection()" class="text-gray-400 hover:text-rose-400">پاک کردن</button>
+            <div class="p-3 border-b border-slate-100 flex items-center justify-between text-xs">
+                <button onclick="selectAllCollections()" class="text-slate-800 font-bold">انتخاب همه</button>
+                <button onclick="clearCollectionSelection()" class="text-slate-400 hover:text-rose-500">پاک کردن</button>
             </div>
             <div id="modalCollectionsList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
-            <div class="p-3 border-t border-white/5 bg-[#090a0f]">
-                <button onclick="applyCollectionModal()" class="w-full py-2.5 bg-amber-400 text-black text-xs font-black rounded-xl">اعمال فیلتر</button>
+            <div class="p-3 border-t border-slate-100 bg-slate-50">
+                <button onclick="applyCollectionModal()" class="w-full py-2.5 bg-[#181d28] text-white text-xs font-black rounded-xl">اعمال فیلتر</button>
             </div>
         </div>
     </div>
@@ -404,7 +527,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                     document.getElementById('topGreeting').innerText = `سلام ${name} 👋`;
                     document.getElementById('profileName').innerText = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || name;
                     document.getElementById('profileUsername').innerText = tgUser.username ? `@${tgUser.username}` : 'بدون یوزرنیم';
-                    document.getElementById('profileUserId').innerText = tgUser.id || '---';
+                    document.getElementById('profileUserId').innerText = tgUser.id || '649632759';
                 }
             } catch(e) {}
         }
@@ -440,15 +563,15 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             prem12: 1690000,
             giftMonthlyPrice: 160000,
             adminTg: 'Zanjani_a',
-            announcementText: 'تخفیف ویژه سفارشات فعال شد',
+            announcementText: 'تخفیف ویژه جشنواره آغاز شد',
             announcementActive: true,
-            couponCode: 'DUCK',
+            couponCode: 'PEARL',
             couponPercent: 10,
             customServices: [
-                { id: "boost-1", category: "boost", title: "بوست ۱ لول (۷ روزه)", price: 45000, desc: "تحویل سریع با لینک کانال" },
-                { id: "boost-2", category: "boost", title: "بوست ۴ لول (۱ ماهه)", price: 180000, desc: "پایداری بالا" },
-                { id: "acc-1", category: "account", title: "اکانت مجازی آمریکا (+1)", price: 85000, desc: "شماره اختصاصی بدون ریپورت" },
-                { id: "ch-1", category: "channel", title: "۱۰۰۰ ممبر واقعی کانال", price: 95000, desc: "کیفیت بالا با ریزش کم" }
+                { id: "boost-1", category: "boost", title: "بوست ۱ لول (۷ روزه)", price: 45000, desc: "تحویل آنی با لینک کانال" },
+                { id: "boost-2", category: "boost", title: "بوست ۴ لول (۱ ماهه)", price: 180000, desc: "پایداری کامل و کیفیت عالی" },
+                { id: "acc-1", category: "account", title: "اکانت مجازی اختصاصی آمریکا", price: 85000, desc: "شماره اختصاصی بدون ریپورت" },
+                { id: "ch-1", category: "channel", title: "۱۰۰۰ ممبر واقعی کانال", price: 95000, desc: "سرعت بالا با ریزش حداقل" }
             ]
         };
 
@@ -469,7 +592,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         let cart = [];
         try { cart = JSON.parse(localStorage.getItem('duck_cart') || '[]'); } catch(e){}
 
-        // جابجایی بین صفحات اصلی
         function switchView(viewName) {
             triggerHaptic('selection');
             currentView = viewName;
@@ -482,32 +604,27 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // کلیک روی دسته‌های صفحه اصلی
         function openCategoryTab(cat) {
             if (cat === 'gift') {
                 switchView('gifts');
-            } else if (cat === 'stars' || cat === 'premium') {
-                switchView('services');
-                switchServiceSubTab(cat);
             } else {
                 switchView('services');
                 switchServiceSubTab(cat);
             }
         }
 
-        // زیرتب‌های صفحه خدمات
         function switchServiceSubTab(tab) {
             triggerHaptic('selection');
             currentServiceSubTab = tab;
             document.querySelectorAll('.service-subtab-btn').forEach(btn => {
-                btn.classList.remove('bg-amber-400', 'text-black', 'font-black');
-                btn.classList.add('bg-[#161926]', 'text-gray-300', 'font-bold');
+                btn.classList.remove('bg-[#181d28]', 'text-white', 'font-black');
+                btn.classList.add('bg-white', 'text-slate-600', 'font-bold');
             });
 
             const activeBtn = document.getElementById(`subtab-${tab}`);
             if (activeBtn) {
-                activeBtn.classList.add('bg-amber-400', 'text-black', 'font-black');
-                activeBtn.classList.remove('bg-[#161926]', 'text-gray-300');
+                activeBtn.classList.add('bg-[#181d28]', 'text-white', 'font-black');
+                activeBtn.classList.remove('bg-white', 'text-slate-600');
             }
 
             document.getElementById('subview-stars').classList.add('hidden');
@@ -562,9 +679,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             container.innerHTML = STARS_PACKAGES.map(qty => {
                 const totalToman = (qty * SETTINGS.ratePerStar).toLocaleString('en-US');
                 return `
-                <div onclick="selectStarsPackage(${qty})" class="store-card p-3 flex items-center justify-between cursor-pointer hover:border-amber-400">
-                    <span class="text-xs font-bold text-white">⭐ ${qty} Stars</span>
-                    <span class="text-xs font-black text-amber-400">${totalToman} ت</span>
+                <div onclick="selectStarsPackage(${qty})" class="neo-card p-3 flex items-center justify-between cursor-pointer hover:border-slate-400">
+                    <span class="text-xs font-bold text-slate-800">⭐ ${qty} Stars</span>
+                    <span class="text-xs font-black text-slate-900">${totalToman} ت</span>
                 </div>
                 `;
             }).join('');
@@ -617,9 +734,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             container.innerHTML = options.map(opt => {
                 const isSelected = selectedPremiumMonths === opt.months;
                 return `
-                <div onclick="selectPremiumPlan(${opt.months})" class="store-card p-3.5 flex items-center justify-between cursor-pointer ${isSelected ? 'border-amber-400 bg-amber-400/5' : ''}">
-                    <span class="text-xs font-bold text-white">${opt.label}</span>
-                    <span class="text-xs font-black text-amber-400">${opt.price.toLocaleString('en-US')} تومان</span>
+                <div onclick="selectPremiumPlan(${opt.months})" class="neo-card p-3.5 flex items-center justify-between cursor-pointer ${isSelected ? 'border-slate-900 bg-slate-50' : ''}">
+                    <span class="text-xs font-bold text-slate-800">${opt.label}</span>
+                    <span class="text-xs font-black text-slate-900">${opt.price.toLocaleString('en-US')} تومان</span>
                 </div>
                 `;
             }).join('');
@@ -648,24 +765,24 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
-        // ================= خدمات سفارشی ادمین (بوست، اکانت، کانال) =================
+        // ================= خدمات سفارشی داینامیک ادمین =================
         function renderCustomServices(category) {
             const container = document.getElementById('customServicesContainer');
             const list = (SETTINGS.customServices || []).filter(s => s.category === category);
 
             if (list.length === 0) {
-                container.innerHTML = '<p class="text-xs text-gray-500 text-center py-6">موردی برای این بخش تعریف نشده است.</p>';
+                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">موردی برای این بخش تعریف نشده است.</p>';
                 return;
             }
 
             container.innerHTML = list.map(item => `
-                <div class="store-card p-3.5 flex items-center justify-between">
+                <div class="neo-card p-3.5 flex items-center justify-between">
                     <div>
-                        <h4 class="text-xs font-bold text-white">${item.title}</h4>
-                        <p class="text-[10px] text-gray-400 mt-0.5">${item.desc || ''}</p>
-                        <span class="text-xs font-black text-amber-400 mt-1 block">${Number(item.price).toLocaleString('en-US')} تومان</span>
+                        <h4 class="text-xs font-bold text-slate-900">${item.title}</h4>
+                        <p class="text-[10px] text-slate-500 mt-0.5">${item.desc || ''}</p>
+                        <span class="text-xs font-black text-slate-800 mt-1 block">${Number(item.price).toLocaleString('en-US')} تومان</span>
                     </div>
-                    <button onclick='addToCartCustom(${JSON.stringify(item)})' class="px-3.5 py-1.5 rounded-xl bg-amber-400 text-black font-black text-xs hover:bg-amber-300">
+                    <button onclick='addToCartCustom(${JSON.stringify(item)})' class="px-3.5 py-1.5 rounded-xl bg-[#181d28] hover:bg-black text-white font-bold text-xs transition">
                         + خرید
                     </button>
                 </div>
@@ -684,7 +801,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             const container = document.getElementById('dealsGrid');
             if (!container) return;
             if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full py-12 text-center text-gray-500 text-xs">گیفتی پیدا نشد.</div>';
+                container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 text-xs font-bold">گیفتی پیدا نشد.</div>';
                 return;
             }
 
@@ -695,23 +812,23 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                 const isInCart = cart.some(c => c.name === deal.name);
 
                 return `
-                <div class="store-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-amber-400 bg-amber-400/5' : ''}">
+                <div class="neo-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-slate-800' : ''}">
                     <div>
-                        <div class="relative w-full h-36 bg-[#161926] flex items-center justify-center border-b border-white/5">
-                            ${deal.rarity ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-bold bg-black/60 text-amber-400 border border-amber-400/30">${deal.rarity}</span>` : ''}
-                            <button onclick="toggleFavorite('${deal.name}')" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/40 flex items-center justify-center text-xs ${isFav ? 'text-rose-500' : 'text-gray-400'}">
+                        <div class="relative w-full h-36 bg-[#f4f7fb] flex items-center justify-center border-b border-slate-100">
+                            ${deal.rarity ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-bold bg-white text-slate-800 shadow-sm border border-slate-200">${deal.rarity}</span>` : ''}
+                            <button onclick="toggleFavorite('${deal.name}')" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-xs ${isFav ? 'text-rose-500' : 'text-slate-400'}">
                                 <i class="fa-solid fa-heart"></i>
                             </button>
                             <img src="${deal.image_url}" alt="${deal.name}" class="w-24 h-24 object-contain" onerror="this.src='https://marketapp.org/favicon.ico'">
                         </div>
                         <div class="p-2.5">
-                            <h4 class="text-xs font-bold text-white truncate text-center">${deal.name}</h4>
-                            <span class="text-xs font-black text-amber-400 text-center block mt-1">${giftPriceFormatted} ت/ماه</span>
+                            <h4 class="text-xs font-bold text-slate-800 truncate text-center">${deal.name}</h4>
+                            <span class="text-xs font-black text-slate-900 text-center block mt-1">${giftPriceFormatted} ت/ماه</span>
                         </div>
                     </div>
                     <div class="p-2.5 pt-0 grid grid-cols-2 gap-1.5">
-                        <a href="${deal.tg_link}" target="_blank" class="py-1.5 text-center text-gray-300 bg-white/5 rounded-lg text-xs font-bold">دیدن</a>
-                        <button onclick='toggleCartGift(${JSON.stringify(deal)})' class="py-1.5 text-center ${isInCart ? 'bg-amber-400 text-black font-black' : 'bg-white text-black font-bold'} rounded-lg text-xs">
+                        <a href="${deal.tg_link}" target="_blank" class="py-1.5 text-center text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold transition">دیدن</a>
+                        <button onclick='toggleCartGift(${JSON.stringify(deal)})' class="py-1.5 text-center ${isInCart ? 'bg-rose-500 text-white font-black' : 'bg-[#181d28] hover:bg-black text-white font-bold'} rounded-lg text-xs transition">
                             ${isInCart ? 'حذف' : 'اجاره'}
                         </button>
                     </div>
@@ -743,7 +860,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             renderCards(getFilteredDeals());
         }
 
-        // پاپ‌آپ خودکار سبد خرید در صورت داشتن آیتم
+        // پاپ‌آپ خودکار سبد خرید
         function updateCartUI() {
             const bar = document.getElementById('floatingCartBar');
             const count = cart.length;
@@ -754,7 +871,6 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             cart.forEach(item => { total += Number(item.price || 0); });
             document.getElementById('cartTotalPrice').innerText = `${total.toLocaleString('en-US')} تومان`;
 
-            // اگر آیتمی در سبد باشد، پاپ‌آپ اتوماتیک بالا می‌آید
             if (count > 0) {
                 bar.classList.remove('translate-y-36', 'opacity-0');
                 bar.classList.add('translate-y-0', 'opacity-100');
@@ -816,9 +932,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             container.innerHTML = COLLECTIONS.map(col => {
                 const isSelected = tempSelectedCollections.has(col.name);
                 return `
-                <div onclick="toggleModalCollection('${col.name}')" class="p-2.5 rounded-xl border ${isSelected ? 'border-amber-400 bg-amber-400/10' : 'border-white/5'} flex items-center justify-between cursor-pointer">
-                    <span class="text-xs font-bold text-white">${col.name}</span>
-                    <span class="text-[10px] text-gray-400">${col.count}</span>
+                <div onclick="toggleModalCollection('${col.name}')" class="p-2.5 rounded-xl border ${isSelected ? 'border-slate-900 bg-slate-100' : 'border-slate-200'} flex items-center justify-between cursor-pointer">
+                    <span class="text-xs font-bold text-slate-800">${col.name}</span>
+                    <span class="text-[10px] text-slate-500">${col.count}</span>
                 </div>
                 `;
             }).join('');
@@ -848,12 +964,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             triggerHaptic('selection');
             selectedType = type;
             document.querySelectorAll('.type-btn').forEach(b => {
-                b.classList.remove('bg-amber-400', 'text-black', 'font-black');
-                b.classList.add('bg-[#161926]', 'text-gray-300', 'font-bold');
+                b.classList.remove('bg-[#181d28]', 'text-white', 'font-black');
+                b.classList.add('bg-white', 'text-slate-600', 'font-bold');
             });
             if (btn) {
-                btn.classList.remove('bg-[#161926]', 'text-gray-300');
-                btn.classList.add('bg-amber-400', 'text-black', 'font-black');
+                btn.classList.remove('bg-white', 'text-slate-600');
+                btn.classList.add('bg-[#181d28]', 'text-white', 'font-black');
             }
             renderCards(getFilteredDeals());
         }
@@ -876,9 +992,50 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             renderCards(getFilteredDeals());
         });
 
+        // ⏳ لودینگ نرم و انتقال به صفحه خوش‌آمدگویی
+        let loadingProgress = 5;
+        function startLoading() {
+            const bar = document.getElementById('loadingProgressBar');
+            const pct = document.getElementById('loadingPercent');
+            const interval = setInterval(() => {
+                loadingProgress += Math.floor(Math.random() * 15) + 10;
+                if (loadingProgress >= 100) {
+                    loadingProgress = 100;
+                    clearInterval(interval);
+                    if (bar) bar.style.width = '100%';
+                    if (pct) pct.innerText = '100%';
+                    setTimeout(() => {
+                        const loader = document.getElementById('loadingScreen');
+                        const welcome = document.getElementById('welcomeScreen');
+                        if (loader) {
+                            loader.classList.add('opacity-0', 'pointer-events-none');
+                            setTimeout(() => { loader.style.display = 'none'; }, 400);
+                        }
+                        if (welcome) {
+                            welcome.classList.remove('hidden');
+                            setTimeout(() => { welcome.classList.remove('opacity-0', 'scale-95'); }, 50);
+                        }
+                    }, 250);
+                } else {
+                    if (bar) bar.style.width = `${loadingProgress}%`;
+                    if (pct) pct.innerText = `${loadingProgress}%`;
+                }
+            }, 80);
+        }
+
+        document.getElementById('enterStoreBtn').addEventListener('click', () => {
+            triggerHaptic('heavy');
+            const welcome = document.getElementById('welcomeScreen');
+            if (welcome) {
+                welcome.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
+                setTimeout(() => { welcome.style.display = 'none'; }, 400);
+            }
+        });
+
         // لود اولیه
         updateUI();
         fetchCloudSettings();
+        startLoading();
     </script>
 </body>
 </html>"""
@@ -945,20 +1102,20 @@ def send_chunks_to_telegram(text: str, token: str, chat_id: str):
 def send_telegram_csv_attachment(file_path: str, token: str, chat_id: str, caption: str):
     if not os.path.exists(file_path): return
     boundary = "----DuckStoreBoundaryXYZ"
-    with open(file_path, "rb") as f: file_bytes = f.read()
-
-    body = (
-        f"--{boundary}\r\n"
-        f'Content-Disposition: form-data; name="chat_id"\r\n\r\n{chat_id}\r\n'
-        f"--{boundary}\r\n"
-        f'Content-Disposition: form-data; name="caption"\r\n\r\n{caption}\r\n'
-        f"--{boundary}\r\n"
-        f'Content-Disposition: form-data; name="document"; filename="duck_store_gifts.csv"\r\n'
-        f"Content-Type: text/csv\r\n\r\n"
-    ).encode("utf-8") + file_bytes + f"\r\n--{boundary}--\r\n".encode("utf-8")
-
-    req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendDocument", data=body, headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
     try:
+        with open(file_path, "rb") as f: file_bytes = f.read()
+
+        body = (
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="chat_id"\r\n\r\n{chat_id}\r\n'
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="caption"\r\n\r\n{caption}\r\n'
+            f"--{boundary}\r\n"
+            f'Content-Disposition: form-data; name="document"; filename="duck_store_gifts.csv"\r\n'
+            f"Content-Type: text/csv\r\n\r\n"
+        ).encode("utf-8") + file_bytes + f"\r\n--{boundary}--\r\n".encode("utf-8")
+
+        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendDocument", data=body, headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
         with urllib.request.urlopen(req, timeout=30): pass
     except Exception: pass
 
@@ -969,9 +1126,10 @@ def send_telegram_csv_attachment(file_path: str, token: str, chat_id: str, capti
 async def main():
     deals_found: List[Dict[str, Any]] = []
     seen_links: Set[str] = set()
+    browser = None
 
     print("\n" + "═" * 65)
-    print("  🦆 DUCK STORE TURBO SCRAPER (200 ITEMS + STABLE ENGINE) 🦆")
+    print("  🦆 PEARL STORE TURBO SCRAPER (SOFT NEUMORPHIC LUXURY) 🦆")
     print("═" * 65 + "\n")
 
     launch_args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-accelerated-2d-canvas", "--no-first-run", "--no-zygote"]
@@ -979,88 +1137,95 @@ async def main():
     async with async_playwright() as p:
         try:
             browser = await p.chromium.launch(headless=True, args=launch_args)
-        except Exception:
-            browser = await p.chromium.launch(headless=True, channel="chrome", args=launch_args)
+            page = await browser.new_page()
 
-        page = await browser.new_page()
-        print("🌐 بارگذاری اولیه مارکت...")
-        await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=60000)
-        await page.wait_for_timeout(3000)
+            print("🌐 بارگذاری اولیه مارکت...")
+            await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=60000)
+            await page.wait_for_timeout(3000)
 
-        while len(deals_found) < CONFIG["TARGET_DEALS_COUNT"]:
-            raw_cards = await page.evaluate(
-                """() => {
-                const cards = Array.from(document.querySelectorAll("a[href*='/nft/']"));
-                return cards.map(c => ({
-                    href: c.getAttribute('href') || '',
-                    text: c.innerText || '',
-                    img: c.querySelector('img') ? c.querySelector('img').src : ''
-                }));
-            }"""
-            )
+            scroll_attempts = 0
+            while len(deals_found) < CONFIG["TARGET_DEALS_COUNT"] and scroll_attempts < CONFIG["MAX_SCROLL_ATTEMPTS"]:
+                scroll_attempts += 1
+                raw_cards = await page.evaluate(
+                    """() => {
+                    const cards = Array.from(document.querySelectorAll("a[href*='/nft/']"));
+                    return cards.map(c => ({
+                        href: c.getAttribute('href') || '',
+                        text: c.innerText || '',
+                        img: c.querySelector('img') ? c.querySelector('img').src : ''
+                    }));
+                }"""
+                )
 
-            for c in raw_cards:
-                href = c["href"]
-                if not href: continue
-                full_link = href if href.startswith("http") else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
-                if full_link in seen_links: continue
+                for c in raw_cards:
+                    href = c.get("href", "")
+                    if not href: continue
 
-                text = c["text"]
-                if not text.strip(): continue
+                    full_link = href if href.startswith("http") else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
+                    if full_link in seen_links: continue
 
-                discount_match = re.search(r"-(\d+(?:\.\d+)?)%", text)
-                if discount_match:
-                    discount_val = float(discount_match.group(1))
-                    if discount_val >= CONFIG["MIN_DISCOUNT_PERCENT"]:
-                        num_match = re.search(r"#(\d+)", text)
-                        item_num = num_match.group(1) if num_match else "0"
-                        days_match = re.search(r"Days:\s*(\d+\s*–\s*\d+)", text)
-                        days_range = days_match.group(1) if days_match else "1 – 180"
+                    text = c.get("text", "")
+                    if not text.strip(): continue
 
-                        lines = [l.strip() for l in text.split("\n") if l.strip()]
-                        name_candidates = [
-                            l for l in lines
-                            if not l.startswith("Days:") and not l.startswith("-") and not l.startswith("#")
-                            and l.lower() not in ["per day", "min. price"] and not re.match(r"^\d+(\.\d+)?$", l)
-                        ]
-                        gift_name = name_candidates[0] if name_candidates else "NFT Gift"
+                    discount_match = re.search(r"-(\d+(?:\.\d+)?)%", text)
+                    if discount_match:
+                        discount_val = float(discount_match.group(1))
+                        if discount_val >= CONFIG["MIN_DISCOUNT_PERCENT"]:
+                            num_match = re.search(r"#(\d+)", text)
+                            item_num = num_match.group(1) if num_match else "0"
+                            days_match = re.search(r"Days:\s*(\d+\s*–\s*\d+)", text)
+                            days_range = days_match.group(1) if days_match else "1 – 180"
 
-                        deal = {
-                            "name": f"{gift_name} #{item_num}",
-                            "gift_title": gift_name,
-                            "number": item_num,
-                            "discount": f"-{discount_val}%",
-                            "discount_num": discount_val,
-                            "price_per_day": "0.01",
-                            "days_range": days_range,
-                            "tg_link": generate_tg_nft_link(gift_name, item_num),
-                            "market_link": full_link,
-                            "image_url": c["img"] if c["img"] else "https://marketapp.org/favicon.ico",
-                            "rarity": detect_rarity_badge(item_num),
-                        }
+                            lines = [l.strip() for l in text.split("\n") if l.strip()]
+                            name_candidates = [
+                                l for l in lines
+                                if not l.startswith("Days:") and not l.startswith("-") and not l.startswith("#")
+                                and l.lower() not in ["per day", "min. price"] and not re.match(r"^\d+(\.\d+)?$", l)
+                            ]
+
+                            gift_name = name_candidates[0] if name_candidates else "NFT Gift"
+                            deal = {
+                                "name": f"{gift_name} #{item_num}",
+                                "gift_title": gift_name,
+                                "number": str(item_num),
+                                "discount": f"-{discount_val}%",
+                                "discount_num": discount_val,
+                                "price_per_day": "0.01",
+                                "days_range": days_range,
+                                "tg_link": generate_tg_nft_link(gift_name, item_num),
+                                "market_link": full_link,
+                                "image_url": c.get("img") or "https://marketapp.org/favicon.ico",
+                                "rarity": detect_rarity_badge(item_num),
+                            }
+
+                            seen_links.add(full_link)
+                            deals_found.append(deal)
+
+                            if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]: break
+                    else:
                         seen_links.add(full_link)
-                        deals_found.append(deal)
 
-                        if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]: break
-                else:
-                    seen_links.add(full_link)
+                if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]: break
+                await page.evaluate("window.scrollBy(0, window.innerHeight * 3);")
+                await page.wait_for_timeout(350)
 
-            if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]: break
-            await page.evaluate("window.scrollBy(0, window.innerHeight * 3);")
-            await page.wait_for_timeout(350)
+        finally:
+            if browser:
+                await browser.close()
 
-        await browser.close()
         sorted_deals = list(reversed(deals_found))
 
         generate_duck_store_html(sorted_deals)
 
-        with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline="") as f:
-            writer = csv.writer(f)
-            writer.writerow(["ردیف", "کالکشن", "نام گیفت", "شماره", "تخفیف", "کمیابی", "لینک تلگرام", "لینک MarketApp"])
-            for idx, d in enumerate(sorted_deals, 1):
-                writer.writerow([idx, d["gift_title"], d["name"], d["number"], d["discount"], d["rarity"] or "معمولی", d["tg_link"], d["market_link"]])
+        try:
+            with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["ردیف", "کالکشن", "نام گیفت", "شماره", "تخفیف", "کمیابی", "لینک تلگرام", "لینک MarketApp"])
+                for idx, d in enumerate(sorted_deals, 1):
+                    writer.writerow([idx, d["gift_title"], d["name"], d["number"], d["discount"], d["rarity"] or "معمولی", d["tg_link"], d["market_link"]])
+        except Exception: pass
 
-        print("\n⚡ فروشگاه Duck Store با دیزاین جدید و سیستم ماژولار تولید شد!")
+        print("\n⚡ فروشگاه با استایل لوکس مرواریدی و سیستم یکپارچه با موفقیت ساخته شد!")
         send_telegram_package(sorted_deals)
 
 
