@@ -36,105 +36,73 @@ CONFIG = {
 
 
 # ==========================================
-# 📈 موتور هوشمند استعلام قیمت ارز و محاسبه نرخ پرمیوم
+# 📈 موتور استعلام زنده قیمت ارز و محاسبه نرخ پرمیوم
 # ==========================================
-async def fetch_auto_pricing(page) -> Dict[str, int]:
-    """استعلام زنده نرخ ارز از نوبیتکس و قیمت‌های فرگمنت با احتساب درصد سود ادمین"""
-    print("\n📊 در حال دریافت قیمت‌های زنده و محاسبه خودکار نرخ پرمیوم...")
+async def calculate_live_pricing(page) -> Dict[str, Any]:
+    print("\n" + "═" * 60)
+    print("📈 در حال استعلام لحظه‌ای ارز و محاسبه قیمت تلگرام پرمیوم...")
+    print("═" * 60)
 
-    # مقادیر پیش‌فرض TON برای ۳، ۶ و ۱۲ ماه در فرگمنت
-    ton_amounts = {"prem3": 3.8, "prem6": 5.8, "prem12": 9.9}
-    ton_to_usd = 5.4  # مقدار پیش‌فرض در صورت قطعی
-    usdt_to_toman = 60000  # مقدار پیش‌فرض تتر به تومان
-    profit_percent = 15  # درصد سود پیش‌فرض ادمین
+    # مقادیر استاندارد پایه فرگمنت (TON)
+    ton_tiers = {"prem3": 3.8, "prem6": 5.8, "prem12": 9.9}
+    ton_usd = 5.3
+    usdt_toman = 60000
+    profit_margin = 15.0
 
-    # ۱. واکشی درصد سود تنظیم‌شده توسط ادمین از Cloudflare KV
+    # ۱. دریافت درصد سود ادمین از Cloudflare Worker
     try:
         req = urllib.request.Request(
             f"{CONFIG['WORKER_URL']}/api/settings",
-            headers={"User-Agent": "DuckBot/1.0"},
+            headers={"User-Agent": "DuckStoreEngine/2.0"},
         )
         with urllib.request.urlopen(req, timeout=5) as res:
-            settings_data = json.loads(res.read().decode())
-            if "profitMargin" in settings_data:
-                profit_percent = float(settings_data["profitMargin"])
-                print(f"💰 درصد سود ادمین از سرور دریافت شد: {profit_percent}%")
-    except Exception as e:
-        print(f"⚠️ استفاده از درصد سود پیش‌فرض ({profit_percent}%)")
+            cloud_settings = json.loads(res.read().decode())
+            profit_margin = float(cloud_settings.get("profitMargin", 15.0))
+            print(f"💰 درصد سود ادمین دریافت شد: {profit_margin}%")
+    except Exception:
+        print(f"ℹ️ استفاده از درصد سود پیش‌فرض: {profit_margin}%")
 
-    # ۲. استعلام زنده قیمت ارز TON به دلار از CoinGecko
+    # ۲. استعلام زنده نرخ TON از CoinGecko
     try:
         req = urllib.request.Request(
             "https://api.coingecko.com/api/v3/simple/price?ids=the-open-network&vs_currencies=usd",
-            headers={"User-Agent": "DuckBot/1.0"},
+            headers={"User-Agent": "DuckStoreEngine/2.0"},
         )
         with urllib.request.urlopen(req, timeout=6) as res:
             cg_data = json.loads(res.read().decode())
-            ton_to_usd = float(cg_data["the-open-network"]["usd"])
-            print(f"💎 نرخ جهانی TON: {ton_to_usd}$")
+            ton_usd = float(cg_data["the-open-network"]["usd"])
+            print(f"💎 قیمت جهانی TON: {ton_usd}$")
     except Exception:
-        print(f"ℹ️ نرخ TON پیش‌فرض: {ton_to_usd}$")
+        print(f"ℹ️ نرخ TON پیش‌فرض: {ton_usd}$")
 
-    # ۳. استعلام نرخ تتر به تومان از صرافی نوبیتکس (Nobitex API)
+    # ۳. استعلام نرخ تتر از نوبیتکس (Nobitex API)
     try:
         req = urllib.request.Request(
             "https://api.nobitex.ir/v2/orderbook/USDTIRT",
-            headers={"User-Agent": "DuckBot/1.0"},
+            headers={"User-Agent": "DuckStoreEngine/2.0"},
         )
         with urllib.request.urlopen(req, timeout=6) as res:
-            nobitex_data = json.loads(res.read().decode())
-            last_trade = float(nobitex_data.get("lastTradePrice", 600000))
-            usdt_to_toman = last_trade / 10  # تبدیل ریال به تومان
-            print(f"💵 نرخ تتر نوبیتکس: {usdt_to_toman:,.0f} تومان")
+            nobi = json.loads(res.read().decode())
+            usdt_toman = float(nobi.get("lastTradePrice", 600000)) / 10
+            print(f"💵 نرخ تتر نوبیتکس: {usdt_toman:,.0f} تومان")
     except Exception:
-        print(f"ℹ️ نرخ تتر پیش‌فرض: {usdt_to_toman:,.0f} تومان")
+        print(f"ℹ️ نرخ تتر پیش‌فرض: {usdt_toman:,.0f} تومان")
 
-    # ۴. بررسی صفحه فرگمنت برای مقادیر TON
-    try:
-        await page.goto(
-            CONFIG["FRAGMENT_PREMIUM_URL"],
-            wait_until="domcontentloaded",
-            timeout=15000,
-        )
-        await page.wait_for_timeout(2000)
-        frag_text = await page.evaluate("() => document.body.innerText")
-        m3 = re.search(r"3\s*months.*?(\d+(?:\.\d+)?)\s*TON", frag_text, re.I)
-        m6 = re.search(r"6\s*months.*?(\d+(?:\.\d+)?)\s*TON", frag_text, re.I)
-        m12 = re.search(
-            r"(?:12\s*months|1\s*year).*?(\d+(?:\.\d+)?)\s*TON", frag_text, re.I
-        )
-        if m3:
-            ton_amounts["prem3"] = float(m3.group(1))
-        if m6:
-            ton_amounts["prem6"] = float(m6.group(1))
-        if m12:
-            ton_amounts["prem12"] = float(m12.group(1))
-        print(f"✅ مقادیر TON فرگمنت: {ton_amounts}")
-    except Exception:
-        print("ℹ️ استفاده از پایه تعرفه استاندارد فرگمنت")
+    # ۴. محاسبه دقیق به تومان با سود ادمین
+    ton_toman = ton_usd * usdt_toman
+    profit_factor = 1.0 + (profit_margin / 100.0)
 
-    # ۵. محاسبه نهایی به تومان با اعمال درصد سود ادمین
-    ton_toman_rate = ton_to_usd * usdt_to_toman
-    profit_multiplier = 1.0 + (profit_percent / 100.0)
-
-    final_prices = {
-        "prem3": int(
-            round(ton_amounts["prem3"] * ton_toman_rate * profit_multiplier, -3)
-        ),
-        "prem6": int(
-            round(ton_amounts["prem6"] * ton_toman_rate * profit_multiplier, -3)
-        ),
-        "prem12": int(
-            round(
-                ton_amounts["prem12"] * ton_toman_rate * profit_multiplier, -3
-            )
-        ),
+    computed = {
+        "prem3": int(round(ton_tiers["prem3"] * ton_toman * profit_factor, -3)),
+        "prem6": int(round(ton_tiers["prem6"] * ton_toman * profit_factor, -3)),
+        "prem12": int(round(ton_tiers["prem12"] * ton_toman * profit_factor, -3)),
+        "ton_rate": round(ton_usd, 2),
+        "usdt_rate": int(usdt_toman),
+        "profit_margin": profit_margin
     }
 
-    print(
-        f"🎯 قیمت‌های خودکار پرمیوم (تومان): ۳ ماهه={final_prices['prem3']:,} | ۶ ماهه={final_prices['prem6']:,} | ۱ ساله={final_prices['prem12']:,}\n"
-    )
-    return final_prices
+    print(f"✅ قیمت‌های محاسبه‌شده پرمیوم: ۳ ماهه={computed['prem3']:,} | ۶ ماهه={computed['prem6']:,} | ۱ ساله={computed['prem12']:,}\n")
+    return computed
 
 
 def detect_rarity_badge(number_str: str) -> str:
@@ -142,29 +110,12 @@ def detect_rarity_badge(number_str: str) -> str:
         num = int(re.sub(r"\D", "", str(number_str)))
     except ValueError:
         return ""
-
     s = str(num)
-    if num < 100:
-        return "👑 زیر 100 (نایاب)"
-    if num < 1000:
-        return f"💎 زیر 1000 (#{num})"
-    if len(s) >= 3 and len(set(s)) == 1:
-        return f"✨ رند (#{s})"
-    if s in [
-        "123",
-        "1234",
-        "12345",
-        "6969",
-        "777",
-        "888",
-        "999",
-        "10000",
-        "50000",
-        "100000",
-    ]:
-        return f"🎯 خاص (#{s})"
-    if len(s) == 4 and s == s[::-1]:
-        return f"🔁 متقارن (#{s})"
+    if num < 100: return "👑 زیر 100"
+    if num < 1000: return f"💎 زیر 1000"
+    if len(s) >= 3 and len(set(s)) == 1: return f"✨ رند (#{s})"
+    if s in ["123", "1234", "12345", "6969", "777", "888", "999", "10000"]: return f"🎯 خاص (#{s})"
+    if len(s) == 4 and s == s[::-1]: return f"🔁 متقارن"
     return ""
 
 
@@ -172,17 +123,11 @@ def generate_tg_nft_link(name: str, number: str) -> str:
     words = re.findall(r"[a-zA-Z0-9]+", name)
     slug = "".join(w.capitalize() for w in words)
     clean_num = re.sub(r"\D", "", str(number))
-    return (
-        f"https://t.me/nft/{slug}-{clean_num}"
-        if slug and clean_num
-        else "https://t.me"
-    )
+    return f"https://t.me/nft/{slug}-{clean_num}" if slug and clean_num else "https://t.me"
 
 
-def generate_duck_store_html(
-    deals: List[Dict[str, Any]], auto_prices: Dict[str, int]
-):
-    """تولید وب‌سایت فروشگاهی Duck Store با استایل لاکچری و مدرن آیفونی (iOS Widget Design)"""
+def generate_duck_store_html(deals: List[Dict[str, Any]], pricing: Dict[str, Any]):
+    """تولید اپلیکیشن Duck Store با معماری و یوزر فلوی کامل iOS"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -196,11 +141,7 @@ def generate_duck_store_html(
             }
         collections_map[c_name]["count"] += 1
 
-    collections_list = sorted(
-        list(collections_map.values()), key=lambda x: x["name"]
-    )
-    deals_json = json.dumps(deals, ensure_ascii=False)
-    collections_json = json.dumps(collections_list, ensure_ascii=False)
+    collections_list = sorted(list(collections_map.values()), key=lambda x: x["name"])
     rare_count = sum(1 for d in deals if d.get("rarity"))
 
     html_template = """<!DOCTYPE html>
@@ -208,322 +149,329 @@ def generate_duck_store_html(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Duck Store | خدمات پرمیوم تلگرام</title>
+    <title>Duck Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-base: #060913;
-            --ios-card: rgba(14, 20, 40, 0.7);
+            --bg-main: #060913;
+            --ios-card: rgba(14, 20, 42, 0.72);
+            --ios-card-hover: rgba(22, 32, 66, 0.85);
             --ios-border: rgba(255, 255, 255, 0.08);
-            --ios-border-glow: rgba(56, 189, 248, 0.25);
+            --neon-blue: #38bdf8;
+            --neon-amber: #fbbf24;
+            --neon-purple: #c084fc;
         }
         body {
             font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-base);
+            background-color: var(--bg-main);
             background-image: 
-                radial-gradient(circle at 10% 10%, rgba(30, 58, 138, 0.28) 0%, transparent 40%),
-                radial-gradient(circle at 90% 25%, rgba(124, 58, 237, 0.22) 0%, transparent 45%),
-                radial-gradient(circle at 50% 90%, rgba(14, 165, 233, 0.15) 0%, transparent 50%);
+                radial-gradient(circle at 10% 10%, rgba(30, 58, 138, 0.35) 0%, transparent 45%),
+                radial-gradient(circle at 90% 20%, rgba(124, 58, 237, 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 50% 95%, rgba(14, 165, 233, 0.2) 0%, transparent 50%);
             color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
         }
-        .ios-glass-card {
+        .ios-card {
             background: var(--ios-card);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
             border: 1px solid var(--ios-border);
-            border-radius: 28px;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border-radius: 26px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .ios-glass-card:hover {
-            border-color: rgba(56, 189, 248, 0.35);
-            box-shadow: 0 20px 40px -15px rgba(2, 6, 23, 0.8), 0 0 25px rgba(56, 189, 248, 0.15);
-            transform: translateY(-3px);
+        .ios-card:hover {
+            background: var(--ios-card-hover);
+            border-color: rgba(56, 189, 248, 0.3);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.12);
         }
-        .ios-pill-tab {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 9999px;
-            padding: 4px;
-        }
-        .ios-badge {
-            background: rgba(15, 23, 42, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(12px);
-        }
-        .modal-bg {
-            background: #090e1f;
+        .ios-bottom-dock {
+            background: rgba(8, 12, 26, 0.85);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
         }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 9999px; }
+        .nav-item.active {
+            color: #38bdf8;
+        }
+        .nav-item.active .nav-icon {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.5));
+        }
     </style>
 </head>
-<body class="min-h-screen pb-36 select-none">
+<body class="min-h-screen pb-32 select-none">
 
-    <!-- ⏳ اسپلش اسکرین اختصاصی iOS -->
-    <div id="loadingScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#060913] transition-all duration-500 px-6">
-        <div class="relative flex items-center justify-center">
-            <div class="w-20 h-20 rounded-[26px] bg-gradient-to-tr from-blue-600 via-indigo-600 to-purple-600 flex items-center justify-center text-4xl shadow-2xl shadow-blue-500/25 animate-pulse">
-                🦆
-            </div>
-            <div class="absolute -inset-3 rounded-[32px] border border-blue-400/20 border-t-cyan-400 animate-spin"></div>
-        </div>
-        <h2 class="text-white font-black text-lg mt-6 tracking-wide flex items-center gap-2">
-            <span>Duck Store</span>
-            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-ping"></span>
-        </h2>
-        <p class="text-slate-400 text-xs mt-2 font-medium">همگام‌سازی لحظه‌ای با نرخ جهانی فرگمنت...</p>
-        <div class="w-48 h-1.5 bg-slate-900 rounded-full overflow-hidden mt-6 border border-white/5">
-            <div id="loadingProgressBar" class="h-full bg-gradient-to-r from-blue-500 to-cyan-400 transition-all duration-150" style="width: 5%"></div>
-        </div>
-        <span id="loadingPercent" class="text-[11px] font-bold text-slate-500 mt-2">0%</span>
-    </div>
-
-    <!-- 🚀 صفحه Onboarding / معرفی جذاب با دکمه "بزن بریم" -->
-    <div id="welcomeScreen" class="fixed inset-0 z-40 hidden flex items-center justify-center bg-[#04060d]/90 backdrop-blur-2xl transition-all duration-500 p-5 opacity-0 scale-95">
-        <div class="w-full max-w-sm ios-glass-card p-6 flex flex-col items-center text-center space-y-5 border-blue-500/20 shadow-2xl shadow-blue-950/40">
-            <div class="w-16 h-16 rounded-[22px] bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-3xl shadow-lg shadow-blue-500/20">
-                🦆
-            </div>
-            <div>
-                <h2 class="text-lg font-black text-white">به Duck Store خوش اومدی!</h2>
-                <p class="text-xs text-cyan-300/80 mt-1 font-semibold">پلتفرم مدرن مبادلات ارز و گیفت تلگرام</p>
-            </div>
-            <div class="w-full space-y-2.5 text-right text-xs">
-                <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-                    <span class="text-xl">🎁</span>
-                    <div>
-                        <p class="font-bold text-white">اجاره گیفت‌های ارزشمند</p>
-                        <p class="text-[10px] text-slate-400">تخفیف‌های بالای ۵۰٪ و شماره‌های خاص</p>
-                    </div>
-                </div>
-                <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-                    <span class="text-xl">👑</span>
-                    <div>
-                        <p class="font-bold text-white">تلگرام پرمیوم لحظه‌ای</p>
-                        <p class="text-[10px] text-slate-400">نرخ کاملاً زنده بر اساس بازار فرگمنت</p>
-                    </div>
-                </div>
-                <div class="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center gap-3">
-                    <span class="text-xl">⭐</span>
-                    <div>
-                        <p class="font-bold text-white">استارز رسمی تلگرام</p>
-                        <p class="text-[10px] text-slate-400">تحویل آنی بدون نیاز به لاگین در اکانت</p>
-                    </div>
-                </div>
-            </div>
-            <button onclick="enterStore()" class="w-full py-3.5 bg-gradient-to-r from-blue-500 via-indigo-500 to-cyan-400 hover:opacity-90 text-white font-black text-xs rounded-2xl transition shadow-xl shadow-blue-500/25 flex items-center justify-center gap-2">
-                <span>بزن بریم</span>
-                <i class="fa-solid fa-arrow-left text-xs"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- 📢 بنر مناسبتی با انیمیشن ملایم -->
-    <div id="promoBanner" class="hidden bg-gradient-to-r from-indigo-900/90 via-blue-900/90 to-purple-900/90 border-b border-white/10 text-white text-xs font-semibold py-2.5 px-4 text-center backdrop-blur-md flex items-center justify-center gap-2">
-        <i class="fa-solid fa-bolt text-amber-400 text-xs"></i>
-        <span id="promoBannerText"></span>
-    </div>
-
-    <!-- هدر با سبک مدرن iOS Dashboard -->
-    <header class="sticky top-0 z-30 bg-[#060913]/80 backdrop-blur-xl border-b border-white/5">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 py-3.5 flex items-center justify-between">
+    <!-- ۱. هدر اپلیکیشنی آیفونی با وضعیت کاربر و قیمت زنده ارز -->
+    <header class="sticky top-0 z-30 bg-[#060913]/85 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-3">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-[14px] bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-xl shadow-lg shadow-blue-500/20">
+                <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/20">
                     🦆
                 </div>
                 <div>
-                    <h1 class="text-sm sm:text-base font-black text-white tracking-tight">Duck Store</h1>
-                    <p id="tgUserGreeting" class="text-[11px] text-slate-400 font-medium">مرجع خدمات تلگرام</p>
+                    <h1 class="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
+                        <span>Duck Store</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">Live</span>
+                    </h1>
+                    <p id="userGreetingText" class="text-[11px] text-slate-400 font-medium">خوش آمدید</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-2">
-                <a id="headerSupportLink" href="https://t.me/Zanjani_a" onclick="openTgLink(this.href); return false;" class="px-3.5 py-2 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/10 text-xs font-bold transition flex items-center gap-2">
-                    <i class="fa-brands fa-telegram text-sky-400"></i>
-                    <span>پشتیبانی</span>
-                </a>
-            </div>
-        </div>
-
-        <!-- کنترل تب‌های آیفونی (Pill Navigation) -->
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-2.5 overflow-x-auto">
-            <div class="ios-pill-tab flex items-center gap-1 w-max min-w-full sm:min-w-0">
-                <button onclick="switchMainTab('gifts')" id="tabBtn-gifts" class="flex-1 px-5 py-2 rounded-full text-xs font-black transition flex items-center justify-center gap-1.5 whitespace-nowrap bg-white text-slate-950 shadow-sm">
-                    <i class="fa-solid fa-gift"></i>
-                    <span class="tab-label">اجاره گیفت</span>
-                </button>
-                <button onclick="switchMainTab('stars')" id="tabBtn-stars" class="flex-1 px-5 py-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1.5 whitespace-nowrap text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-star text-amber-400"></i>
-                    <span class="tab-label">استارز تلگرام</span>
-                </button>
-                <button onclick="switchMainTab('premium')" id="tabBtn-premium" class="flex-1 px-5 py-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1.5 whitespace-nowrap text-slate-400 hover:text-white">
-                    <i class="fa-solid fa-crown text-purple-400"></i>
-                    <span class="tab-label">تلگرام پرمیوم</span>
-                </button>
-            </div>
+            <!-- دکمه پشتیبانی اختصاصی تلگرام -->
+            <a id="headerSupportLink" href="https://t.me/Zanjani_a" onclick="openTgLink(this.href); return false;" class="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10 text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-brands fa-telegram text-sky-400 text-sm"></i>
+                <span>پشتیبانی</span>
+            </a>
         </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 mt-5">
-        
-        <!-- ۱. بخش گیفت‌ها -->
-        <section id="section-gifts" class="block space-y-4">
-            <!-- نوار فیلتر و ابزار مدرن -->
-            <div class="ios-glass-card p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div class="relative w-full sm:w-80">
-                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-3.5 text-slate-500 text-xs"></i>
-                    <input type="text" id="searchInput" placeholder="جستجوی نام یا شناسه گیفت..." 
-                           class="w-full bg-[#060913]/60 border border-white/10 rounded-2xl pr-10 pl-4 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+    <!-- ۲. محفظه اصلی صفحات (Multi-View Flow) -->
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 mt-4">
+
+        <!-- 🏠 تب شماره ۱: صفحه اصلی داشبورد و فرصت‌ها -->
+        <section id="view-dashboard" class="space-y-4">
+            <!-- ویجت نرخ لحظه‌ای بازار ارز و فرگمنت -->
+            <div class="ios-card p-4 sm:p-5 flex items-center justify-between border-blue-500/20 bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent">
+                <div>
+                    <span class="text-[10px] font-bold text-cyan-400 uppercase tracking-wider">بازار زنده کریپتو</span>
+                    <h3 class="text-xs sm:text-sm font-black text-white mt-0.5">نرخ مبنای خرید پرمیوم</h3>
+                    <p class="text-[11px] text-slate-400 mt-1">
+                        هر TON: <b class="text-slate-200 font-bold">__TON_RATE__$</b> | 
+                        تتر نوبیتکس: <b class="text-slate-200 font-bold">__USDT_RATE__</b> تومان
+                    </p>
+                </div>
+                <div class="text-left">
+                    <span class="text-[10px] px-2.5 py-1 rounded-full font-black bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        سود ادمین: __PROFIT_MARGIN__%
+                    </span>
+                    <p class="text-[10px] text-slate-500 mt-2">آپدیت خودکار با فرگمنت</p>
+                </div>
+            </div>
+
+            <!-- بنر مناسبتی هدر (در صورت فعال بودن) -->
+            <div id="promoBanner" class="hidden ios-card p-4 border-amber-500/20 bg-amber-500/5 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-bullhorn text-amber-400 text-sm"></i>
+                    <span id="promoBannerText" class="text-xs font-bold text-amber-200"></span>
+                </div>
+                <button onclick="switchView('gifts')" class="text-xs font-black text-amber-400 hover:underline">مشاهده &larr;</button>
+            </div>
+
+            <!-- کارت‌های میانبر خدمات سریع -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                <div onclick="switchView('gifts')" class="ios-card p-4 cursor-pointer flex flex-col justify-between space-y-2">
+                    <span class="text-2xl">🎁</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">اجاره گیفت</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">__TOTAL_COUNT__ مورد فعال با تخفیف</p>
+                    </div>
+                </div>
+                <div onclick="switchView('premium')" class="ios-card p-4 cursor-pointer flex flex-col justify-between space-y-2 border-purple-500/20">
+                    <span class="text-2xl">👑</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">تلگرام پرمیوم</h4>
+                        <p class="text-[10px] text-purple-300 mt-0.5">استعلام آنی از فرگمنت</p>
+                    </div>
+                </div>
+                <div onclick="switchView('stars')" class="ios-card p-4 cursor-pointer flex flex-col justify-between space-y-2 col-span-2 sm:col-span-1 border-amber-500/20">
+                    <span class="text-2xl">⭐</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">استارز تلگرام</h4>
+                        <p class="text-[10px] text-amber-300 mt-0.5">تحویل سریع بدون نیاز به پسورد</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- پیش‌نمایش جدیدترین گیفت‌های ویژه -->
+            <div class="pt-2">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-fire text-amber-400"></i>
+                        <span>تازه‌ترین فرصت‌های کشف‌شده</span>
+                    </h3>
+                    <button onclick="switchView('gifts')" class="text-[11px] font-bold text-cyan-400 hover:underline">مشاهده همه &larr;</button>
+                </div>
+                <div id="homeRecentDeals" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+
+        <!-- 🎁 تب شماره ۲: مارکت و فروشگاه گیفت‌ها -->
+        <section id="view-gifts" class="hidden space-y-4">
+            <!-- ابزار جستجو و فیلترها -->
+            <div class="ios-card p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="relative w-full sm:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره..." 
+                           class="w-full bg-[#050711] border border-white/10 rounded-2xl pr-10 pl-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
                 </div>
 
                 <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
-                    <button onclick="openModal()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 border border-white/10 transition whitespace-nowrap">
+                    <button onclick="openModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-200 border border-white/10 whitespace-nowrap">
                         <i class="fa-solid fa-layer-group text-cyan-400 text-xs"></i>
                         <span id="selectedColText">کالکشن‌ها</span>
                         <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 mr-0.5"></i>
                     </button>
-                    <button onclick="filterType('all', this)" class="type-btn active px-4 py-2 rounded-xl text-xs font-black bg-cyan-400 text-slate-950 transition whitespace-nowrap shadow-lg shadow-cyan-400/20">همه (__TOTAL_COUNT__)</button>
-                    <button onclick="filterType('rare', this)" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-300 hover:text-white border border-white/10 transition whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
-                    <button onclick="filterType('favs', this)" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-300 hover:text-rose-400 border border-white/10 transition whitespace-nowrap flex items-center gap-1.5">
+                    <button onclick="filterType('all', this)" class="type-btn active px-3.5 py-2 rounded-xl text-xs font-black bg-cyan-400 text-slate-950 whitespace-nowrap">همه (__TOTAL_COUNT__)</button>
+                    <button onclick="filterType('rare', this)" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-300 border border-white/10 whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
+                    <button onclick="filterType('favs', this)" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-300 border border-white/10 whitespace-nowrap flex items-center gap-1.5">
                         <i class="fa-solid fa-heart text-rose-500 text-xs"></i> (<span id="favCount">0</span>)
                     </button>
                 </div>
             </div>
 
-            <!-- گرید نمایش ویجتی کارت‌ها -->
-            <div id="dealsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5"></div>
+            <!-- گرید کارت‌های گیفت -->
+            <div id="dealsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"></div>
         </section>
 
-        <!-- ۲. بخش استارز -->
-        <section id="section-stars" class="hidden max-w-xl mx-auto space-y-5">
-            <div class="ios-glass-card p-6 space-y-3">
-                <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2">
-                    <span class="text-amber-400 text-sm">⭐</span>
-                    <span>تعداد استارز دلخواه</span>
-                </h3>
-                <input type="number" id="customStarsInput" min="50" max="10000000" placeholder="حداقل ۵۰ تا ۱۰,۰۰۰,۰۰۰ استارز..." 
-                       class="w-full bg-[#060913]/80 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white font-bold placeholder-slate-600 focus:outline-none focus:border-amber-400 transition">
-                <div id="customStarsCalcBox" class="p-3.5 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between hidden">
-                    <span class="text-xs text-slate-400">مبلغ محاسبه‌شده:</span>
-                    <span id="customStarsPrice" class="text-sm font-black text-amber-400">0 تومان</span>
-                </div>
-            </div>
-
-            <div class="ios-glass-card p-6 space-y-4">
-                <h3 class="text-xs font-bold text-slate-400">یا انتخاب پکیج‌های آماده:</h3>
-                <div id="starsPackagesList" class="space-y-2.5"></div>
-
-                <div class="pt-4 border-t border-white/5 flex items-center justify-between">
-                    <div>
-                        <p class="text-[11px] text-slate-400">مبلغ نهایی پرداخت:</p>
-                        <p id="selectedStarsFinalToman" class="text-lg font-black text-amber-400">0 تومان</p>
-                    </div>
-                    <button onclick="orderStars()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-amber-500 hover:opacity-90 text-slate-950 font-black text-xs transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
-                        <span>خرید استارز</span>
-                        <i class="fa-solid fa-bolt text-xs"></i>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- ۳. بخش پرمیوم (کاملاً خودکار متصل به فرگمنت) -->
-        <section id="section-premium" class="hidden max-w-xl mx-auto space-y-5">
-            <div class="ios-glass-card p-6 space-y-4">
+        <!-- 👑 تب شماره ۳: تلگرام پرمیوم (کاملاً خودکار با فرگمنت) -->
+        <section id="view-premium" class="hidden max-w-xl mx-auto space-y-4">
+            <div class="ios-card p-6 space-y-4 border-purple-500/20">
                 <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-black text-white flex items-center gap-2">
-                        <i class="fa-solid fa-crown text-purple-400 text-sm"></i>
-                        <span>اشتراک تلگرام پرمیوم (Fragment Live)</span>
-                    </h3>
-                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">
-                        نرخ لحظه‌ای
-                    </span>
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-10 h-10 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 text-lg">
+                            👑
+                        </div>
+                        <div>
+                            <h3 class="text-sm font-black text-white">اشتراک پرمیوم تلگرام</h3>
+                            <p class="text-[11px] text-slate-400">محاسبه خودکار با نرخ فرگمنت و سود مشخص</p>
+                        </div>
+                    </div>
+                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-cyan-400/10 text-cyan-400 border border-cyan-400/20">نرخ زنده</span>
                 </div>
 
                 <div class="space-y-3" id="premiumOptionsList"></div>
 
                 <div class="pt-4 border-t border-white/5 flex items-center justify-between">
                     <div>
-                        <p class="text-[11px] text-slate-400">مبلغ اشتراک پرمیوم:</p>
-                        <p id="selectedPremiumFinalToman" class="text-lg font-black text-purple-400">0 تومان</p>
+                        <p class="text-[11px] text-slate-400">مبلغ نهایی اشتراک:</p>
+                        <p id="selectedPremiumFinalToman" class="text-base sm:text-lg font-black text-purple-400">0 تومان</p>
                     </div>
                     <button onclick="orderPremium()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-black text-xs transition shadow-lg shadow-purple-600/25 flex items-center gap-2">
                         <span>خرید پرمیوم</span>
-                        <i class="fa-solid fa-crown text-xs"></i>
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
                     </button>
                 </div>
             </div>
         </section>
+
+        <!-- ⭐ تب شماره ۴: استارز تلگرام -->
+        <section id="view-stars" class="hidden max-w-xl mx-auto space-y-4">
+            <div class="ios-card p-6 space-y-3 border-amber-500/20">
+                <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                    <span class="text-amber-400 text-sm">⭐</span>
+                    <span>تعداد استارز دلخواه</span>
+                </h3>
+                <input type="number" id="customStarsInput" min="50" max="10000000" placeholder="حداقل ۵۰ استارز..." 
+                       class="w-full bg-[#050711] border border-white/10 rounded-2xl px-4 py-3 text-sm text-white font-bold placeholder-slate-600 focus:outline-none focus:border-amber-400 transition">
+                <div id="customStarsCalcBox" class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between hidden">
+                    <span class="text-xs text-slate-400">مبلغ محاسبه‌شده:</span>
+                    <span id="customStarsPrice" class="text-sm font-black text-amber-400">0 تومان</span>
+                </div>
+            </div>
+
+            <div class="ios-card p-6 space-y-3">
+                <h3 class="text-xs font-bold text-slate-400">پکیج‌های سریع:</h3>
+                <div id="starsPackagesList" class="space-y-2.5"></div>
+
+                <div class="pt-4 border-t border-white/5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] text-slate-400">مبلغ قابل پرداخت:</p>
+                        <p id="selectedStarsFinalToman" class="text-base sm:text-lg font-black text-amber-400">0 تومان</p>
+                    </div>
+                    <button onclick="orderStars()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
+                        <span>خرید استارز</span>
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🛍️ تب شماره ۵: سبد خرید و فاکتور نهایی -->
+        <section id="view-cart" class="hidden max-w-xl mx-auto space-y-4">
+            <div class="ios-card p-6 space-y-4">
+                <div class="flex items-center justify-between border-b border-white/5 pb-3">
+                    <h3 class="text-sm font-black text-white flex items-center gap-2">
+                        <span>🛍️ سبد اجاره گیفت</span>
+                        <span id="cartViewCount" class="text-xs px-2 py-0.5 rounded-full bg-cyan-400/10 text-cyan-400">0 مورد</span>
+                    </h3>
+                    <button onclick="clearCart()" class="text-xs text-rose-400 hover:underline">خالی کردن سبد</button>
+                </div>
+
+                <!-- لیست اقلام سبد خرید -->
+                <div id="cartItemsList" class="space-y-2.5 max-h-60 overflow-y-auto"></div>
+
+                <!-- کادر کوپن تخفیف -->
+                <div class="flex items-center gap-2 bg-[#050711] p-1.5 rounded-2xl border border-white/5">
+                    <input type="text" id="couponInput" placeholder="کد تخفیف (مثلاً DUCK)..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold placeholder-slate-600">
+                    <button onclick="applyCoupon()" class="px-4 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition">اعمال</button>
+                </div>
+
+                <div class="pt-2 border-t border-white/5 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <p class="text-[11px] text-slate-400">مبلغ کل قابل پرداخت:</p>
+                            <span id="discountTag" class="hidden text-[9px] px-2 py-0.5 rounded font-black bg-emerald-500/20 text-emerald-400">تخفیف فعال</span>
+                        </div>
+                        <p id="cartTotalPrice" class="text-lg font-black text-cyan-400">0 تومان</p>
+                    </div>
+                    <button onclick="checkoutCart()" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-400 text-slate-950 font-black text-xs transition shadow-lg shadow-cyan-400/25 flex items-center gap-2">
+                        <span>ارسال سفارش به تلگرام</span>
+                        <i class="fa-solid fa-paper-plane text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
     </main>
 
-    <!-- نوار شناور سبد خرید مدرن (Floating Dock) -->
-    <div id="floatingCartBar" class="fixed bottom-4 inset-x-4 max-w-lg mx-auto z-40 bg-[#0c1224]/90 backdrop-blur-2xl border border-white/10 p-3.5 rounded-[26px] shadow-2xl shadow-black/80 transition-all duration-300 transform translate-y-48 opacity-0 space-y-3">
-        <div class="flex items-center gap-2 bg-[#060913]/80 p-1.5 rounded-2xl border border-white/5">
-            <input type="text" id="couponInput" placeholder="کد تخفیف داری؟ وارد کن..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold placeholder-slate-500">
-            <button onclick="applyCoupon()" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl transition">اعمال</button>
-        </div>
-
-        <div class="flex items-center justify-between pt-1 border-t border-white/5">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-cyan-400 to-blue-500 text-slate-950 flex items-center justify-center font-black text-sm shadow-md shadow-cyan-500/20">
-                    <span id="cartCountBadge">0</span>
-                </div>
-                <div>
-                    <div class="flex items-center gap-2">
-                        <p class="text-xs font-bold text-white">سبد اجاره</p>
-                        <span id="discountTag" class="hidden px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">تخفیف اعمال شد</span>
-                    </div>
-                    <p id="cartTotalPrice" class="text-xs text-cyan-400 font-black">0 تومان</p>
-                </div>
-            </div>
-            <div class="flex items-center gap-2">
-                <button onclick="clearCart()" class="p-2 text-slate-400 hover:text-rose-400 text-xs transition" title="خالی کردن">
-                    <i class="fa-solid fa-trash-can text-sm"></i>
-                </button>
-                <button onclick="checkoutCart()" class="py-2.5 px-5 rounded-xl bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 text-slate-950 text-xs font-black transition shadow-lg shadow-cyan-400/20 flex items-center gap-2">
-                    <span>ثبت سفارش</span>
-                    <i class="fa-solid fa-arrow-left text-[11px]"></i>
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- ۳. منوی شناور پایینی به سبک نوار اصلی آیفون (iOS Bottom Navigation Dock) -->
+    <nav class="fixed bottom-3 inset-x-4 max-w-md mx-auto z-40 ios-bottom-dock px-3 py-2 flex items-center justify-around shadow-2xl">
+        <button onclick="switchView('dashboard')" id="nav-dashboard" class="nav-item active flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-house nav-icon text-sm"></i>
+            <span>خانه</span>
+        </button>
+        <button onclick="switchView('gifts')" id="nav-gifts" class="nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-gift nav-icon text-sm"></i>
+            <span>گیفت‌ها</span>
+        </button>
+        <button onclick="switchView('premium')" id="nav-premium" class="nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-crown nav-icon text-sm"></i>
+            <span>پرمیوم</span>
+        </button>
+        <button onclick="switchView('stars')" id="nav-stars" class="nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-star nav-icon text-sm"></i>
+            <span>استارز</span>
+        </button>
+        <button onclick="switchView('cart')" id="nav-cart" class="nav-item flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition relative">
+            <i class="fa-solid fa-cart-shopping nav-icon text-sm"></i>
+            <span>سبد</span>
+            <span id="dockCartBadge" class="hidden absolute -top-1 -right-1 w-4 h-4 rounded-full bg-cyan-400 text-slate-950 font-black text-[9px] flex items-center justify-center">0</span>
+        </button>
+    </nav>
 
     <!-- مودال انتخاب کالکشن -->
     <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
-        <div class="modal-bg w-full max-w-md rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
-            <div class="px-6 py-4 flex items-center justify-between border-b border-white/10">
-                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white flex items-center justify-center transition">
+        <div class="modal-bg w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col max-h-[80vh]">
+            <div class="px-5 py-3.5 flex items-center justify-between border-b border-white/10">
+                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-white/5 text-slate-400 hover:text-white flex items-center justify-center transition">
                     <i class="fa-solid fa-xmark text-xs"></i>
                 </button>
-                <h3 class="text-sm font-black text-white">انتخاب کالکشن‌ها</h3>
+                <h3 class="text-xs font-black text-white">کالکشن‌های گیفت</h3>
                 <div class="w-7"></div>
             </div>
-
-            <div class="p-4 border-b border-white/10 space-y-2.5">
-                <div class="relative">
-                    <input type="text" id="modalSearchInput" placeholder="جستجوی کالکشن..." 
-                           class="w-full bg-[#060913] border border-white/10 rounded-2xl pr-4 pl-9 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-500 text-xs"></i>
-                </div>
-                <div class="flex items-center justify-between px-1 text-xs">
-                    <button onclick="selectAllCollections()" class="text-cyan-400 hover:underline text-[11px] font-bold">انتخاب همه</button>
-                    <button onclick="clearCollectionSelection()" class="text-slate-400 hover:text-rose-400 text-[11px]">پاک کردن</button>
-                </div>
+            <div class="p-3 border-b border-white/10 flex items-center justify-between text-xs">
+                <button onclick="selectAllCollections()" class="text-cyan-400 font-bold">انتخاب همه</button>
+                <button onclick="clearCollectionSelection()" class="text-slate-400 hover:text-rose-400">لغو همه</button>
             </div>
-
-            <div id="modalCollectionsList" class="p-4 space-y-2 overflow-y-auto flex-1"></div>
-
-            <div class="p-4 border-t border-white/10 bg-[#060913]/60">
-                <button onclick="applyCollectionModal()" class="w-full py-3 bg-gradient-to-r from-blue-500 to-cyan-400 hover:opacity-90 text-slate-950 text-xs font-black rounded-2xl transition shadow-lg shadow-cyan-500/20 flex items-center justify-center gap-2">
-                    <span>اعمال فیلتر</span>
-                    <span id="modalSelectedCountBadge" class="bg-black/20 px-2 py-0.5 rounded-full text-[11px]">0</span>
+            <div id="modalCollectionsList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
+            <div class="p-3 border-t border-white/10 bg-[#060913]">
+                <button onclick="applyCollectionModal()" class="w-full py-2.5 bg-cyan-400 text-slate-950 text-xs font-black rounded-xl transition">
+                    اعمال فیلتر (<span id="modalSelectedCountBadge">همه</span>)
                 </button>
             </div>
         </div>
@@ -538,7 +486,7 @@ def generate_duck_store_html(
             tgUser = window.Telegram.WebApp.initDataUnsafe?.user || null;
             if (tgUser) {
                 const name = tgUser.first_name || tgUser.username || "کاربر عزیز";
-                document.getElementById('tgUserGreeting').innerText = `خوش آمدید، ${name} 👋`;
+                document.getElementById('userGreetingText').innerText = `${name} 👋`;
             }
         }
 
@@ -557,73 +505,22 @@ def generate_duck_store_html(
                     return;
                 } catch(e) {}
             }
-            try {
-                const win = window.open(cleanUrl, '_blank');
-                if (!win || win.closed || typeof win.closed === 'undefined') {
-                    window.location.href = cleanUrl;
-                }
-            } catch(e) {
-                window.location.href = cleanUrl;
-            }
-        }
-
-        // انیمیشن اسپلش و هدایت به خوش‌آمدگویی
-        let loadingProgress = 5;
-        function startLoadingFlow() {
-            const bar = document.getElementById('loadingProgressBar');
-            const pct = document.getElementById('loadingPercent');
-            const interval = setInterval(() => {
-                loadingProgress += Math.floor(Math.random() * 15) + 10;
-                if (loadingProgress >= 100) {
-                    loadingProgress = 100;
-                    clearInterval(interval);
-                    if (bar) bar.style.width = '100%';
-                    if (pct) pct.innerText = '100%';
-                    setTimeout(transitionToWelcome, 300);
-                } else {
-                    if (bar) bar.style.width = loadingProgress + '%';
-                    if (pct) pct.innerText = loadingProgress + '%';
-                }
-            }, 90);
-        }
-
-        function transitionToWelcome() {
-            const loader = document.getElementById('loadingScreen');
-            const welcome = document.getElementById('welcomeScreen');
-            if (loader) {
-                loader.classList.add('opacity-0', 'pointer-events-none');
-                setTimeout(() => { loader.style.display = 'none'; }, 400);
-            }
-            if (welcome) {
-                welcome.classList.remove('hidden');
-                setTimeout(() => { welcome.classList.remove('opacity-0', 'scale-95'); }, 50);
-            }
-        }
-
-        function enterStore() {
-            triggerHaptic('heavy');
-            const welcome = document.getElementById('welcomeScreen');
-            if (welcome) {
-                welcome.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                setTimeout(() => { welcome.style.display = 'none'; }, 400);
-            }
+            window.location.href = cleanUrl;
         }
 
         const DEALS = __DEALS_JSON__;
         const COLLECTIONS = __COLLECTIONS_JSON__;
         const WORKER_URL = "__WORKER_URL__";
-
-        // قیمت‌های هوشمند استخراج‌شده از فرگمنت و نوبیتکس
-        const AUTO_PRICES = __AUTO_PRICES_JSON__;
+        const LIVE_PRICING = __LIVE_PRICING_JSON__;
 
         const DEFAULT_SETTINGS = {
             ratePerStar: 1450,
-            prem3: AUTO_PRICES.prem3,
-            prem6: AUTO_PRICES.prem6,
-            prem12: AUTO_PRICES.prem12,
+            prem3: LIVE_PRICING.prem3,
+            prem6: LIVE_PRICING.prem6,
+            prem12: LIVE_PRICING.prem12,
             giftMonthlyPrice: 160000,
             adminTg: 'Zanjani_a',
-            announcementText: '🎉 تخفیف ویژه پرمیوم محاسبه‌شده با نرخ زنده فرگمنت',
+            announcementText: 'تخفیف ویژه پرمیوم محاسبه‌شده زنده با فرگمنت',
             announcementActive: true,
             couponCode: 'DUCK',
             couponPercent: 10,
@@ -633,10 +530,11 @@ def generate_duck_store_html(
         };
 
         let SETTINGS = { ...DEFAULT_SETTINGS };
-        let currentMainTab = 'gifts';
+        let currentView = 'dashboard';
         let selectedType = 'all';
         let selectedCollections = new Set();
         let tempSelectedCollections = new Set();
+
         let appliedCouponCode = null;
         let appliedDiscountPercent = 0;
         let selectedStarsCount = 50;
@@ -646,13 +544,32 @@ def generate_duck_store_html(
         let favorites = JSON.parse(localStorage.getItem('duck_favs') || '[]');
         let cart = JSON.parse(localStorage.getItem('duck_cart') || '[]');
 
+        // 🔄 تغییر صفحه اختصاصی بر اساس یوزر فلو جدید
+        function switchView(viewName) {
+            triggerHaptic('selection');
+            currentView = viewName;
+            ['dashboard', 'gifts', 'premium', 'stars', 'cart'].forEach(v => {
+                document.getElementById(`view-${v}`).classList.add('hidden');
+                const nav = document.getElementById(`nav-${v}`);
+                if (nav) nav.classList.remove('active');
+            });
+
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${viewName}`);
+            if (activeNav) activeNav.classList.add('active');
+
+            if (viewName === 'cart') renderCartView();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         async function fetchCloudSettings() {
             try {
                 const res = await fetch(`${WORKER_URL}/api/settings`);
                 if (res.ok) {
                     const parsed = await res.json();
                     if (parsed && typeof parsed === 'object') {
-                        SETTINGS = { ...DEFAULT_SETTINGS, ...parsed };
+                        // ادغام هوشمند: حفظ قیمت زنده فرگمنت در اولویت
+                        SETTINGS = { ...DEFAULT_SETTINGS, ...parsed, prem3: LIVE_PRICING.prem3, prem6: LIVE_PRICING.prem6, prem12: LIVE_PRICING.prem12 };
                     }
                 }
             } catch (err) {}
@@ -671,59 +588,32 @@ def generate_duck_store_html(
                 promo.classList.add('hidden');
             }
 
-            updateTabAvailability();
             renderCards(getFilteredDeals());
+            renderHomeDeals();
             renderStarsPackages();
             renderPremiumOptions();
-            updateCartUI();
+            updateCartBadges();
         }
 
-        function updateTabAvailability() {
-            const tabs = [
-                { id: 'gifts', active: SETTINGS.tabGiftsActive !== false, label: 'اجاره گیفت' },
-                { id: 'stars', active: SETTINGS.tabStarsActive !== false, label: 'استارز تلگرام' },
-                { id: 'premium', active: SETTINGS.tabPremiumActive !== false, label: 'تلگرام پرمیوم' }
-            ];
-
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tabBtn-${t.id}`);
-                const labelSpan = btn.querySelector('.tab-label');
-                if (!t.active) {
-                    btn.classList.add('opacity-40', 'cursor-not-allowed');
-                    if (labelSpan && !labelSpan.innerHTML.includes('ناموجود')) {
-                        labelSpan.innerHTML = `${t.label} <span class="text-[9px] bg-rose-500/20 text-rose-300 px-1 rounded">ناموجود</span>`;
-                    }
-                } else {
-                    if (t.id !== currentMainTab) btn.classList.remove('opacity-40', 'cursor-not-allowed');
-                    if (labelSpan) labelSpan.innerText = t.label;
-                }
-            });
-        }
-
-        function switchMainTab(tab) {
-            if (tab === 'gifts' && SETTINGS.tabGiftsActive === false) return alert('⚠️ بخش اجاره گیفت موقتاً غیرفعال است.');
-            if (tab === 'stars' && SETTINGS.tabStarsActive === false) return alert('⚠️ بخش استارز موقتاً غیرفعال است.');
-            if (tab === 'premium' && SETTINGS.tabPremiumActive === false) return alert('⚠️ بخش پرمیوم موقتاً غیرفعال است.');
-
-            triggerHaptic('selection');
-            currentMainTab = tab;
-
-            const tabIds = ['gifts', 'stars', 'premium'];
-            tabIds.forEach(t => {
-                const sec = document.getElementById(`section-${t}`);
-                const btn = document.getElementById(`tabBtn-${t}`);
-                if (!sec || !btn) return;
-
-                if (t === tab) {
-                    sec.classList.remove('hidden');
-                    btn.className = "flex-1 px-5 py-2 rounded-full text-xs font-black transition flex items-center justify-center gap-1.5 whitespace-nowrap bg-white text-slate-950 shadow-md";
-                } else {
-                    sec.classList.add('hidden');
-                    btn.className = "flex-1 px-5 py-2 rounded-full text-xs font-bold transition flex items-center justify-center gap-1.5 whitespace-nowrap text-slate-400 hover:text-white";
-                }
-            });
-
-            updateCartUI();
+        // رندر پیش‌نمایش در صفحه اصلی
+        function renderHomeDeals() {
+            const container = document.getElementById('homeRecentDeals');
+            if (!container) return;
+            const topDeals = DEALS.slice(0, 6);
+            container.innerHTML = topDeals.map(d => `
+                <div class="ios-card p-3.5 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <img src="${d.image_url}" class="w-12 h-12 rounded-xl object-contain bg-black/40 p-1" onerror="this.src='https://marketapp.org/favicon.ico'">
+                        <div>
+                            <h4 class="text-xs font-bold text-white">${d.name}</h4>
+                            <span class="text-[10px] text-cyan-400 font-bold">${SETTINGS.giftMonthlyPrice.toLocaleString('en-US')} ت/ماه</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleCart(${JSON.stringify(d).replace(/"/g, '&quot;')})" class="px-3 py-1.5 rounded-xl bg-cyan-400/10 text-cyan-300 border border-cyan-400/20 text-xs font-bold hover:bg-cyan-400 hover:text-slate-950 transition">
+                        + سبد
+                    </button>
+                </div>
+            `).join('');
         }
 
         // ================= استارز =================
@@ -733,12 +623,9 @@ def generate_duck_store_html(
                 const totalToman = (qty * SETTINGS.ratePerStar).toLocaleString('en-US');
                 const isSelected = selectedStarsCount === qty;
                 return `
-                <div onclick="selectStarsPackage(${qty})" class="p-3.5 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border ${isSelected ? 'border-amber-400 bg-amber-400/5' : 'border-white/5'} flex items-center justify-between cursor-pointer transition">
-                    <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded-full border ${isSelected ? 'border-amber-400 bg-amber-400' : 'border-slate-600'}"></div>
-                        <span class="text-xs font-bold text-white">${qty} Stars</span>
-                    </div>
-                    <span class="text-xs font-black text-amber-400">${totalToman} t</span>
+                <div onclick="selectStarsPackage(${qty})" class="p-3.5 rounded-2xl bg-white/[0.02] border ${isSelected ? 'border-amber-400 bg-amber-400/10' : 'border-white/5'} flex items-center justify-between cursor-pointer transition">
+                    <span class="text-xs font-bold text-white">${qty} Stars</span>
+                    <span class="text-xs font-black text-amber-400">${totalToman} ت</span>
                 </div>
                 `;
             }).join('');
@@ -778,10 +665,10 @@ def generate_duck_store_html(
             const buyerInfo = getBuyerDetailsText();
             const nl = String.fromCharCode(10);
             const msg = encodeURIComponent(
-                "سلام، متقاضی خرید استارز هستم:" + nl + nl +
+                "سلام، متقاضی خرید استارز تلگرام هستم:" + nl + nl +
                 buyerInfo + nl + nl +
                 "تعداد استارز: " + selectedStarsCount + " Stars" + nl +
-                "مبلغ پرداختی: " + total + " تومان"
+                "مبلغ: " + total + " تومان"
             );
             openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
@@ -790,22 +677,21 @@ def generate_duck_store_html(
         function renderPremiumOptions() {
             const container = document.getElementById('premiumOptionsList');
             const options = [
-                { months: 12, label: '۱۲ ماهه (1 Year)', discount: '-52%', price: SETTINGS.prem12 },
-                { months: 6, label: '۶ ماهه (6 Months)', discount: '-47%', price: SETTINGS.prem6 },
-                { months: 3, label: '۳ ماهه (3 Months)', discount: '-20%', price: SETTINGS.prem3 }
+                { months: 12, label: '۱۲ ماهه (1 Year)', discount: '-52%', price: LIVE_PRICING.prem12 },
+                { months: 6, label: '۶ ماهه (6 Months)', discount: '-47%', price: LIVE_PRICING.prem6 },
+                { months: 3, label: '۳ ماهه (3 Months)', discount: '-20%', price: LIVE_PRICING.prem3 }
             ];
 
             container.innerHTML = options.map(opt => {
                 const isSelected = selectedPremiumMonths === opt.months;
                 const totalToman = opt.price.toLocaleString('en-US');
                 return `
-                <div onclick="selectPremiumPlan(${opt.months})" class="p-4 rounded-2xl bg-white/[0.02] hover:bg-white/[0.05] border ${isSelected ? 'border-purple-400 bg-purple-500/10' : 'border-white/5'} flex items-center justify-between cursor-pointer transition">
-                    <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded-full border ${isSelected ? 'border-purple-400 bg-purple-400' : 'border-slate-600'}"></div>
+                <div onclick="selectPremiumPlan(${opt.months})" class="p-4 rounded-2xl bg-white/[0.02] border ${isSelected ? 'border-purple-400 bg-purple-500/10' : 'border-white/5'} flex items-center justify-between cursor-pointer transition">
+                    <div>
                         <span class="text-xs font-bold text-white">${opt.label}</span>
-                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30">${opt.discount}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-bold mr-2">${opt.discount}</span>
                     </div>
-                    <span class="text-xs font-black text-purple-300">${totalToman} t</span>
+                    <span class="text-xs font-black text-purple-300">${totalToman} ت</span>
                 </div>
                 `;
             }).join('');
@@ -819,9 +705,9 @@ def generate_duck_store_html(
         }
 
         function updatePremiumFinalPrice() {
-            let price = SETTINGS.prem12;
-            if (selectedPremiumMonths === 6) price = SETTINGS.prem6;
-            if (selectedPremiumMonths === 3) price = SETTINGS.prem3;
+            let price = LIVE_PRICING.prem12;
+            if (selectedPremiumMonths === 6) price = LIVE_PRICING.prem6;
+            if (selectedPremiumMonths === 3) price = LIVE_PRICING.prem3;
             document.getElementById('selectedPremiumFinalToman').innerText = `${price.toLocaleString('en-US')} تومان`;
         }
 
@@ -829,9 +715,9 @@ def generate_duck_store_html(
             triggerHaptic('heavy');
             const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
             let planName = '1 ساله';
-            let price = SETTINGS.prem12;
-            if (selectedPremiumMonths === 6) { planName = '6 ماهه'; price = SETTINGS.prem6; }
-            if (selectedPremiumMonths === 3) { planName = '3 ماهه'; price = SETTINGS.prem3; }
+            let price = LIVE_PRICING.prem12;
+            if (selectedPremiumMonths === 6) { planName = '6 ماهه'; price = LIVE_PRICING.prem6; }
+            if (selectedPremiumMonths === 3) { planName = '3 ماهه'; price = LIVE_PRICING.prem3; }
             const total = price.toLocaleString('en-US');
             const buyerInfo = getBuyerDetailsText();
             const nl = String.fromCharCode(10);
@@ -839,59 +725,68 @@ def generate_duck_store_html(
                 "سلام، متقاضی خرید تلگرام پرمیوم هستم:" + nl + nl +
                 buyerInfo + nl + nl +
                 "نوع اشتراک: " + planName + nl +
-                "مبلغ استعلامی زنده: " + total + " تومان"
+                "مبلغ محاسبه‌شده با فرگمنت: " + total + " تومان"
             );
             openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
-        // ================= گیفت‌ها و سبد خرید =================
-        function updateFavCount() {
-            document.getElementById('favCount').innerText = favorites.length;
-        }
-
-        function toggleFavorite(itemId) {
-            triggerHaptic('medium');
-            const idx = favorites.indexOf(itemId);
-            if (idx > -1) favorites.splice(idx, 1);
-            else favorites.push(itemId);
-            localStorage.setItem('duck_favs', JSON.stringify(favorites));
-            updateFavCount();
-            renderCards(getFilteredDeals());
-        }
-
+        // ================= سبد خرید اختصاصی =================
         function toggleCart(item) {
             triggerHaptic('selection');
-            const existingIdx = cart.findIndex(c => c.name === item.name);
-            if (existingIdx > -1) cart.splice(existingIdx, 1);
+            const idx = cart.findIndex(c => c.name === item.name);
+            if (idx > -1) cart.splice(idx, 1);
             else cart.push(item);
             localStorage.setItem('duck_cart', JSON.stringify(cart));
-            updateCartUI();
+            updateCartBadges();
             renderCards(getFilteredDeals());
+            if (currentView === 'cart') renderCartView();
         }
 
-        function calculateCartFinalPrice() {
-            const rawTotal = cart.length * SETTINGS.giftMonthlyPrice;
-            if (appliedDiscountPercent > 0) {
-                const discount = (rawTotal * appliedDiscountPercent) / 100;
-                return Math.round(rawTotal - discount);
-            }
-            return rawTotal;
-        }
-
-        function updateCartUI() {
-            const bar = document.getElementById('floatingCartBar');
+        function updateCartBadges() {
             const count = cart.length;
-            document.getElementById('cartCountBadge').innerText = count;
-            const finalTotal = calculateCartFinalPrice().toLocaleString('en-US');
-            document.getElementById('cartTotalPrice').innerText = `${finalTotal} تومان / ماه`;
-
-            if (count > 0 && currentMainTab === 'gifts') {
-                bar.classList.remove('translate-y-48', 'opacity-0');
-                bar.classList.add('translate-y-0', 'opacity-100');
-            } else {
-                bar.classList.remove('translate-y-0', 'opacity-100');
-                bar.classList.add('translate-y-48', 'opacity-0');
+            const badge = document.getElementById('dockCartBadge');
+            if (badge) {
+                badge.innerText = count;
+                if (count > 0) badge.classList.remove('hidden');
+                else badge.classList.add('hidden');
             }
+        }
+
+        function renderCartView() {
+            const container = document.getElementById('cartItemsList');
+            document.getElementById('cartViewCount').innerText = `${cart.length} مورد`;
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-500 py-6 text-center font-bold">سبد خرید شما در حال حاضر خالی است.</p>';
+            } else {
+                container.innerHTML = cart.map((item, i) => `
+                    <div class="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs font-bold text-slate-200">${i + 1}. ${item.name}</span>
+                        </div>
+                        <button onclick="toggleCart(${JSON.stringify(item).replace(/"/g, '&quot;')})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            const rawTotal = cart.length * SETTINGS.giftMonthlyPrice;
+            const finalTotal = appliedDiscountPercent > 0 ? Math.round(rawTotal * (1 - appliedDiscountPercent / 100)) : rawTotal;
+            document.getElementById('cartTotalPrice').innerText = `${finalTotal.toLocaleString('en-US')} تومان`;
+        }
+
+        function applyCoupon() {
+            triggerHaptic('medium');
+            const input = document.getElementById('couponInput').value.trim().toUpperCase();
+            if (SETTINGS.couponCode && input === SETTINGS.couponCode.toUpperCase()) {
+                appliedCouponCode = input;
+                appliedDiscountPercent = SETTINGS.couponPercent || 10;
+                document.getElementById('discountTag').classList.remove('hidden');
+                alert(`کد تخفیف ${appliedDiscountPercent}٪ اعمال شد`);
+            } else {
+                alert('کد تخفیف نامعتبر است');
+            }
+            renderCartView();
         }
 
         function clearCart() {
@@ -899,10 +794,9 @@ def generate_duck_store_html(
             cart = [];
             appliedCouponCode = null;
             appliedDiscountPercent = 0;
-            document.getElementById('discountTag').classList.add('hidden');
-            document.getElementById('couponInput').value = '';
             localStorage.setItem('duck_cart', JSON.stringify(cart));
-            updateCartUI();
+            updateCartBadges();
+            renderCartView();
             renderCards(getFilteredDeals());
         }
 
@@ -915,30 +809,27 @@ def generate_duck_store_html(
 
         function checkoutCart() {
             triggerHaptic('heavy');
-            if (!cart || cart.length === 0) {
-                alert('سبد خرید شما خالی است!');
-                return;
-            }
-
+            if (cart.length === 0) return alert('سبد خرید شما خالی است!');
             const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
-            const finalTotal = calculateCartFinalPrice().toLocaleString('en-US');
+            const rawTotal = cart.length * SETTINGS.giftMonthlyPrice;
+            const finalTotal = appliedDiscountPercent > 0 ? Math.round(rawTotal * (1 - appliedDiscountPercent / 100)) : rawTotal;
             const buyer = getBuyerDetailsText();
             const nl = String.fromCharCode(10);
             const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link})`).join(nl);
-            const coupon = appliedCouponCode ? (nl + `کد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}% تخفیف)`) : '';
+            const coupon = appliedCouponCode ? (nl + `کد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}%)`) : '';
 
-            const message = encodeURIComponent(
+            const msg = encodeURIComponent(
                 "سلام، درخواست اجاره گیفت دارم:" + nl + nl +
                 buyer + nl + nl +
                 "اقلام سفارش (" + cart.length + " عدد):" + nl +
                 itemsList + nl + nl +
-                "مبلغ نهایی: " + finalTotal + " تومان / ماه" +
+                "مبلغ نهایی: " + finalTotal.toLocaleString('en-US') + " تومان / ماه" +
                 coupon
             );
-
-            openTgLink("https://t.me/" + adminUser + "?text=" + message);
+            openTgLink("https://t.me/" + adminUser + "?text=" + msg);
         }
 
+        // ================= رندر گیفت‌ها =================
         function renderCards(items) {
             const container = document.getElementById('dealsGrid');
             if (items.length === 0) {
@@ -950,46 +841,26 @@ def generate_duck_store_html(
 
             container.innerHTML = items.map((deal) => {
                 const rarityBadge = deal.rarity ? `<span class="absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 backdrop-blur-md">${deal.rarity}</span>` : '';
-                const isFav = favorites.includes(deal.name);
                 const isInCart = cart.some(c => c.name === deal.name);
 
                 return `
-                <div class="ios-glass-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-cyan-400 bg-cyan-950/20' : ''}">
+                <div class="ios-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-cyan-400 bg-cyan-950/20' : ''}">
                     <div>
-                        <div class="relative w-full h-48 bg-gradient-to-b from-white/[0.04] to-transparent flex items-center justify-center overflow-hidden border-b border-white/5 rounded-t-[28px]">
+                        <div class="relative w-full h-44 bg-gradient-to-b from-white/[0.04] to-transparent flex items-center justify-center overflow-hidden border-b border-white/5">
                             ${rarityBadge}
-                            <button onclick="toggleFavorite('${deal.name}')" class="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-sm transition hover:scale-110 ${isFav ? 'text-rose-500' : 'text-slate-400 hover:text-white'}">
-                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
-                            </button>
-                            <img src="${deal.image_url}" alt="${deal.name}" class="w-32 h-32 object-contain filter drop-shadow-[0_12px_24px_rgba(0,0,0,0.8)] transform hover:scale-105 transition duration-300" onerror="this.src='https://marketapp.org/favicon.ico'">
+                            <img src="${deal.image_url}" alt="${deal.name}" class="w-28 h-28 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]" onerror="this.src='https://marketapp.org/favicon.ico'">
                         </div>
-
-                        <div class="p-4 space-y-3">
-                            <h3 class="font-bold text-sm text-center text-white truncate">${deal.name}</h3>
-                            <div class="flex flex-col items-center">
-                                <span class="px-3.5 py-1 rounded-full text-xs font-black bg-cyan-400/10 text-cyan-300 border border-cyan-400/20">
-                                    ${giftPriceFormatted} تومان / ماه
-                                </span>
-                            </div>
-                            <div class="space-y-1.5 text-xs text-slate-400 bg-black/20 p-2.5 rounded-xl border border-white/5">
-                                <div class="flex justify-between items-center text-[11px]">
-                                    <span class="text-slate-500">کالکشن:</span>
-                                    <span class="font-semibold text-slate-200 truncate">${deal.gift_title}</span>
-                                </div>
-                                <div class="flex justify-between items-center text-[11px]">
-                                    <span class="text-slate-500">مدت اجاره:</span>
-                                    <span class="font-semibold text-slate-200">${deal.days_range} روز</span>
-                                </div>
+                        <div class="p-3.5 space-y-2">
+                            <h3 class="font-bold text-xs text-white truncate text-center">${deal.name}</h3>
+                            <div class="flex justify-between items-center text-[11px] bg-black/20 p-2 rounded-xl border border-white/5">
+                                <span class="text-slate-400">اجاره ماهانه:</span>
+                                <span class="font-black text-cyan-300">${giftPriceFormatted} ت</span>
                             </div>
                         </div>
                     </div>
-
-                    <div class="p-4 pt-0 grid grid-cols-2 gap-2">
-                        <a href="${deal.tg_link}" target="_blank" onclick="triggerHaptic('light')" class="py-2 px-3 rounded-xl bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 text-xs font-bold text-center transition border border-white/10 flex items-center justify-center">
-                            مشاهده
-                        </a>
-                        <button onclick='toggleCart(${JSON.stringify(deal)})' class="py-2 px-3 rounded-xl ${isInCart ? 'bg-cyan-400 text-slate-950 font-black' : 'bg-white hover:bg-slate-200 text-slate-950 font-black'} text-xs text-center transition shadow-md flex items-center justify-center gap-1">
-                            <i class="fa-solid ${isInCart ? 'fa-check' : 'fa-plus'} text-xs"></i>
+                    <div class="p-3.5 pt-0 grid grid-cols-2 gap-2">
+                        <a href="${deal.tg_link}" target="_blank" onclick="triggerHaptic('light')" class="py-2 rounded-xl bg-white/[0.04] text-slate-300 text-xs font-bold text-center border border-white/10">مشاهده</a>
+                        <button onclick='toggleCart(${JSON.stringify(deal)})' class="py-2 rounded-xl ${isInCart ? 'bg-cyan-400 text-slate-950 font-black' : 'bg-white text-slate-950 font-bold'} text-xs text-center transition">
                             ${isInCart ? 'انتخاب شد' : 'اجاره'}
                         </button>
                     </div>
@@ -998,113 +869,73 @@ def generate_duck_store_html(
             }).join('');
         }
 
-        function updateModalBadge() {
-            const badge = document.getElementById('modalSelectedCountBadge');
-            if (badge) badge.innerText = tempSelectedCollections.size === 0 ? 'همه' : `${tempSelectedCollections.size} مورد`;
+        function updateFavCount() {
+            document.getElementById('favCount').innerText = favorites.length;
         }
 
-        function renderModalCollections(query = '') {
-            const container = document.getElementById('modalCollectionsList');
-            const filtered = COLLECTIONS.filter(c => c.name.toLowerCase().includes(query.toLowerCase()));
-
-            container.innerHTML = filtered.map(col => {
-                const isSelected = tempSelectedCollections.has(col.name);
-                return `
-                <div onclick="toggleModalCollection('${col.name}')" class="p-3 rounded-2xl flex items-center justify-between cursor-pointer border ${isSelected ? 'border-cyan-400 bg-cyan-950/20' : 'border-white/5 bg-white/[0.02]'} hover:bg-white/[0.05] transition">
-                    <div class="flex items-center gap-3">
-                        <div class="w-4 h-4 rounded-md border ${isSelected ? 'border-cyan-400 bg-cyan-400 text-slate-950' : 'border-slate-600'} flex items-center justify-center">
-                            ${isSelected ? '<i class="fa-solid fa-check text-[10px]"></i>' : ''}
-                        </div>
-                        <span class="text-xs font-bold text-slate-200">${col.name}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-[11px] text-slate-400 bg-black/40 px-2 py-0.5 rounded-md">${col.count}</span>
-                        <img src="${col.image}" alt="${col.name}" class="w-7 h-7 rounded-full object-contain p-1 bg-black/40 border border-white/10" onerror="this.src='https://marketapp.org/favicon.ico'">
-                    </div>
-                </div>
-                `;
-            }).join('');
-            updateModalBadge();
-        }
-
-        function toggleModalCollection(name) {
-            triggerHaptic('selection');
-            if (tempSelectedCollections.has(name)) tempSelectedCollections.delete(name);
-            else tempSelectedCollections.add(name);
-            renderModalCollections(document.getElementById('modalSearchInput').value.trim());
-        }
-
-        function selectAllCollections() {
-            triggerHaptic('light');
-            COLLECTIONS.forEach(c => tempSelectedCollections.add(c.name));
-            renderModalCollections(document.getElementById('modalSearchInput').value.trim());
-        }
-
-        function clearCollectionSelection() {
-            triggerHaptic('light');
-            tempSelectedCollections.clear();
-            renderModalCollections(document.getElementById('modalSearchInput').value.trim());
-        }
-
+        // کالکشن‌ها
         function openModal() {
             triggerHaptic('light');
             tempSelectedCollections = new Set(selectedCollections);
-            document.getElementById('modalSearchInput').value = '';
             document.getElementById('collectionModal').classList.remove('hidden');
             renderModalCollections();
         }
-
         function closeModal() {
             triggerHaptic('light');
             document.getElementById('collectionModal').classList.add('hidden');
         }
-
+        function renderModalCollections() {
+            const container = document.getElementById('modalCollectionsList');
+            container.innerHTML = COLLECTIONS.map(col => {
+                const isSelected = tempSelectedCollections.has(col.name);
+                return `
+                <div onclick="toggleModalCollection('${col.name}')" class="p-2.5 rounded-xl border ${isSelected ? 'border-cyan-400 bg-cyan-950/20' : 'border-white/5'} flex items-center justify-between cursor-pointer">
+                    <span class="text-xs font-bold text-slate-200">${col.name}</span>
+                    <span class="text-[10px] text-slate-400">${col.count}</span>
+                </div>
+                `;
+            }).join('');
+        }
+        function toggleModalCollection(name) {
+            triggerHaptic('selection');
+            if (tempSelectedCollections.has(name)) tempSelectedCollections.delete(name);
+            else tempSelectedCollections.add(name);
+            renderModalCollections();
+        }
+        function selectAllCollections() {
+            COLLECTIONS.forEach(c => tempSelectedCollections.add(c.name));
+            renderModalCollections();
+        }
+        function clearCollectionSelection() {
+            tempSelectedCollections.clear();
+            renderModalCollections();
+        }
         function applyCollectionModal() {
-            triggerHaptic('medium');
             selectedCollections = new Set(tempSelectedCollections);
-            updateHeaderCollectionButton();
+            document.getElementById('selectedColText').innerText = selectedCollections.size === 0 ? 'کالکشن‌ها' : `${selectedCollections.size} کالکشن`;
             closeModal();
             applyFilters();
         }
 
-        function updateHeaderCollectionButton() {
-            const label = document.getElementById('selectedColText');
-            if (selectedCollections.size === 0 || selectedCollections.size === COLLECTIONS.length) {
-                label.innerText = 'کالکشن‌ها';
-            } else if (selectedCollections.size === 1) {
-                label.innerText = Array.from(selectedCollections)[0];
-            } else {
-                label.innerText = `${selectedCollections.size} کالکشن`;
-            }
-        }
-
-        document.getElementById('modalSearchInput').addEventListener('input', (e) => {
-            renderModalCollections(e.target.value.trim());
-        });
-
-        document.getElementById('collectionModal').addEventListener('click', (e) => {
-            if (e.target.id === 'collectionModal') closeModal();
-        });
-
-        function filterType(type, btnElement) {
+        function filterType(type, btn) {
             triggerHaptic('selection');
             selectedType = type;
-            document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.classList.remove('bg-cyan-400', 'text-slate-950', 'shadow-lg', 'shadow-cyan-400/20');
-                btn.classList.add('bg-white/[0.04]', 'text-slate-300');
+            document.querySelectorAll('.type-btn').forEach(b => {
+                b.classList.remove('bg-cyan-400', 'text-slate-950');
+                b.classList.add('bg-white/[0.04]', 'text-slate-300');
             });
-            if (btnElement) {
-                btnElement.classList.remove('bg-white/[0.04]', 'text-slate-300');
-                btnElement.classList.add('bg-cyan-400', 'text-slate-950', 'shadow-lg', 'shadow-cyan-400/20');
+            if (btn) {
+                btn.classList.remove('bg-white/[0.04]', 'text-slate-300');
+                btn.classList.add('bg-cyan-400', 'text-slate-950');
             }
             applyFilters();
         }
 
         function getFilteredDeals() {
-            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            const query = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
             return DEALS.filter(d => {
-                const matchQuery = d.name.toLowerCase().includes(query) || d.number.includes(query) || d.gift_title.toLowerCase().includes(query);
-                if (!matchQuery) return false;
+                const match = d.name.toLowerCase().includes(query) || d.number.includes(query) || d.gift_title.toLowerCase().includes(query);
+                if (!match) return false;
                 if (selectedType === 'rare' && d.rarity === '') return false;
                 if (selectedType === 'favs' && !favorites.includes(d.name)) return false;
                 if (selectedCollections.size > 0 && selectedCollections.size < COLLECTIONS.length) {
@@ -1121,7 +952,6 @@ def generate_duck_store_html(
         document.getElementById('searchInput').addEventListener('input', applyFilters);
         updateFavCount();
         fetchCloudSettings();
-        startLoadingFlow();
     </script>
 </body>
 </html>"""
@@ -1132,7 +962,10 @@ def generate_duck_store_html(
         .replace("__RARE_COUNT__", str(rare_count))
         .replace("__DEALS_JSON__", deals_json)
         .replace("__COLLECTIONS_JSON__", collections_json)
-        .replace("__AUTO_PRICES_JSON__", json.dumps(auto_prices))
+        .replace("__LIVE_PRICING_JSON__", json.dumps(pricing))
+        .replace("__TON_RATE__", str(pricing["ton_rate"]))
+        .replace("__USDT_RATE__", f"{pricing['usdt_rate']:,}")
+        .replace("__PROFIT_MARGIN__", str(pricing["profit_margin"]))
         .replace("__WORKER_URL__", CONFIG["WORKER_URL"])
     )
 
@@ -1143,7 +976,7 @@ def generate_duck_store_html(
         json.dump(deals, f, ensure_ascii=False, indent=2)
 
 
-def send_telegram_package(deals: List[Dict[str, Any]]):
+def send_telegram_package(deals: List[Dict[str, Any]], pricing: Dict[str, Any]):
     token = CONFIG.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = CONFIG.get("TELEGRAM_CHAT_ID", "").strip()
     if not token or not chat_id:
@@ -1157,42 +990,26 @@ def send_telegram_package(deals: List[Dict[str, Any]]):
         else "https://zanjania0.github.io/market-deal-bot/"
     )
 
-    grouped_deals = defaultdict(list)
-    for d in deals:
-        grouped_deals[d["gift_title"]].append(d)
-
     rare_count = sum(1 for d in deals if d["rarity"])
-
     full_text = (
-        f"🦆 <b>گزارش موجودی جدید 200 گیفت در Duck Store</b>\n"
+        f"🦆 <b>گزارش جدید فروشگاه Duck Store</b>\n"
         f"📅 <i>{timestamp}</i>\n\n"
-        f"🌐 <b>ویترین آنلاین فروشگاه:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n"
+        f"🌐 <b>لینک ورود به مینی‌اپ:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n\n"
+        f"📊 <b>نرخ‌های محاسبه‌شده پرمیوم (زنده از فرگمنت):</b>\n"
+        f"🔹 ۳ ماهه: <code>{pricing['prem3']:,}</code> تومان\n"
+        f"🔹 ۶ ماهه: <code>{pricing['prem6']:,}</code> تومان\n"
+        f"🔹 ۱ ساله: <code>{pricing['prem12']:,}</code> تومان\n"
+        f"💵 نرخ تتر: {pricing['usdt_rate']:,} ت | 💎 نرخ TON: {pricing['ton_rate']}$\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"🎯 <b>تعداد کل:</b> {len(deals)} مورد ({len(grouped_deals)} کالکشن)\n"
-        f"💎 <b>موارد کمیاب:</b> {rare_count} مورد\n"
-        f"━━━━━━━━━━━━━━━━━━━━\n\n"
+        f"🎯 موجودی کل گیفت‌ها: {len(deals)} مورد (کمیاب: {rare_count})\n"
     )
-
-    item_counter = 1
-    for collection_name in sorted(grouped_deals.keys()):
-        items = grouped_deals[collection_name]
-        full_text += f"📦 <b>━━━ کالکشن {collection_name} ({len(items)} مورد) ━━━</b>\n\n"
-        for d in items:
-            rarity_badge = f"\n   🏆 <b>{d['rarity']}</b>" if d["rarity"] else ""
-            full_text += (
-                f"<b>{item_counter}. {d['name']}</b>{rarity_badge}\n"
-                f"   🏷️ تخفیف: <code>{d['discount']}</code> | 💰 {d['price_per_day']} TON/روز\n"
-                f"   📱 <a href='{d['tg_link']}'>مشاهده در تلگرام</a>\n"
-                f"   🛒 <a href='{d['market_link']}'>خرید/اجاره در MarketApp</a>\n\n"
-            )
-            item_counter += 1
 
     send_chunks_to_telegram(full_text, token, chat_id)
     send_telegram_csv_attachment(
         CONFIG["EXPORT_CSV"],
         token,
         chat_id,
-        f"📊 فایل اکسل 200 گیفت Duck Store ({timestamp})",
+        f"📊 فایل اکسل ۲۰۰ گیفت Duck Store ({timestamp})",
     )
 
 
@@ -1205,6 +1022,7 @@ def send_chunks_to_telegram(text: str, token: str, chat_id: str):
             current_chunk = paragraph + "\n\n"
         else:
             current_chunk += paragraph + "\n\n"
+
     if current_chunk.strip():
         chunks.append(current_chunk.strip())
 
@@ -1227,9 +1045,7 @@ def send_chunks_to_telegram(text: str, token: str, chat_id: str):
             pass
 
 
-def send_telegram_csv_attachment(
-    file_path: str, token: str, chat_id: str, caption: str
-):
+def send_telegram_csv_attachment(file_path: str, token: str, chat_id: str, caption: str):
     if not os.path.exists(file_path):
         return
     boundary = "----DuckStoreBoundaryXYZ"
@@ -1269,22 +1085,29 @@ async def main():
     print("  🦆 DUCK STORE TURBO SCRAPER (AUTO PRICING + IOS THEME) 🦆")
     print("═" * 65 + "\n")
 
+    launch_args = [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+    ]
+
     async with async_playwright() as p:
         try:
-            browser = await p.chromium.launch(headless=True)
+            browser = await p.chromium.launch(headless=True, args=launch_args)
         except Exception:
-            browser = await p.chromium.launch(headless=True, channel="chrome")
+            browser = await p.chromium.launch(headless=True, channel="chrome", args=launch_args)
 
         page = await browser.new_page()
 
-        # ۱. استعلام خودکار نرخ‌های پرمیوم از فرگمنت و نوبیتکس
-        auto_prices = await fetch_auto_pricing(page)
+        # ۱. محاسبه زنده و تضمینی قیمت‌های پرمیوم از کریپتو و نوبیتکس با درصد سود ادمین
+        live_pricing = await calculate_live_pricing(page)
 
         # ۲. اسکرپ ۲۰۰ گیفت از مارکت‌اپ
         print("🌐 بارگذاری اولیه مارکت...")
-        await page.goto(
-            CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=60000
-        )
+        await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=60000)
         await page.wait_for_timeout(3000)
 
         while len(deals_found) < CONFIG["TARGET_DEALS_COUNT"]:
@@ -1301,42 +1124,26 @@ async def main():
 
             for c in raw_cards:
                 href = c["href"]
-                if not href:
-                    continue
+                if not href: continue
 
-                full_link = (
-                    href
-                    if href.startswith("http")
-                    else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
-                )
-                if full_link in seen_links:
-                    continue
+                full_link = href if href.startswith("http") else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
+                if full_link in seen_links: continue
 
                 text = c["text"]
-                if not text.strip():
-                    continue
+                if not text.strip(): continue
 
                 discount_match = re.search(r"-(\d+(?:\.\d+)?)%", text)
                 if discount_match:
                     discount_val = float(discount_match.group(1))
-
                     if discount_val >= CONFIG["MIN_DISCOUNT_PERCENT"]:
                         num_match = re.search(r"#(\d+)", text)
                         item_num = num_match.group(1) if num_match else "0"
+                        days_match = re.search(r"Days:\s*(\d+\s*–\s*\d+)", text)
+                        days_range = days_match.group(1) if days_match else "1 – 180"
 
-                        days_match = re.search(
-                            r"Days:\s*(\d+\s*–\s*\d+)", text
-                        )
-                        days_range = (
-                            days_match.group(1) if days_match else "1 – 180"
-                        )
-
-                        lines = [
-                            l.strip() for l in text.split("\n") if l.strip()
-                        ]
+                        lines = [l.strip() for l in text.split("\n") if l.strip()]
                         name_candidates = [
-                            l
-                            for l in lines
+                            l for l in lines
                             if not l.startswith("Days:")
                             and not l.startswith("-")
                             and not l.startswith("#")
@@ -1344,17 +1151,7 @@ async def main():
                             and not re.match(r"^\d+(\.\d+)?$", l)
                         ]
 
-                        gift_name = (
-                            name_candidates[0] if name_candidates else "NFT Gift"
-                        )
-                        tg_link = generate_tg_nft_link(gift_name, item_num)
-                        rarity = detect_rarity_badge(item_num)
-                        img_src = (
-                            c["img"]
-                            if c["img"]
-                            else "https://marketapp.org/favicon.ico"
-                        )
-
+                        gift_name = name_candidates[0] if name_candidates else "NFT Gift"
                         deal = {
                             "name": f"{gift_name} #{item_num}",
                             "gift_title": gift_name,
@@ -1363,10 +1160,10 @@ async def main():
                             "discount_num": discount_val,
                             "price_per_day": "0.01",
                             "days_range": days_range,
-                            "tg_link": tg_link,
+                            "tg_link": generate_tg_nft_link(gift_name, item_num),
                             "market_link": full_link,
-                            "image_url": img_src,
-                            "rarity": rarity,
+                            "image_url": c["img"] if c["img"] else "https://marketapp.org/favicon.ico",
+                            "rarity": detect_rarity_badge(item_num),
                         }
 
                         seen_links.add(full_link)
@@ -1381,50 +1178,24 @@ async def main():
                 break
 
             await page.evaluate("window.scrollBy(0, window.innerHeight * 3);")
-            await page.wait_for_timeout(400)
+            await page.wait_for_timeout(350)
 
         await browser.close()
 
-        # 🎯 چیدمان بر اساس جدیدترین‌ها
+        # چیدمان بر اساس جدیدترین‌ها
         sorted_deals = list(reversed(deals_found))
 
-        # ساخت HTML با قیمت‌های خودکار
-        generate_duck_store_html(sorted_deals, auto_prices)
+        # ساخت صفحه با قیمت‌های زنده و دیزاین جدید
+        generate_duck_store_html(sorted_deals, live_pricing)
 
-        with open(
-            CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline=""
-        ) as f:
+        with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(
-                [
-                    "ردیف",
-                    "کالکشن",
-                    "نام گیفت",
-                    "شماره",
-                    "تخفیف",
-                    "کمیابی",
-                    "لینک تلگرام",
-                    "لینک MarketApp",
-                ]
-            )
+            writer.writerow(["ردیف", "کالکشن", "نام گیفت", "شماره", "تخفیف", "کمیابی", "لینک تلگرام", "لینک MarketApp"])
             for idx, d in enumerate(sorted_deals, 1):
-                writer.writerow(
-                    [
-                        idx,
-                        d["gift_title"],
-                        d["name"],
-                        d["number"],
-                        d["discount"],
-                        d["rarity"] or "معمولی",
-                        d["tg_link"],
-                        d["market_link"],
-                    ]
-                )
+                writer.writerow([idx, d["gift_title"], d["name"], d["number"], d["discount"], d["rarity"] or "معمولی", d["tg_link"], d["market_link"]])
 
-        print(
-            "\n⚡ فروشگاه Duck Store با دیزاین جدید آیفونی و قیمت‌گذاری خودکار آماده شد!"
-        )
-        send_telegram_package(sorted_deals)
+        print("\n⚡ فروشگاه با معماری کامل iOS و قیمت‌های آپدیت‌شده منتشر شد!")
+        send_telegram_package(sorted_deals, live_pricing)
 
 
 if __name__ == "__main__":
