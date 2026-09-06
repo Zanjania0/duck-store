@@ -1,326 +1,369 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>مدیریت Pearl Store</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Vazirmatn', sans-serif; background: #e9edf3; color: #1e293b; }
-        .neo-card { background: #ffffff; border-radius: 26px; box-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.25); border: 1px solid rgba(255, 255, 255, 0.8); }
-        .input-soft { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 16px; color: #0f172a; }
-        .input-soft:focus { outline: none; border-color: #0f172a; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>مدیریت Pearl Store</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08090b; --glass:rgba(255,255,255,.045); --glass2:rgba(255,255,255,.075);
+  --border:rgba(255,255,255,.09); --border2:rgba(255,255,255,.18);
+  --text:#f3f3f5; --dim:#98979f; --faint:#5c5b63;
+  --accent:#d9c9a1; --accent-soft:rgba(217,201,161,.14);
+  --good:#3ddc97; --bad:#f4685f;
+}
+*{-webkit-tap-highlight-color:transparent;}
+body{
+  font-family:'Vazirmatn',sans-serif; color:var(--text); min-height:100vh;
+  background:
+    radial-gradient(circle at 15% -10%, rgba(255,255,255,.05) 0%, transparent 45%),
+    radial-gradient(circle at 100% 20%, rgba(255,255,255,.035) 0%, transparent 40%),
+    var(--bg);
+}
+::-webkit-scrollbar{width:3px;} ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:9999px;}
+.glass{background:var(--glass); border:1px solid var(--border); border-radius:26px; -webkit-backdrop-filter:blur(20px); backdrop-filter:blur(20px);}
+.glass2{background:var(--glass2); border:1px solid var(--border2); -webkit-backdrop-filter:blur(24px); backdrop-filter:blur(24px);}
+.input-soft{background:rgba(255,255,255,.04); border:1px solid var(--border); border-radius:14px; color:var(--text);}
+.input-soft:focus{outline:none; border-color:var(--border2);}
+.input-soft::placeholder{color:var(--faint);}
+.btn-inv{background:var(--text); color:#0a0a0b; font-weight:800; border-radius:16px; transition:all .15s ease;}
+.btn-inv:active{transform:scale(.97);}
+.btn-ghost{background:var(--glass); border:1px solid var(--border2); color:var(--text); border-radius:14px;}
+.tab-btn{padding:10px 16px; border-radius:14px; font-size:11px; font-weight:800; background:var(--glass); color:var(--dim); border:1px solid var(--border); white-space:nowrap;}
+.tab-btn.active{background:var(--text); color:#0a0a0b; border-color:var(--text);}
+label.lbl{display:block; color:var(--dim); font-size:11px; font-weight:700; margin-bottom:6px;}
+.toast-wrap{position:fixed; top:14px; left:50%; transform:translateX(-50%); z-index:70; display:flex; flex-direction:column; gap:8px; width:calc(100% - 32px); max-width:420px;}
+.toast{background:#131418; border:1px solid var(--border2); border-radius:16px; padding:11px 16px; font-size:12px; font-weight:700; box-shadow:0 12px 30px rgba(0,0,0,.5); animation:toastIn .25s cubic-bezier(.16,1,.3,1) both; display:flex; align-items:center; gap:8px;}
+@keyframes toastIn{from{opacity:0; transform:translateY(-12px) scale(.95)}to{opacity:1; transform:translateY(0) scale(1)}}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-8">
 
-    <!-- فرم لاگین -->
-    <div id="loginCard" class="neo-card w-full max-w-md p-6 sm:p-8 space-y-6">
-        <div class="text-center space-y-2">
-            <div class="w-16 h-16 rounded-[22px] bg-[#181d28] text-white flex items-center justify-center text-3xl mx-auto shadow-md">🦆</div>
-            <h1 class="text-base font-black text-slate-900">پنل مدیریت Pearl Store</h1>
-            <p class="text-xs text-slate-500">برای ورود رمز عبور خود را وارد کنید</p>
-        </div>
-        <div class="space-y-4">
-            <input type="password" id="adminPass" placeholder="رمز عبور..." class="input-soft w-full px-4 py-3.5 text-center text-sm font-bold">
-            <button onclick="login()" id="loginBtn" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl transition shadow-md">ورود به مدیریت</button>
-        </div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- ورود -->
+<div id="loginCard" class="glass w-full max-w-md p-6 sm:p-8 space-y-6">
+  <div class="text-center space-y-2">
+    <div class="w-16 h-16 rounded-3xl glass2 flex items-center justify-center text-3xl mx-auto">🦆</div>
+    <h1 class="text-sm font-black">پنل مدیریت Pearl Store</h1>
+    <p class="text-xs" style="color:var(--faint)">برای ورود رمز عبور خود را وارد کنید</p>
+  </div>
+  <div class="space-y-3">
+    <div class="relative">
+      <input type="password" id="adminPass" placeholder="رمز عبور..." class="input-soft w-full px-4 py-3.5 text-center text-sm font-bold" onkeydown="if(event.key==='Enter')login()">
+      <button onclick="togglePass()" class="absolute left-3 top-1/2 -translate-y-1/2 text-xs" style="color:var(--faint)"><i class="fa-solid fa-eye" id="passEyeIcon"></i></button>
     </div>
+    <button onclick="login()" id="loginBtn" class="w-full py-3.5 btn-inv text-xs">ورود به مدیریت</button>
+  </div>
+</div>
 
-    <!-- داشبورد اصلی -->
-    <div id="dashboardCard" class="hidden neo-card w-full max-w-2xl p-6 sm:p-8 space-y-6">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-            <h2 class="text-sm font-black text-slate-900 flex items-center gap-2">
-                <span>مدیریت محصولات و تعرفه‌ها</span>
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            </h2>
-            <div class="flex items-center gap-2">
-                <a href="index.html" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold hover:bg-slate-200 transition">مشاهده سایت</a>
-                <button onclick="logout()" class="px-3.5 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold hover:bg-rose-100 transition">خروج</button>
-            </div>
-        </div>
-
-        <!-- منوی تب‌های پنل -->
-        <div class="flex items-center gap-2 border-b border-slate-100 pb-3 overflow-x-auto">
-            <button onclick="switchAdminTab('prices')" id="atab-prices" class="px-4 py-2 rounded-xl text-xs font-black bg-[#181d28] text-white">تعرفه‌های پایه</button>
-            <button onclick="switchAdminTab('custom')" id="atab-custom" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600">افزودن خدمات جدید (بوست، اکانت، ممبر)</button>
-            <button onclick="switchAdminTab('marketing')" id="atab-marketing" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-600">بنر و تخفیف</button>
-        </div>
-
-        <!-- بخش تعرفه‌ها -->
-        <div id="asec-prices" class="space-y-4">
-            <div class="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                    <label class="block text-slate-600 mb-1 font-bold">نرخ هر ۱ استارز (تومان):</label>
-                    <input type="number" id="ratePerStar" class="input-soft w-full p-2.5 font-bold">
-                </div>
-                <div>
-                    <label class="block text-slate-600 mb-1 font-bold">اجاره ماهانه گیفت (تومان):</label>
-                    <input type="number" id="giftMonthlyPrice" class="input-soft w-full p-2.5 font-bold">
-                </div>
-            </div>
-
-            <div class="pt-3 border-t border-slate-100">
-                <label class="block text-slate-700 mb-2 font-bold text-xs">قیمت‌های تلگرام پرمیوم (تومان):</label>
-                <div class="grid grid-cols-3 gap-2 text-xs">
-                    <div>
-                        <span class="block text-slate-500 text-[11px] mb-1">۳ ماهه</span>
-                        <input type="number" id="prem3" class="input-soft w-full p-2 font-bold text-center">
-                    </div>
-                    <div>
-                        <span class="block text-slate-500 text-[11px] mb-1">۶ ماهه</span>
-                        <input type="number" id="prem6" class="input-soft w-full p-2 font-bold text-center">
-                    </div>
-                    <div>
-                        <span class="block text-slate-500 text-[11px] mb-1">۱۲ ماهه</span>
-                        <input type="number" id="prem12" class="input-soft w-full p-2 font-bold text-center">
-                    </div>
-                </div>
-            </div>
-
-            <div>
-                <label class="block text-slate-600 mb-1 font-bold text-xs">آیدی تلگرام پشتیبانی (بدون @):</label>
-                <input type="text" id="adminTg" class="input-soft w-full p-2.5 text-xs font-bold dir-ltr text-left">
-            </div>
-        </div>
-
-        <!-- بخش افزودن خدمات دلخواه (بوست، اکانت، کانال) -->
-        <div id="asec-custom" class="hidden space-y-4">
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
-                <h4 class="text-xs font-black text-slate-900 flex items-center gap-1.5">
-                    <i class="fa-solid fa-plus-circle text-slate-700"></i>
-                    <span>افزودن پلن جدید (بوست، اکانت یا کانال)</span>
-                </h4>
-                <div class="grid grid-cols-2 gap-2.5 text-xs">
-                    <div>
-                        <label class="block text-slate-600 mb-1">دسته‌بندی:</label>
-                        <select id="newCat" class="input-soft w-full p-2 text-xs font-bold">
-                            <option value="boost">بوست کانال (Boost)</option>
-                            <option value="account">اکانت مجازی (Account)</option>
-                            <option value="channel">خدمات کانال / ممبر (Channel)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 mb-1">عنوان (مثلاً: بوست ۷ روزه لول ۲):</label>
-                        <input type="text" id="newTitle" placeholder="نام سرویس..." class="input-soft w-full p-2 text-xs">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 mb-1">قیمت به تومان:</label>
-                        <input type="number" id="newPrice" placeholder="50000" class="input-soft w-full p-2 text-xs font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-slate-600 mb-1">توضیح کوتاه:</label>
-                        <input type="text" id="newDesc" placeholder="توضیحات کوتاه..." class="input-soft w-full p-2 text-xs">
-                    </div>
-                </div>
-                <button onclick="addNewCustomService()" class="w-full py-2.5 bg-[#181d28] hover:bg-black text-white font-bold text-xs rounded-xl transition">
-                    + اضافه کردن به لیست
-                </button>
-            </div>
-
-            <div class="space-y-2">
-                <h4 class="text-xs font-bold text-slate-700">پلن‌های فعال فعلی:</h4>
-                <div id="customListAdmin" class="space-y-2 max-h-56 overflow-y-auto"></div>
-            </div>
-        </div>
-
-        <!-- بخش بنر و کد تخفیف -->
-        <div id="asec-marketing" class="hidden space-y-4">
-            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div class="flex items-center justify-between text-xs">
-                    <span class="font-bold text-slate-800">بنر اطلاعیه بالای سایت:</span>
-                    <label class="flex items-center gap-1.5 cursor-pointer">
-                        <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded text-slate-800">
-                        <span class="text-slate-800 font-bold text-[11px]">فعال باشد</span>
-                    </label>
-                </div>
-                <input type="text" id="announcementText" placeholder="متن بنر..." class="input-soft w-full p-2.5 text-xs">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                    <label class="block text-slate-600 mb-1 font-bold">کد کوپن تخفیف:</label>
-                    <input type="text" id="couponCode" placeholder="PEARL" class="input-soft w-full p-2.5 text-center font-black uppercase">
-                </div>
-                <div>
-                    <label class="block text-slate-600 mb-1 font-bold">درصد تخفیف (%):</label>
-                    <input type="number" id="couponPercent" placeholder="10" class="input-soft w-full p-2.5 text-center font-black">
-                </div>
-            </div>
-        </div>
-
-        <!-- دکمه ذخیره نهایی -->
-        <button onclick="saveAllSettings()" id="saveBtn" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl shadow-lg transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-cloud-arrow-up"></i>
-            <span>ذخیره نهایی در دیتابیس ابری</span>
-        </button>
+<!-- داشبورد -->
+<div id="dashboardCard" class="hidden glass2 w-full max-w-3xl p-5 sm:p-7 space-y-5">
+  <div class="flex items-center justify-between pb-4" style="border-bottom:1px solid var(--border)">
+    <h2 class="text-sm font-black flex items-center gap-2">
+      <span>مدیریت محصولات و تعرفه‌ها</span>
+      <span class="w-2 h-2 rounded-full" style="background:var(--good)"></span>
+    </h2>
+    <div class="flex items-center gap-2">
+      <a href="index.html" target="_blank" class="px-3.5 py-1.5 rounded-xl btn-ghost text-xs font-bold">مشاهده سایت</a>
+      <button onclick="logout()" class="px-3.5 py-1.5 rounded-xl text-xs font-bold" style="background:rgba(244,104,95,.12); color:var(--bad); border:1px solid rgba(244,104,95,.25)">خروج</button>
     </div>
+  </div>
 
-    <script>
-        const WORKER_URL = "https://duck-api.ali-zanjani2007.workers.dev";
-        let authToken = sessionStorage.getItem("duck_admin_token");
-        let activeAdminCustomServices = [];
+  <div class="grid grid-cols-3 gap-2.5">
+    <div class="glass p-3 text-center"><p id="statCustomCount" class="text-lg font-black">0</p><p class="text-[10px] mt-0.5" style="color:var(--faint)">محصول سفارشی</p></div>
+    <div class="glass p-3 text-center"><p id="statCouponPercent" class="text-lg font-black" style="color:var(--good)">٪۰</p><p class="text-[10px] mt-0.5" style="color:var(--faint)">تخفیف فعال</p></div>
+    <div class="glass p-3 text-center"><p id="statAnnounce" class="text-lg font-black">خاموش</p><p class="text-[10px] mt-0.5" style="color:var(--faint)">بنر اطلاعیه</p></div>
+  </div>
 
-        if (authToken) showDashboard();
+  <div class="flex items-center gap-2 overflow-x-auto pb-1">
+    <button onclick="switchAdminTab('prices')" id="atab-prices" class="tab-btn active">تعرفه‌های پایه</button>
+    <button onclick="switchAdminTab('custom')" id="atab-custom" class="tab-btn">خدمات سفارشی (بوست، اکانت، ممبر)</button>
+    <button onclick="switchAdminTab('marketing')" id="atab-marketing" class="tab-btn">بنر و تخفیف</button>
+  </div>
 
-        function switchAdminTab(t) {
-            ['prices', 'custom', 'marketing'].forEach(tab => {
-                document.getElementById(`asec-${tab}`).classList.add('hidden');
-                document.getElementById(`atab-${tab}`).classList.remove('bg-[#181d28]', 'text-white');
-                document.getElementById(`atab-${tab}`).classList.add('bg-slate-100', 'text-slate-600');
-            });
-            document.getElementById(`asec-${t}`).classList.remove('hidden');
-            document.getElementById(`atab-${t}`).classList.add('bg-[#181d28]', 'text-white');
-            document.getElementById(`atab-${t}`).classList.remove('bg-slate-100', 'text-slate-600');
-        }
+  <!-- تعرفه‌ها -->
+  <div id="asec-prices" class="space-y-4">
+    <div class="grid grid-cols-2 gap-3 text-xs">
+      <div><label class="lbl">نرخ هر ۱ استارز (تومان)</label><input type="number" id="ratePerStar" class="input-soft w-full p-2.5 font-bold"></div>
+      <div><label class="lbl">اجاره ماهانه گیفت (تومان)</label><input type="number" id="giftMonthlyPrice" class="input-soft w-full p-2.5 font-bold"></div>
+    </div>
+    <div class="pt-3" style="border-top:1px solid var(--border)">
+      <label class="lbl">قیمت‌های تلگرام پرمیوم (تومان)</label>
+      <div class="grid grid-cols-3 gap-2 text-xs">
+        <div><span class="block text-[10px] mb-1" style="color:var(--faint)">۳ ماهه</span><input type="number" id="prem3" class="input-soft w-full p-2 font-bold text-center"></div>
+        <div><span class="block text-[10px] mb-1" style="color:var(--faint)">۶ ماهه</span><input type="number" id="prem6" class="input-soft w-full p-2 font-bold text-center"></div>
+        <div><span class="block text-[10px] mb-1" style="color:var(--faint)">۱۲ ماهه</span><input type="number" id="prem12" class="input-soft w-full p-2 font-bold text-center"></div>
+      </div>
+    </div>
+    <div><label class="lbl">آیدی تلگرام پشتیبانی (بدون @)</label><input type="text" id="adminTg" class="input-soft w-full p-2.5 text-xs font-bold dir-ltr text-left"></div>
+  </div>
 
-        async function login() {
-            const pass = document.getElementById("adminPass").value.trim();
-            if (!pass) return alert("رمز را وارد کنید");
-            const btn = document.getElementById("loginBtn");
-            btn.innerText = "در حال بررسی...";
+  <!-- خدمات سفارشی -->
+  <div id="asec-custom" class="hidden space-y-4">
+    <div class="glass p-4 space-y-3">
+      <h4 class="text-xs font-black flex items-center gap-1.5"><i class="fa-solid fa-circle-plus"></i><span id="customFormTitle">افزودن پلن جدید</span></h4>
+      <div class="grid grid-cols-2 gap-2.5 text-xs">
+        <div>
+          <label class="lbl">دسته‌بندی</label>
+          <select id="newCat" class="input-soft w-full p-2 text-xs font-bold">
+            <option value="boost">بوست کانال (Boost)</option>
+            <option value="account">اکانت مجازی (Account)</option>
+            <option value="channel">خدمات کانال / ممبر (Channel)</option>
+          </select>
+        </div>
+        <div><label class="lbl">عنوان</label><input type="text" id="newTitle" placeholder="مثلاً: بوست ۷ روزه لول ۲" class="input-soft w-full p-2 text-xs"></div>
+        <div><label class="lbl">قیمت به تومان</label><input type="number" id="newPrice" placeholder="50000" class="input-soft w-full p-2 text-xs font-bold"></div>
+        <div><label class="lbl">توضیح کوتاه</label><input type="text" id="newDesc" placeholder="توضیحات کوتاه..." class="input-soft w-full p-2 text-xs"></div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="saveCustomServiceForm()" id="customFormBtn" class="flex-1 py-2.5 btn-inv text-xs">افزودن به لیست</button>
+        <button onclick="cancelEditCustomService()" id="customFormCancelBtn" class="hidden px-4 py-2.5 btn-ghost text-xs font-bold">انصراف</button>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <h4 class="text-xs font-bold" style="color:var(--dim)">پلن‌های فعال فعلی</h4>
+      <div id="customListAdmin" class="space-y-2 max-h-64 overflow-y-auto"></div>
+    </div>
+  </div>
 
-            try {
-                const res = await fetch(`${WORKER_URL}/api/admin/login`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ password: pass })
-                });
-                const data = await res.json();
-                if (res.ok && data.token) {
-                    authToken = data.token;
-                    sessionStorage.setItem("duck_admin_token", authToken);
-                    showDashboard();
-                } else {
-                    alert(data.error || "رمز اشتباه است");
-                }
-            } catch(e) {
-                alert("خطا در شبکه");
-            } finally {
-                btn.innerText = "ورود به مدیریت";
-            }
-        }
+  <!-- بنر و تخفیف -->
+  <div id="asec-marketing" class="hidden space-y-4">
+    <div class="glass p-4 space-y-2.5">
+      <div class="flex items-center justify-between text-xs">
+        <span class="font-bold">بنر اطلاعیه بالای سایت</span>
+        <label class="flex items-center gap-1.5 cursor-pointer">
+          <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded">
+          <span class="font-bold text-[11px]">فعال باشد</span>
+        </label>
+      </div>
+      <input type="text" id="announcementText" placeholder="متن بنر..." class="input-soft w-full p-2.5 text-xs">
+    </div>
+    <div class="grid grid-cols-2 gap-3 text-xs">
+      <div><label class="lbl">کد کوپن تخفیف</label><input type="text" id="couponCode" placeholder="PEARL" class="input-soft w-full p-2.5 text-center font-black uppercase"></div>
+      <div><label class="lbl">درصد تخفیف (%)</label><input type="number" id="couponPercent" placeholder="10" class="input-soft w-full p-2.5 text-center font-black"></div>
+    </div>
+  </div>
 
-        async function showDashboard() {
-            document.getElementById("loginCard").classList.add("hidden");
-            document.getElementById("dashboardCard").classList.remove("hidden");
+  <button onclick="saveAllSettings()" id="saveBtn" class="w-full py-3.5 btn-inv text-xs flex items-center justify-center gap-2">
+    <i class="fa-solid fa-cloud-arrow-up"></i><span>ذخیره نهایی در دیتابیس ابری</span>
+  </button>
+</div>
 
-            try {
-                const res = await fetch(`${WORKER_URL}/api/settings`);
-                if (res.ok) {
-                    const s = await res.json();
-                    document.getElementById("ratePerStar").value = s.ratePerStar || 1450;
-                    document.getElementById("giftMonthlyPrice").value = s.giftMonthlyPrice || 160000;
-                    document.getElementById("prem3").value = s.prem3 || 620000;
-                    document.getElementById("prem6").value = s.prem6 || 950000;
-                    document.getElementById("prem12").value = s.prem12 || 1690000;
-                    document.getElementById("adminTg").value = s.adminTg || "Zanjani_a";
-                    document.getElementById("announcementText").value = s.announcementText || "";
-                    document.getElementById("announcementActive").checked = s.announcementActive !== false;
-                    document.getElementById("couponCode").value = s.couponCode || "PEARL";
-                    document.getElementById("couponPercent").value = s.couponPercent || 10;
-                    activeAdminCustomServices = s.customServices || [];
-                    renderAdminCustomList();
-                }
-            } catch(e) {}
-        }
+<script>
+const WORKER_URL = "https://duck-api.ali-zanjani2007.workers.dev";
+let authToken = sessionStorage.getItem("duck_admin_token");
+let activeAdminCustomServices = [];
+let editingIndex = -1;
 
-        function renderAdminCustomList() {
-            const container = document.getElementById("customListAdmin");
-            if (activeAdminCustomServices.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 py-3 text-center">محصول سفارشی ثبت نشده است.</p>';
-                return;
-            }
+if (authToken) showDashboard();
 
-            container.innerHTML = activeAdminCustomServices.map((item, idx) => `
-                <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-xs">
-                    <div>
-                        <span class="font-bold text-slate-800">${item.title}</span>
-                        <span class="text-[11px] text-slate-900 mr-2 font-black">${Number(item.price).toLocaleString('en-US')} تومان</span>
-                        <span class="text-[10px] text-slate-500 bg-slate-200 px-2 py-0.5 rounded mr-1">${item.category}</span>
-                    </div>
-                    <button onclick="removeAdminCustomService(${idx})" class="text-rose-500 hover:text-rose-700 text-xs px-2">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `).join('');
-        }
+function toast(msg, icon, color) {
+  const wrap = document.getElementById('toastWrap');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.innerHTML = `<i class="fa-solid ${icon || 'fa-circle-check'} text-xs" style="color:${color || 'var(--good)'}"></i><span>${msg}</span>`;
+  wrap.appendChild(el);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(-10px)'; el.style.transition = 'all .25s ease'; setTimeout(() => el.remove(), 250); }, 2400);
+}
 
-        function addNewCustomService() {
-            const cat = document.getElementById("newCat").value;
-            const title = document.getElementById("newTitle").value.trim();
-            const price = parseInt(document.getElementById("newPrice").value);
-            const desc = document.getElementById("newDesc").value.trim();
+function togglePass() {
+  const inp = document.getElementById('adminPass');
+  const icon = document.getElementById('passEyeIcon');
+  if (inp.type === 'password') { inp.type = 'text'; icon.className = 'fa-solid fa-eye-slash'; }
+  else { inp.type = 'password'; icon.className = 'fa-solid fa-eye'; }
+}
 
-            if (!title || !price) return alert("عنوان و قیمت الزامی است");
+function switchAdminTab(t) {
+  ['prices','custom','marketing'].forEach(tab => {
+    document.getElementById(`asec-${tab}`).classList.toggle('hidden', tab !== t);
+    document.getElementById(`atab-${tab}`).classList.toggle('active', tab === t);
+  });
+}
 
-            activeAdminCustomServices.push({
-                id: "item-" + Date.now(),
-                category: cat,
-                title: title,
-                price: price,
-                desc: desc
-            });
+async function login() {
+  const pass = document.getElementById("adminPass").value.trim();
+  if (!pass) { toast("رمز را وارد کنید", "fa-triangle-exclamation", "var(--bad)"); return; }
+  const btn = document.getElementById("loginBtn");
+  btn.innerText = "در حال بررسی...";
+  try {
+    const res = await fetch(`${WORKER_URL}/api/admin/login`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pass })
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      authToken = data.token;
+      sessionStorage.setItem("duck_admin_token", authToken);
+      showDashboard();
+    } else {
+      toast(data.error || "رمز اشتباه است", "fa-triangle-exclamation", "var(--bad)");
+    }
+  } catch(e) {
+    toast("خطا در شبکه", "fa-triangle-exclamation", "var(--bad)");
+  } finally {
+    btn.innerText = "ورود به مدیریت";
+  }
+}
 
-            document.getElementById("newTitle").value = "";
-            document.getElementById("newPrice").value = "";
-            document.getElementById("newDesc").value = "";
-            renderAdminCustomList();
-        }
+async function showDashboard() {
+  document.getElementById("loginCard").classList.add("hidden");
+  document.getElementById("dashboardCard").classList.remove("hidden");
+  try {
+    const res = await fetch(`${WORKER_URL}/api/settings`);
+    if (res.ok) {
+      const s = await res.json();
+      document.getElementById("ratePerStar").value = s.ratePerStar || 1450;
+      document.getElementById("giftMonthlyPrice").value = s.giftMonthlyPrice || 160000;
+      document.getElementById("prem3").value = s.prem3 || 620000;
+      document.getElementById("prem6").value = s.prem6 || 950000;
+      document.getElementById("prem12").value = s.prem12 || 1690000;
+      document.getElementById("adminTg").value = s.adminTg || "Zanjani_a";
+      document.getElementById("announcementText").value = s.announcementText || "";
+      document.getElementById("announcementActive").checked = s.announcementActive !== false;
+      document.getElementById("couponCode").value = s.couponCode || "PEARL";
+      document.getElementById("couponPercent").value = s.couponPercent || 10;
+      activeAdminCustomServices = s.customServices || [];
+      renderAdminCustomList();
+      updateStats();
+    }
+  } catch(e) {}
+}
 
-        function removeAdminCustomService(idx) {
-            activeAdminCustomServices.splice(idx, 1);
-            renderAdminCustomList();
-        }
+function updateStats() {
+  document.getElementById('statCustomCount').innerText = activeAdminCustomServices.length.toLocaleString('fa-IR');
+  document.getElementById('statCouponPercent').innerText = '٪' + (parseInt(document.getElementById('couponPercent').value) || 0).toLocaleString('fa-IR');
+  document.getElementById('statAnnounce').innerText = document.getElementById('announcementActive').checked ? 'روشن' : 'خاموش';
+}
 
-        async function saveAllSettings() {
-            const btn = document.getElementById("saveBtn");
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> در حال ذخیره...';
+const CAT_ICON = { boost: '🚀', account: '📲', channel: '📢' };
+const CAT_LABEL = { boost: 'بوست', account: 'اکانت', channel: 'کانال' };
 
-            const payload = {
-                ratePerStar: parseInt(document.getElementById("ratePerStar").value) || 1450,
-                giftMonthlyPrice: parseInt(document.getElementById("giftMonthlyPrice").value) || 160000,
-                prem3: parseInt(document.getElementById("prem3").value) || 620000,
-                prem6: parseInt(document.getElementById("prem6").value) || 950000,
-                prem12: parseInt(document.getElementById("prem12").value) || 1690000,
-                adminTg: document.getElementById("adminTg").value.trim().replace("@", "") || "Zanjani_a",
-                announcementText: document.getElementById("announcementText").value.trim(),
-                announcementActive: document.getElementById("announcementActive").checked,
-                couponCode: document.getElementById("couponCode").value.trim().toUpperCase() || "PEARL",
-                couponPercent: parseInt(document.getElementById("couponPercent").value) || 0,
-                customServices: activeAdminCustomServices
-            };
+function renderAdminCustomList() {
+  const container = document.getElementById("customListAdmin");
+  if (activeAdminCustomServices.length === 0) {
+    container.innerHTML = `<p class="text-xs py-3 text-center" style="color:var(--faint)">محصول سفارشی ثبت نشده است.</p>`;
+    return;
+  }
+  container.innerHTML = activeAdminCustomServices.map((item, idx) => `
+    <div class="p-3 rounded-2xl flex items-center justify-between text-xs glass">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="text-lg">${CAT_ICON[item.category] || '🛠️'}</span>
+        <div class="min-w-0">
+          <p class="font-bold truncate">${item.title} <span class="font-black" style="color:var(--text)">· ${Number(item.price).toLocaleString('en-US')} ت</span></p>
+          <span class="text-[10px] px-2 py-0.5 rounded-full" style="background:var(--glass2); color:var(--faint)">${CAT_LABEL[item.category] || item.category}</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <button onclick="editCustomService(${idx})" class="w-7 h-7 rounded-full flex items-center justify-center" style="color:var(--dim)"><i class="fa-solid fa-pen text-[10px]"></i></button>
+        <button onclick="removeAdminCustomService(${idx})" class="w-7 h-7 rounded-full flex items-center justify-center" style="color:var(--bad)"><i class="fa-solid fa-trash text-[10px]"></i></button>
+      </div>
+    </div>
+  `).join('');
+  updateStats();
+}
 
-            try {
-                const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": `Bearer ${authToken}`
-                    },
-                    body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    alert("✅ تنظیمات و محصولات جدید با موفقیت ذخیره شدند!");
-                } else {
-                    alert("نشست منقضی شده است.");
-                    logout();
-                }
-            } catch(e) {
-                alert("خطا در ارسال اطلاعات");
-            } finally {
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>ذخیره نهایی در دیتابیس ابری</span>';
-            }
-        }
+function saveCustomServiceForm() {
+  const cat = document.getElementById("newCat").value;
+  const title = document.getElementById("newTitle").value.trim();
+  const price = parseInt(document.getElementById("newPrice").value);
+  const desc = document.getElementById("newDesc").value.trim();
+  if (!title || !price) { toast("عنوان و قیمت الزامی است", "fa-triangle-exclamation", "var(--bad)"); return; }
 
-        function logout() {
-            sessionStorage.removeItem("duck_admin_token");
-            location.reload();
-        }
-    </script>
+  if (editingIndex >= 0) {
+    activeAdminCustomServices[editingIndex] = { ...activeAdminCustomServices[editingIndex], category: cat, title, price, desc };
+    toast("مورد ویرایش شد", "fa-pen");
+    cancelEditCustomService();
+  } else {
+    activeAdminCustomServices.push({ id: "item-" + Date.now(), category: cat, title, price, desc });
+    toast("به لیست اضافه شد", "fa-circle-plus");
+  }
+  document.getElementById("newTitle").value = "";
+  document.getElementById("newPrice").value = "";
+  document.getElementById("newDesc").value = "";
+  renderAdminCustomList();
+}
+
+function editCustomService(idx) {
+  const item = activeAdminCustomServices[idx];
+  editingIndex = idx;
+  document.getElementById("newCat").value = item.category;
+  document.getElementById("newTitle").value = item.title;
+  document.getElementById("newPrice").value = item.price;
+  document.getElementById("newDesc").value = item.desc || '';
+  document.getElementById("customFormTitle").innerText = "ویرایش پلن";
+  document.getElementById("customFormBtn").innerText = "ذخیره ویرایش";
+  document.getElementById("customFormCancelBtn").classList.remove("hidden");
+  document.getElementById("newTitle").scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function cancelEditCustomService() {
+  editingIndex = -1;
+  document.getElementById("customFormTitle").innerText = "افزودن پلن جدید";
+  document.getElementById("customFormBtn").innerText = "افزودن به لیست";
+  document.getElementById("customFormCancelBtn").classList.add("hidden");
+  document.getElementById("newTitle").value = "";
+  document.getElementById("newPrice").value = "";
+  document.getElementById("newDesc").value = "";
+}
+
+function removeAdminCustomService(idx) {
+  if (editingIndex === idx) cancelEditCustomService();
+  activeAdminCustomServices.splice(idx, 1);
+  renderAdminCustomList();
+  toast("حذف شد", "fa-trash", "var(--bad)");
+}
+
+async function saveAllSettings() {
+  const btn = document.getElementById("saveBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i> در حال ذخیره...';
+
+  const payload = {
+    ratePerStar: parseInt(document.getElementById("ratePerStar").value) || 1450,
+    giftMonthlyPrice: parseInt(document.getElementById("giftMonthlyPrice").value) || 160000,
+    prem3: parseInt(document.getElementById("prem3").value) || 620000,
+    prem6: parseInt(document.getElementById("prem6").value) || 950000,
+    prem12: parseInt(document.getElementById("prem12").value) || 1690000,
+    adminTg: document.getElementById("adminTg").value.trim().replace("@", "") || "Zanjani_a",
+    announcementText: document.getElementById("announcementText").value.trim(),
+    announcementActive: document.getElementById("announcementActive").checked,
+    couponCode: document.getElementById("couponCode").value.trim().toUpperCase() || "PEARL",
+    couponPercent: parseInt(document.getElementById("couponPercent").value) || 0,
+    customServices: activeAdminCustomServices
+  };
+
+  try {
+    const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Authorization": `Bearer ${authToken}` },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      toast("تنظیمات و محصولات با موفقیت ذخیره شدند", "fa-circle-check");
+      updateStats();
+    } else {
+      toast("نشست منقضی شده است", "fa-triangle-exclamation", "var(--bad)");
+      logout();
+    }
+  } catch(e) {
+    toast("خطا در ارسال اطلاعات", "fa-triangle-exclamation", "var(--bad)");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up"></i> <span>ذخیره نهایی در دیتابیس ابری</span>';
+  }
+}
+
+function logout() {
+  sessionStorage.removeItem("duck_admin_token");
+  location.reload();
+}
+
+document.getElementById('couponPercent').addEventListener('input', updateStats);
+document.getElementById('announcementActive').addEventListener('change', updateStats);
+</script>
 </body>
 </html>
