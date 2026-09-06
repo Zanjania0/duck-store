@@ -1245,7 +1245,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                     navigator.share({
                         title: 'Duck Store',
                         text: 'مرجع گیفت، استارز و پرمیوم تلگرام',
-                        url: window.location.href
+                        url: https://t.me/duck_storee
                     }).catch(() => {});
                 } else {
                     alert('لینک فروشگاه کپی شد');
