@@ -40,11 +40,27 @@ def detect_rarity_badge(number_str: str) -> str:
     except ValueError:
         return ""
     s = str(num)
-    if num < 100: return "👑 زیر 100"
-    if num < 1000: return "💎 زیر 1000"
-    if len(s) >= 3 and len(set(s)) == 1: return f"✨ رند (#{s})"
-    if s in ["123", "1234", "12345", "6969", "777", "888", "999", "10000"]: return f"🎯 خاص (#{s})"
-    if len(s) == 4 and s == s[::-1]: return "🔁 متقارن"
+    if num < 100:
+        return "👑 زیر 100"
+    if num < 1000:
+        return "💎 زیر 1000"
+    if len(s) >= 3 and len(set(s)) == 1:
+        return f"✨ رند (#{s})"
+    if s in [
+        "123",
+        "1234",
+        "12345",
+        "6969",
+        "777",
+        "888",
+        "999",
+        "10000",
+        "50000",
+        "100000",
+    ]:
+        return f"🎯 خاص (#{s})"
+    if len(s) == 4 and s == s[::-1]:
+        return "🔁 متقارن"
     return ""
 
 
@@ -52,11 +68,15 @@ def generate_tg_nft_link(name: str, number: str) -> str:
     words = re.findall(r"[a-zA-Z0-9]+", name)
     slug = "".join(w.capitalize() for w in words)
     clean_num = re.sub(r"\D", "", str(number))
-    return f"https://t.me/nft/{slug}-{clean_num}" if slug and clean_num else "https://t.me"
+    return (
+        f"https://t.me/nft/{slug}-{clean_num}"
+        if slug and clean_num
+        else "https://t.me"
+    )
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت با دیزاین فوق مدرن مینیمال مرواریدی/نقره‌ای (Soft Neumorphic Luxury)"""
+    """تولید وب‌اپلیکیشن پیشرفته Duck Store با پروفایل و خدمات سفارشی"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -70,7 +90,9 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
             }
         collections_map[c_name]["count"] += 1
 
-    collections_list = sorted(list(collections_map.values()), key=lambda x: str(x["name"]))
+    collections_list = sorted(
+        list(collections_map.values()), key=lambda x: str(x["name"])
+    )
     rare_count = sum(1 for d in deals if d.get("rarity"))
 
     deals_json = json.dumps(deals, ensure_ascii=False)
@@ -81,455 +103,402 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Pearl Store | خدمات پرمیوم تلگرام</title>
+    <title>Duck Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-canvas: #e9edf3;
-            --card-surface: #ffffff;
-            --text-main: #191f2c;
-            --text-muted: #64748b;
-            --neo-shadow: 0 10px 30px -5px rgba(148, 163, 184, 0.3), 0 4px 12px -2px rgba(148, 163, 184, 0.15);
-            --neo-convex: 0 8px 20px -3px rgba(148, 163, 184, 0.25);
-            --dark-btn: #181d28;
+            --bg-deep: #07080f;
+            --glass-card: rgba(13, 14, 26, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --accent-gold: #fbbf24;
+            --accent-purple: #8b5cf6;
+            --accent-cyan: #38bdf8;
         }
         body {
             font-family: 'Vazirmatn', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: var(--bg-canvas);
+            background-color: var(--bg-deep);
             background-image: 
-                radial-gradient(circle at 15% 10%, rgba(255, 255, 255, 0.8) 0%, transparent 40%),
-                radial-gradient(circle at 85% 25%, rgba(226, 232, 240, 0.6) 0%, transparent 50%),
-                radial-gradient(circle at 50% 90%, rgba(255, 255, 255, 0.7) 0%, transparent 50%);
-            color: var(--text-main);
+                radial-gradient(circle at 10% 10%, rgba(30, 58, 138, 0.3) 0%, transparent 45%),
+                radial-gradient(circle at 90% 15%, rgba(124, 58, 237, 0.25) 0%, transparent 45%),
+                radial-gradient(circle at 50% 90%, rgba(14, 165, 233, 0.18) 0%, transparent 50%);
+            color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
             -webkit-touch-callout: none;
         }
-        .neo-card {
-            background: var(--card-surface);
-            border-radius: 28px;
-            box-shadow: var(--neo-shadow);
-            border: 1px solid rgba(255, 255, 255, 0.8);
+        .app-card {
+            background: var(--glass-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
             transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
-        .neo-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 16px 36px -6px rgba(148, 163, 184, 0.38);
+        .app-card:hover {
+            border-color: rgba(251, 191, 36, 0.4);
+            box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(139, 92, 246, 0.15);
         }
-        .neo-pill {
-            background: #ffffff;
-            border-radius: 9999px;
-            box-shadow: var(--neo-convex);
-            border: 1px solid rgba(255, 255, 255, 0.9);
-        }
-        .neo-well {
-            background: #e2e8f0;
-            border-radius: 20px;
-            box-shadow: inset 2px 2px 5px rgba(148, 163, 184, 0.3), inset -2px -2px 5px rgba(255, 255, 255, 0.8);
-        }
-        .bottom-dock {
-            background: rgba(255, 255, 255, 0.88);
+        .dock-bar {
+            background: rgba(10, 12, 22, 0.88);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
-            border-radius: 34px;
-            box-shadow: 0 12px 40px -8px rgba(100, 116, 139, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
         }
-        .nav-tab.active {
-            background: var(--dark-btn);
-            color: #ffffff;
-            box-shadow: 0 8px 18px -2px rgba(24, 29, 40, 0.3);
+        .nav-btn.active {
+            color: var(--accent-gold);
         }
-        ::-webkit-scrollbar { width: 4px; }
+        .nav-btn.active .nav-icon {
+            transform: translateY(-2px);
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.5));
+        }
+        ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 9999px; }
     </style>
 </head>
-<body class="min-h-screen pb-36 select-none">
+<body class="min-h-screen pb-32 select-none">
 
-    <!-- ⏳ اسپلش اسکرین نقره‌ای لوکس -->
-    <div id="loadingScreen" class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#e9edf3] transition-all duration-500 px-6">
-        <div class="w-20 h-20 rounded-[28px] bg-white flex items-center justify-center text-4xl shadow-[0_15px_35px_rgba(148,163,184,0.35)] border border-white animate-pulse">
-            🦆
-        </div>
-        <h2 class="text-slate-800 font-black text-base mt-6 tracking-wide flex items-center gap-2">
-            <span>PEARL STORE</span>
-            <span class="w-2 h-2 rounded-full bg-slate-800 animate-ping"></span>
-        </h2>
-        <p class="text-slate-500 text-xs mt-1.5 font-medium">در حال همگام‌سازی خدمات تلگرام...</p>
-        <div class="w-48 h-1.5 bg-slate-200 rounded-full overflow-hidden mt-5 shadow-inner">
-            <div id="loadingProgressBar" class="h-full bg-slate-800 transition-all duration-150" style="width: 5%"></div>
-        </div>
-        <span id="loadingPercent" class="text-[11px] font-bold text-slate-400 mt-2">0%</span>
-    </div>
-
-    <!-- 🚀 صفحه Onboarding / معرفی شبیه عکس ارسالی -->
-    <div id="welcomeScreen" class="fixed inset-0 z-40 hidden flex items-center justify-center bg-[#e9edf3]/90 backdrop-blur-xl transition-all duration-500 p-5 opacity-0 scale-95">
-        <div class="w-full max-w-sm neo-card p-6 flex flex-col items-center text-center space-y-5">
-            <div class="w-16 h-16 rounded-2xl bg-white shadow-md flex items-center justify-center text-3xl border border-slate-100">
-                🦆
-            </div>
-            <div>
-                <span class="text-[10px] font-black tracking-widest text-slate-400 uppercase">PEARL STORE</span>
-                <h2 class="text-base font-black text-slate-900 mt-0.5">به فروشگاه خدمات تلگرام خوش آمدید</h2>
-                <p class="text-xs text-slate-500 mt-1">سریع‌ترین مرجع استارز، پرمیوم، بوست و گیفت</p>
-            </div>
-
-            <div class="w-full space-y-2 text-right text-xs">
-                <div class="p-3 rounded-2xl bg-[#f4f7fb] border border-slate-200/60 flex items-center gap-3">
-                    <span class="text-xl">🎁</span>
-                    <div>
-                        <p class="font-bold text-slate-800">اجاره گیفت‌های ارزشمند</p>
-                        <p class="text-[10px] text-slate-500">تخفیف‌های بالای ۵۰٪ با شماره‌های خاص</p>
-                    </div>
-                </div>
-                <div class="p-3 rounded-2xl bg-[#f4f7fb] border border-slate-200/60 flex items-center gap-3">
-                    <span class="text-xl">💎</span>
-                    <div>
-                        <p class="font-bold text-slate-800">اشتراک پرمیوم و استارز</p>
-                        <p class="text-[10px] text-slate-500">تحویل فوری با بهترین نرخ بازار</p>
-                    </div>
-                </div>
-                <div class="p-3 rounded-2xl bg-[#f4f7fb] border border-slate-200/60 flex items-center gap-3">
-                    <span class="text-xl">🚀</span>
-                    <div>
-                        <p class="font-bold text-slate-800">خدمات بوست، اکانت و کانال</p>
-                        <p class="text-[10px] text-slate-500">ارتقای سطح و پایداری کانال‌های تلگرامی</p>
-                    </div>
-                </div>
-            </div>
-
-            <button id="enterStoreBtn" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl transition shadow-[0_10px_25px_rgba(24,29,40,0.3)] flex items-center justify-center gap-2">
-                <span>بزن بریم</span>
-                <i class="fa-solid fa-arrow-left text-xs"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- هدر سایت -->
-    <header class="sticky top-0 z-30 bg-[#e9edf3]/80 backdrop-blur-xl border-b border-slate-200/60 px-4 py-3">
-        <div class="max-w-xl mx-auto flex items-center justify-between">
+    <!-- هدر اپلیکیشن -->
+    <header class="sticky top-0 z-30 bg-[#07080f]/85 backdrop-blur-xl border-b border-white/5 px-4 sm:px-6 py-3.5">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-white text-slate-800 flex items-center justify-center text-xl font-black shadow-[0_6px_16px_rgba(148,163,184,0.3)] border border-white">
+                <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-amber-400 via-amber-500 to-purple-600 flex items-center justify-center text-xl shadow-lg shadow-amber-500/20">
                     🦆
                 </div>
                 <div>
-                    <h1 class="text-xs text-slate-400 font-extrabold uppercase tracking-wider">PEARL STORE</h1>
-                    <p id="topGreeting" class="text-sm font-black text-slate-800">مرجع خدمات تلگرام</p>
+                    <h1 class="text-sm font-black text-white tracking-tight flex items-center gap-1.5">
+                        <span>Duck Store</span>
+                        <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    </h1>
+                    <p id="headerGreeting" class="text-[11px] text-amber-300/80 font-medium">مرجع خدمات تلگرام</p>
                 </div>
             </div>
 
-            <a id="headerSupportLink" href="https://t.me/Zanjani_a" class="px-3.5 py-1.5 rounded-full bg-white text-slate-700 text-xs font-bold border border-slate-200 shadow-sm transition hover:bg-slate-50 flex items-center gap-1.5">
-                <i class="fa-brands fa-telegram text-sky-500"></i>
+            <a id="headerSupportLink" href="https://t.me/Zanjani_a" class="px-3.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] text-slate-200 border border-white/10 text-xs font-bold transition flex items-center gap-2">
+                <i class="fa-brands fa-telegram text-sky-400 text-sm"></i>
                 <span>پشتیبانی</span>
             </a>
         </div>
     </header>
 
     <!-- محفظه صفحات اصلی (Views) -->
-    <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
+    <main class="max-w-5xl mx-auto px-4 sm:px-6 mt-4">
 
-        <!-- 🏠 ۱. تب خانه (ویترین و دسته‌بندی‌ها شبیه عکس ۲ و ۳) -->
+        <!-- 🏠 ۱. تب خانه (ویترین و پیشنهادات) -->
         <section id="view-home" class="space-y-4">
-            
-            <!-- بنر مناسبتی (در صورت فعال بودن) -->
-            <div id="promoBanner" class="hidden neo-card p-4 bg-gradient-to-r from-amber-50 to-white border-amber-200 flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-bullhorn text-amber-500 text-sm"></i>
-                    <span id="promoBannerText" class="text-xs font-bold text-slate-700"></span>
-                </div>
-            </div>
-
-            <!-- دسته‌بندی خدمات (Services Grid شبیه عکس دوم) -->
-            <div>
-                <div class="flex items-center justify-between mb-3 px-1">
-                    <h3 class="text-sm font-black text-slate-800">دسته‌بندی خدمات</h3>
-                    <span class="text-[10px] font-bold text-slate-400">PEARL STORE</span>
-                </div>
-
-                <div class="grid grid-cols-3 gap-3">
-                    <div onclick="openCategoryTab('gift')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
-                        <span class="text-3xl mb-1.5">🎁</span>
-                        <span class="text-xs font-black text-slate-800">Gift</span>
-                    </div>
-                    <div onclick="openCategoryTab('stars')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
-                        <span class="text-3xl mb-1.5">⭐</span>
-                        <span class="text-xs font-black text-slate-800">Stars</span>
-                    </div>
-                    <div onclick="openCategoryTab('premium')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
-                        <span class="text-3xl mb-1.5">💎</span>
-                        <span class="text-xs font-black text-slate-800">Premium</span>
-                    </div>
-                    <div onclick="openCategoryTab('boost')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
-                        <span class="text-3xl mb-1.5">🚀</span>
-                        <span class="text-xs font-black text-slate-800">Boost</span>
-                    </div>
-                    <div onclick="openCategoryTab('account')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
-                        <span class="text-3xl mb-1.5">📲</span>
-                        <span class="text-xs font-black text-slate-800">Account</span>
-                    </div>
-                    <div onclick="openCategoryTab('channel')" class="neo-card p-4 flex flex-col items-center justify-center text-center cursor-pointer">
-                        <span class="text-3xl mb-1.5">📢</span>
-                        <span class="text-xs font-black text-slate-800">Channel</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- خدمات ویژه (Featured Services شبیه عکس سوم) -->
-            <div class="space-y-2.5 pt-2">
-                <div class="flex items-center justify-between px-1 mb-1">
-                    <h3 class="text-sm font-black text-slate-800">خدمات ویژه</h3>
-                    <span class="text-[10px] font-bold text-slate-400">PEARL SHOP</span>
-                </div>
-                
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">💎</div>
-                        <div>
-                            <h4 class="text-xs font-black text-slate-800">Telegram Premium</h4>
-                            <p class="text-[10px] text-slate-500 font-medium">انتخاب و مشاهده قیمت</p>
-                        </div>
-                    </div>
-                    <button onclick="openCategoryTab('premium')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
-                </div>
-
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">⭐</div>
-                        <div>
-                            <h4 class="text-xs font-black text-slate-800">Telegram Stars</h4>
-                            <p class="text-[10px] text-slate-500 font-medium">انتخاب تعداد استارز</p>
-                        </div>
-                    </div>
-                    <button onclick="openCategoryTab('stars')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
-                </div>
-
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">🎁</div>
-                        <div>
-                            <h4 class="text-xs font-black text-slate-800">Telegram Gift</h4>
-                            <p class="text-[10px] text-slate-500 font-medium">انتخاب و اجاره هدیه</p>
-                        </div>
-                    </div>
-                    <button onclick="openCategoryTab('gift')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
-                </div>
-
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">🚀</div>
-                        <div>
-                            <h4 class="text-xs font-black text-slate-800">Channel Boost</h4>
-                            <p class="text-[10px] text-slate-500 font-medium">بوست اختصاصی برای کانال</p>
-                        </div>
-                    </div>
-                    <button onclick="openCategoryTab('boost')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
-                </div>
-
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">📲</div>
-                        <div>
-                            <h4 class="text-xs font-black text-slate-800">Virtual Account</h4>
-                            <p class="text-[10px] text-slate-500 font-medium">خدمات اکانت مجازی</p>
-                        </div>
-                    </div>
-                    <button onclick="openCategoryTab('account')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
-                </div>
-
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-2xl bg-[#eef2f7] flex items-center justify-center text-2xl shadow-inner">📢</div>
-                        <div>
-                            <h4 class="text-xs font-black text-slate-800">Channel Services</h4>
-                            <p class="text-[10px] text-slate-500 font-medium">ممبر، سین و خدمات اختصاصی</p>
-                        </div>
-                    </div>
-                    <button onclick="openCategoryTab('channel')" class="px-4 py-2 rounded-xl bg-[#e2cc97] hover:bg-[#d8c086] text-slate-900 font-black text-xs transition shadow-sm">مشاهده</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- 🎁 ۲. تب مارکت گیفت‌ها -->
-        <section id="view-gifts" class="hidden space-y-3">
-            <div class="neo-card p-3 flex items-center justify-between gap-2">
-                <div class="relative flex-1">
-                    <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-slate-400 text-xs"></i>
-                    <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره گیفت..." 
-                           class="w-full bg-[#f1f5f9] border border-slate-200 rounded-xl pr-8 pl-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-400">
-                </div>
-                <button onclick="openModal()" class="px-3 py-1.5 rounded-xl bg-white text-xs font-bold text-slate-700 border border-slate-200 shadow-sm flex items-center gap-1.5 whitespace-nowrap">
-                    <span id="selectedColText">کالکشن‌ها</span>
-                    <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
-                </button>
-            </div>
-
-            <div class="flex items-center gap-2 overflow-x-auto pb-1">
-                <button onclick="filterType('all', this)" class="type-btn active px-4 py-1.5 rounded-full text-xs font-black bg-[#181d28] text-white whitespace-nowrap shadow-sm">همه (__TOTAL_COUNT__)</button>
-                <button onclick="filterType('rare', this)" class="type-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">💎 کمیاب‌ها</button>
-                <button onclick="filterType('favs', this)" class="type-btn px-4 py-1.5 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm flex items-center gap-1.5">
-                    <i class="fa-solid fa-heart text-rose-500 text-[10px]"></i> (<span id="favCount">0</span>)
-                </button>
-            </div>
-
-            <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
-        </section>
-
-        <!-- ⚡ ۳. تب خدمات و محصولات سفارشی (Stars, Premium, Boost, Account, Channel) -->
-        <section id="view-services" class="hidden space-y-4">
-            <!-- زیرتب‌های خدمات -->
-            <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
-                <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-black bg-[#181d28] text-white whitespace-nowrap shadow-sm">استارز</button>
-                <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">پرمیوم</button>
-                <button onclick="switchServiceSubTab('boost')" id="subtab-boost" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">بوست کانال</button>
-                <button onclick="switchServiceSubTab('account')" id="subtab-account" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">اکانت مجازی</button>
-                <button onclick="switchServiceSubTab('channel')" id="subtab-channel" class="service-subtab-btn px-4 py-2 rounded-full text-xs font-bold bg-white text-slate-600 border border-slate-200 whitespace-nowrap shadow-sm">خدمات کانال</button>
-            </div>
-
-            <!-- بخش استارز -->
-            <div id="subview-stars" class="space-y-3">
-                <div class="neo-card p-4 space-y-3">
-                    <h4 class="text-xs font-bold text-slate-700">⭐ تعداد دلخواه استارز:</h4>
-                    <input type="number" id="customStarsInput" min="50" placeholder="تعداد استارز (از ۵۰ به بالا)..." class="w-full bg-[#f1f5f9] border border-slate-200 rounded-xl px-3.5 py-2.5 text-xs text-slate-900 font-bold focus:outline-none">
-                    <div id="customStarsCalcBox" class="p-3 rounded-xl bg-slate-100 flex items-center justify-between hidden">
-                        <span class="text-xs text-slate-500 font-medium">مبلغ قابل پرداخت:</span>
-                        <span id="customStarsPrice" class="text-xs font-black text-slate-900">0 تومان</span>
-                    </div>
-                </div>
-                <div id="starsPackagesList" class="space-y-2"></div>
-                <button onclick="orderStars()" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl shadow-md transition">خرید استارز</button>
-            </div>
-
-            <!-- بخش پرمیوم -->
-            <div id="subview-premium" class="hidden space-y-3">
-                <div id="premiumOptionsList" class="space-y-2.5"></div>
-                <button onclick="orderPremium()" class="w-full py-3.5 bg-[#181d28] hover:bg-black text-white font-black text-xs rounded-2xl shadow-md transition">خرید تلگرام پرمیوم</button>
-            </div>
-
-            <!-- بخش محصولات داینامیک ادمین (بوست، اکانت مجازی، خدمات کانال) -->
-            <div id="subview-custom" class="hidden space-y-2.5">
-                <div id="customServicesContainer" class="space-y-2.5"></div>
-            </div>
-        </section>
-
-        <!-- 👤 ۴. تب پروفایل کاربری (دقیقاً مطابق عکس اول ارسالی) -->
-        <section id="view-profile" class="hidden space-y-4">
-            <div class="neo-card p-6 flex flex-col items-center text-center space-y-4">
-                
-                <!-- آواتار نشان شطرنج با هاله مرواریدی و طلایی -->
-                <div class="w-24 h-24 rounded-full bg-gradient-to-b from-[#e8cf9b] to-[#c7a969] flex items-center justify-center shadow-lg border-4 border-white">
-                    <span id="profileAvatarIcon" class="text-4xl filter drop-shadow">♟️</span>
-                </div>
-
+            <!-- بنر خوش‌آمدگویی -->
+            <div class="app-card p-5 border-amber-500/20 bg-gradient-to-r from-amber-500/10 via-purple-500/5 to-transparent flex items-center justify-between">
                 <div>
-                    <h2 id="profileName" class="text-base font-black text-slate-900">Ali</h2>
-                    <p id="profileUsername" class="text-xs text-slate-500 font-semibold dir-ltr mt-0.5">@Zanjani_a</p>
+                    <span class="text-[10px] font-black text-amber-400 uppercase tracking-wider">مرکز تخصصی تلگرام</span>
+                    <h3 class="text-xs sm:text-sm font-black text-white mt-1">خدمات مستقیم و تحویل آنی</h3>
+                    <p class="text-[11px] text-slate-400 mt-0.5">اجاره گیفت، پرمیوم، استارز و بوست کانال</p>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-amber-400/10 border border-amber-400/20 flex items-center justify-center text-2xl shadow-inner">
+                    ⚡
+                </div>
+            </div>
+
+            <!-- بنر اطلاعیه ادمین -->
+            <div id="promoBanner" class="hidden app-card p-3.5 border-purple-500/20 bg-purple-500/5 flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-purple-400 text-xs"></i>
+                    <span id="promoBannerText" class="text-xs font-bold text-purple-200"></span>
+                </div>
+                <button id="promoActionBtn" class="text-xs font-black text-amber-400 hover:underline">دیدن &larr;</button>
+            </div>
+
+            <!-- کارت‌های میانبر به سایر بخش‌ها -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div id="shortcutGifts" class="app-card p-4 cursor-pointer flex flex-col justify-between space-y-2">
+                    <span class="text-2xl">🎁</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">اجاره گیفت</h4>
+                        <p class="text-[10px] text-slate-400 mt-0.5">__TOTAL_COUNT__ مورد فعال</p>
+                    </div>
+                </div>
+                <div id="shortcutPremium" class="app-card p-4 cursor-pointer flex flex-col justify-between space-y-2 border-purple-500/20">
+                    <span class="text-2xl">👑</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">تلگرام پرمیوم</h4>
+                        <p class="text-[10px] text-purple-300 mt-0.5">اشتراک قانونی</p>
+                    </div>
+                </div>
+                <div id="shortcutStars" class="app-card p-4 cursor-pointer flex flex-col justify-between space-y-2 border-amber-500/20">
+                    <span class="text-2xl">⭐</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">استارز تلگرام</h4>
+                        <p class="text-[10px] text-amber-300 mt-0.5">شارژ سریع</p>
+                    </div>
+                </div>
+                <div id="shortcutServices" class="app-card p-4 cursor-pointer flex flex-col justify-between space-y-2 border-cyan-500/20">
+                    <span class="text-2xl">🚀</span>
+                    <div>
+                        <h4 class="text-xs font-black text-white">بوست و خدمات</h4>
+                        <p class="text-[10px] text-cyan-300 mt-0.5">خدمات سفارشی</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- پیش‌نمایش تازه‌ترین‌ها -->
+            <div class="pt-2">
+                <div class="flex items-center justify-between mb-3">
+                    <h3 class="text-xs font-bold text-slate-300 flex items-center gap-1.5">
+                        <i class="fa-solid fa-fire text-amber-400"></i>
+                        <span>تازه‌ترین گیفت‌های ویژه</span>
+                    </h3>
+                    <button id="seeAllDealsBtn" class="text-[11px] font-bold text-amber-400 hover:underline">مشاهده همه &larr;</button>
+                </div>
+                <div id="homeRecentDeals" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5"></div>
+            </div>
+        </section>
+
+        <!-- 🎁 ۲. تب گیفت‌ها (فروشگاه اصلی) -->
+        <section id="view-gifts" class="hidden space-y-4">
+            <!-- نوار فیلتر و جستجو -->
+            <div class="app-card p-3 sm:p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="relative w-full sm:w-72">
+                    <i class="fa-solid fa-magnifying-glass absolute right-4 top-3 text-slate-500 text-xs"></i>
+                    <input type="text" id="searchInput" placeholder="جستجوی نام یا شماره گیفت..." 
+                           class="w-full bg-[#050711] border border-white/10 rounded-2xl pr-10 pl-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
                 </div>
 
-                <div class="w-full pt-4 border-t border-slate-100 space-y-3.5 text-xs">
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-700 font-bold">شناسه کاربر</span>
-                        <span id="profileUserId" class="font-bold text-slate-900 font-mono tracking-wider">649632759</span>
+                <div class="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                    <button id="openColModalBtn" class="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-200 border border-white/10 whitespace-nowrap">
+                        <i class="fa-solid fa-layer-group text-amber-400 text-xs"></i>
+                        <span id="selectedColText">کالکشن‌ها</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-500 mr-0.5"></i>
+                    </button>
+                    <button id="filterBtnAll" class="type-btn active px-3.5 py-2 rounded-xl text-xs font-black bg-amber-400 text-slate-950 whitespace-nowrap shadow-md">همه (__TOTAL_COUNT__)</button>
+                    <button id="filterBtnRare" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-300 border border-white/10 whitespace-nowrap">💎 کمیاب‌ها (__RARE_COUNT__)</button>
+                    <button id="filterBtnFavs" class="type-btn px-3.5 py-2 rounded-xl text-xs font-bold bg-white/[0.04] text-slate-300 border border-white/10 whitespace-nowrap flex items-center gap-1.5">
+                        <i class="fa-solid fa-heart text-rose-500 text-xs"></i> (<span id="favCount">0</span>)
+                    </button>
+                </div>
+            </div>
+
+            <!-- گرید کارت‌های گیفت -->
+            <div id="dealsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 min-h-[300px]"></div>
+        </section>
+
+        <!-- ⚡ ۳. تب خدمات تلگرام (پرمیوم، استارز و خدمات پویا/بوست) -->
+        <section id="view-services" class="hidden max-w-xl mx-auto space-y-4">
+            <!-- زیرتب‌های خدمات -->
+            <div class="flex items-center gap-1.5 bg-[#0e101f] p-1.5 rounded-2xl border border-white/10 overflow-x-auto">
+                <button id="subtabBtn-prem" class="subtab-btn active flex-1 py-2 px-3 rounded-xl text-xs font-black bg-amber-400 text-slate-950 whitespace-nowrap transition">👑 تلگرام پرمیوم</button>
+                <button id="subtabBtn-stars" class="subtab-btn flex-1 py-2 px-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white whitespace-nowrap transition">⭐ استارز</button>
+                <button id="subtabBtn-custom" class="subtab-btn flex-1 py-2 px-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white whitespace-nowrap transition">🚀 بوست و خدمات</button>
+            </div>
+
+            <!-- بخش ۱: پرمیوم -->
+            <div id="serviceSec-prem" class="app-card p-5 space-y-4 border-purple-500/20">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-sm font-black text-white">اشتراک تلگرام پرمیوم</h3>
+                        <p class="text-[11px] text-slate-400 mt-0.5">بدون نیاز به پسورد اکانت، فعال‌سازی قانونی</p>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-700 font-bold">وضعیت حساب</span>
-                        <span class="font-bold text-emerald-600">فعال</span>
+                    <span class="text-[10px] px-2.5 py-1 rounded-full font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">تخفیف ویژه</span>
+                </div>
+
+                <div class="space-y-2.5" id="premiumOptionsList"></div>
+
+                <div class="pt-3 border-t border-white/5 flex items-center justify-between">
+                    <div>
+                        <p class="text-[11px] text-slate-400">مبلغ اشتراک:</p>
+                        <p id="selectedPremiumFinalToman" class="text-base font-black text-purple-400">0 تومان</p>
                     </div>
-                    <div class="flex items-center justify-between">
-                        <span class="text-slate-700 font-bold">سبد خرید</span>
-                        <span id="profileCartCount" class="font-bold text-slate-900">0 قلم در سبد</span>
+                    <button id="orderPremiumBtn" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white font-black text-xs transition shadow-lg shadow-purple-600/25 flex items-center gap-2">
+                        <span>خرید پرمیوم</span>
+                        <i class="fa-solid fa-arrow-left text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- بخش ۲: استارز -->
+            <div id="serviceSec-stars" class="hidden space-y-4">
+                <div class="app-card p-5 space-y-3 border-amber-500/20">
+                    <h3 class="text-xs font-bold text-slate-300 flex items-center gap-2">
+                        <span class="text-amber-400 text-sm">⭐</span>
+                        <span>تعداد استارز دلخواه</span>
+                    </h3>
+                    <input type="number" id="customStarsInput" min="50" max="10000000" placeholder="حداقل ۵۰ استارز..." 
+                           class="w-full bg-[#050711] border border-white/10 rounded-2xl px-4 py-3 text-sm text-white font-bold placeholder-slate-600 focus:outline-none focus:border-amber-400 transition">
+                    <div id="customStarsCalcBox" class="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center justify-between hidden">
+                        <span class="text-xs text-slate-400">مبلغ نهایی:</span>
+                        <span id="customStarsPrice" class="text-sm font-black text-amber-400">0 تومان</span>
                     </div>
                 </div>
 
-                <a id="profileSupportBtn" href="https://t.me/Zanjani_a" class="w-full py-3 rounded-2xl bg-[#f1f5f9] hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 border border-slate-200 transition">
-                    <i class="fa-brands fa-telegram text-sky-500 text-sm"></i>
-                    <span>ارتباط با پشتیبانی</span>
+                <div class="app-card p-5 space-y-3">
+                    <h3 class="text-xs font-bold text-slate-400">پکیج‌های سریع استارز:</h3>
+                    <div id="starsPackagesList" class="space-y-2"></div>
+
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between">
+                        <div>
+                            <p class="text-[11px] text-slate-400">مبلغ قابل پرداخت:</p>
+                            <p id="selectedStarsFinalToman" class="text-base font-black text-amber-400">0 تومان</p>
+                        </div>
+                        <button id="orderStarsBtn" class="py-3 px-6 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 text-slate-950 font-black text-xs transition shadow-lg shadow-amber-500/20 flex items-center gap-2">
+                            <span>خرید استارز</span>
+                            <i class="fa-solid fa-arrow-left text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- بخش ۳: خدمات پویا و بوست کانال -->
+            <div id="serviceSec-custom" class="hidden space-y-4">
+                <div id="customServicesContainer" class="space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- 👤 ۴. تب پروفایل کاربر (User Profile) -->
+        <section id="view-profile" class="hidden max-w-xl mx-auto space-y-4">
+            <!-- کارت کاربری تلگرام -->
+            <div class="app-card p-6 flex items-center gap-4 border-amber-500/20">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-amber-400 via-purple-500 to-indigo-600 flex items-center justify-center text-2xl font-black text-slate-950 shadow-lg shadow-amber-500/20">
+                    <span id="profileAvatarInitial">🦆</span>
+                </div>
+                <div class="space-y-1">
+                    <h3 id="profileFullName" class="text-base font-black text-white">کاربر تلگرام</h3>
+                    <p id="profileUsername" class="text-xs text-amber-400 font-bold">@username</p>
+                    <p id="profileUserId" class="text-[10px] text-slate-400">آیدی کاربری: -</p>
+                </div>
+            </div>
+
+            <!-- خلاصه آمار حساب -->
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="app-card p-4 flex flex-col justify-between space-y-1">
+                    <span class="text-slate-400 font-bold">گیفت‌های ذخیره‌شده</span>
+                    <span id="profileFavsCount" class="text-lg font-black text-rose-400">0 عدد</span>
+                </div>
+                <div class="app-card p-4 flex flex-col justify-between space-y-1">
+                    <span class="text-slate-400 font-bold">اقلام سبد خرید</span>
+                    <span id="profileCartCount" class="text-lg font-black text-cyan-400">0 مورد</span>
+                </div>
+            </div>
+
+            <!-- گزینه‌ها و لینک‌ها -->
+            <div class="app-card p-4 space-y-2 text-xs font-bold">
+                <a id="profileSupportBtn" href="https://t.me/Zanjani_a" class="p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] flex items-center justify-between transition">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-brands fa-telegram text-sky-400 text-sm"></i>
+                        <span>ارتباط مستقیم با پشتیبانی Duck Store</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-left text-[10px] text-slate-500"></i>
                 </a>
+                <button id="profileShareBtn" class="w-full p-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] flex items-center justify-between transition text-right">
+                    <div class="flex items-center gap-3">
+                        <i class="fa-solid fa-share-nodes text-amber-400 text-sm"></i>
+                        <span>اشتراک‌گذاری فروشگاه با دوستان</span>
+                    </div>
+                    <i class="fa-solid fa-chevron-left text-[10px] text-slate-500"></i>
+                </button>
             </div>
         </section>
 
     </main>
 
-    <!-- 🛍️ نوار پاپ‌آپ خودکار سبد خرید -->
-    <div id="floatingCartBar" class="fixed bottom-20 inset-x-4 max-w-xl mx-auto z-40 bg-white/95 backdrop-blur-xl border border-slate-200 p-3.5 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-36 opacity-0 space-y-2">
-        <div class="flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-xl bg-[#181d28] text-white flex items-center justify-center font-black text-xs shadow-md">
-                    <span id="cartCountBadge">0</span>
+    <!-- 🛍️ پاپ‌آپ سبد خرید (Interactive Cart Drawer) -->
+    <div id="cartPopupDrawer" class="fixed inset-x-4 bottom-24 max-w-lg mx-auto z-40 app-card p-4 shadow-2xl border-amber-500/40 bg-[#0d0e1b]/95 backdrop-blur-2xl transition-all duration-300 transform translate-y-48 opacity-0 space-y-3">
+        <div class="flex items-center justify-between border-b border-white/5 pb-2.5">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-black text-xs">
+                    <span id="cartDrawerCount">0</span>
                 </div>
                 <div>
-                    <span class="text-[10px] text-slate-400 font-bold block">سبد خرید شما</span>
-                    <span id="cartTotalPrice" class="text-xs font-black text-slate-900">0 تومان</span>
+                    <h4 class="text-xs font-black text-white">سبد اجاره گیفت</h4>
+                    <p id="cartDrawerTotal" class="text-[11px] font-black text-amber-400">0 تومان</p>
                 </div>
             </div>
             <div class="flex items-center gap-2">
-                <button onclick="clearCart()" class="p-2 text-slate-400 hover:text-rose-500 text-xs">
-                    <i class="fa-solid fa-trash-can"></i>
-                </button>
-                <button onclick="checkoutCart()" class="py-2.5 px-4 rounded-xl bg-[#181d28] hover:bg-black text-white text-xs font-black flex items-center gap-1.5 shadow-md">
-                    <span>ثبت سفارش</span>
-                    <i class="fa-solid fa-arrow-left text-[10px]"></i>
+                <button id="drawerClearBtn" class="text-[11px] text-rose-400 hover:text-rose-300 font-bold px-2 py-1">پاک کردن</button>
+                <button id="drawerToggleListBtn" class="w-7 h-7 rounded-lg bg-white/5 text-slate-300 flex items-center justify-center text-xs">
+                    <i id="drawerToggleIcon" class="fa-solid fa-chevron-up"></i>
                 </button>
             </div>
         </div>
+
+        <!-- لیست قابل باز شدن آیتم‌ها -->
+        <div id="cartDrawerItems" class="hidden space-y-2 max-h-40 overflow-y-auto pt-1"></div>
+
+        <!-- کادر کوپن تخفیف -->
+        <div class="flex items-center gap-2 bg-[#050711] p-1.5 rounded-xl border border-white/5">
+            <input type="text" id="couponInput" maxlength="20" placeholder="کد تخفیف..." class="bg-transparent text-xs text-white px-3 py-1.5 flex-1 focus:outline-none uppercase font-bold placeholder-slate-600">
+            <button id="applyCouponBtn" class="px-3.5 py-1.5 bg-amber-400 hover:bg-amber-300 text-slate-950 text-xs font-black rounded-lg transition">اعمال</button>
+        </div>
+
+        <!-- دکمه نهایی ثبت فاکتور -->
+        <button id="checkoutCartBtn" class="w-full py-3 bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:opacity-90 text-slate-950 font-black text-xs rounded-xl transition shadow-lg shadow-amber-500/20 flex items-center justify-center gap-2">
+            <span>ثبت و ارسال سفارش به تلگرام</span>
+            <i class="fa-solid fa-paper-plane text-xs"></i>
+        </button>
     </div>
 
-    <!-- منوی شناور پایینی (Bottom Dock شبیه عکس سوم) -->
-    <nav class="fixed bottom-3 inset-x-4 max-w-xl mx-auto z-40 bottom-dock px-3 py-2 flex items-center justify-around">
-        <button onclick="switchView('home')" id="nav-home" class="nav-tab active px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
-            <i class="fa-solid fa-house text-sm"></i>
+    <!-- منوی شناور ناوبری پایینی -->
+    <nav class="fixed bottom-3 inset-x-4 max-w-md mx-auto z-40 dock-bar px-3 py-2 flex items-center justify-around shadow-2xl">
+        <button id="nav-home" class="nav-btn active flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-house nav-icon text-sm"></i>
             <span>خانه</span>
         </button>
-        <button onclick="switchView('gifts')" id="nav-gifts" class="nav-tab px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
-            <i class="fa-solid fa-gift text-sm"></i>
+        <button id="nav-gifts" class="nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-gift nav-icon text-sm"></i>
             <span>گیفت‌ها</span>
         </button>
-        <button onclick="switchView('services')" id="nav-services" class="nav-tab px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
-            <i class="fa-solid fa-bolt text-sm"></i>
-            <span>سفارش‌ها</span>
+        <button id="nav-services" class="nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-bolt nav-icon text-sm"></i>
+            <span>خدمات</span>
         </button>
-        <button onclick="switchView('profile')" id="nav-profile" class="nav-tab px-5 py-2 rounded-2xl flex flex-col items-center gap-1 text-[10px] font-bold text-slate-500 transition">
-            <i class="fa-solid fa-chess-pawn text-sm"></i>
-            <span>حساب</span>
+        <button id="nav-profile" class="nav-btn flex flex-col items-center gap-1 text-[10px] font-bold text-slate-400 transition">
+            <i class="fa-solid fa-user nav-icon text-sm"></i>
+            <span>پروفایل</span>
         </button>
     </nav>
 
     <!-- مودال انتخاب کالکشن -->
-    <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm hidden">
-        <div class="neo-card w-full max-w-md rounded-3xl overflow-hidden flex flex-col max-h-[80vh]">
-            <div class="px-5 py-3.5 flex items-center justify-between border-b border-slate-100">
-                <button onclick="closeModal()" class="w-7 h-7 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
-                <h3 class="text-xs font-black text-slate-800">کالکشن‌های گیفت</h3>
+    <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="app-card w-full max-w-md rounded-[28px] overflow-hidden shadow-2xl flex flex-col max-h-[80vh] border-purple-500/20">
+            <div class="px-5 py-3.5 flex items-center justify-between border-b border-white/10">
+                <button id="closeCollectionModalBtn" class="w-7 h-7 rounded-full bg-white/5 text-slate-400 hover:text-white flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+                <h3 class="text-xs font-black text-white">کالکشن‌های گیفت</h3>
                 <div class="w-7"></div>
             </div>
-            <div class="p-3 border-b border-slate-100 flex items-center justify-between text-xs">
-                <button onclick="selectAllCollections()" class="text-slate-800 font-bold">انتخاب همه</button>
-                <button onclick="clearCollectionSelection()" class="text-slate-400 hover:text-rose-500">پاک کردن</button>
+            <div class="p-3 border-b border-white/10 flex items-center justify-between text-xs">
+                <button id="selectAllColsBtn" class="text-amber-400 font-bold">انتخاب همه</button>
+                <button id="clearColsBtn" class="text-slate-400 hover:text-rose-400">لغو همه</button>
             </div>
             <div id="modalCollectionsList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
-            <div class="p-3 border-t border-slate-100 bg-slate-50">
-                <button onclick="applyCollectionModal()" class="w-full py-2.5 bg-[#181d28] text-white text-xs font-black rounded-xl">اعمال فیلتر</button>
+            <div class="p-3 border-t border-white/10 bg-[#07080f]">
+                <button id="applyColsModalBtn" class="w-full py-2.5 bg-amber-400 text-slate-950 text-xs font-black rounded-xl transition">
+                    اعمال فیلتر (<span id="modalSelectedCountBadge">همه</span>)
+                </button>
             </div>
         </div>
     </div>
 
     <script>
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
         let tgUser = null;
         if (window.Telegram && window.Telegram.WebApp) {
             try {
                 window.Telegram.WebApp.ready();
                 window.Telegram.WebApp.expand();
+                if (window.Telegram.WebApp.MainButton) window.Telegram.WebApp.MainButton.hide();
                 tgUser = window.Telegram.WebApp.initDataUnsafe?.user || null;
-                if (tgUser) {
-                    const name = tgUser.first_name || tgUser.username || "کاربر گرامی";
-                    document.getElementById('topGreeting').innerText = `سلام ${name} 👋`;
-                    document.getElementById('profileName').innerText = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || name;
-                    document.getElementById('profileUsername').innerText = tgUser.username ? `@${tgUser.username}` : 'بدون یوزرنیم';
-                    document.getElementById('profileUserId').innerText = tgUser.id || '649632759';
-                }
-            } catch(e) {}
+            } catch (e) {}
         }
 
         function triggerHaptic(type = 'light') {
@@ -538,12 +507,12 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
                     if (type === 'selection') window.Telegram.WebApp.HapticFeedback.selectionChanged();
                     else window.Telegram.WebApp.HapticFeedback.impactOccurred(type);
                 }
-            } catch(e) {}
+            } catch (e) {}
         }
 
         function openTgLink(url) {
             const cleanUrl = url.replace('https://t.me/@', 'https://t.me/');
-            if (window.Telegram?.WebApp?.openTelegramLink) {
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.openTelegramLink) {
                 try {
                     window.Telegram.WebApp.openTelegramLink(cleanUrl);
                     return;
@@ -558,484 +527,753 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 
         const DEFAULT_SETTINGS = {
             ratePerStar: 1450,
+            giftMonthlyPrice: 160000,
             prem3: 620000,
             prem6: 950000,
             prem12: 1690000,
-            giftMonthlyPrice: 160000,
             adminTg: 'Zanjani_a',
-            announcementText: 'تخفیف ویژه جشنواره آغاز شد',
+            announcementText: 'تخفیف ویژه سفارشات فعال شد',
             announcementActive: true,
-            couponCode: 'PEARL',
+            couponCode: 'DUCK',
             couponPercent: 10,
+            tabGiftsActive: true,
+            tabStarsActive: true,
+            tabPremiumActive: true,
             customServices: [
-                { id: "boost-1", category: "boost", title: "بوست ۱ لول (۷ روزه)", price: 45000, desc: "تحویل آنی با لینک کانال" },
-                { id: "boost-2", category: "boost", title: "بوست ۴ لول (۱ ماهه)", price: 180000, desc: "پایداری کامل و کیفیت عالی" },
-                { id: "acc-1", category: "account", title: "اکانت مجازی اختصاصی آمریکا", price: 85000, desc: "شماره اختصاصی بدون ریپورت" },
-                { id: "ch-1", category: "channel", title: "۱۰۰۰ ممبر واقعی کانال", price: 95000, desc: "سرعت بالا با ریزش حداقل" }
+                {
+                    id: 'boost',
+                    title: 'بوست کانال (Channel Boost)',
+                    icon: 'fa-bolt',
+                    description: 'افزایش لول کانال جهت فعال‌سازی استوری و لینک‌های ویژه',
+                    packages: [
+                        { name: 'بوست ۱ روزه (Level 1)', price: 45000, tag: 'تستی' },
+                        { name: 'بوست ۷ روزه (Level 1)', price: 180000, tag: 'محبوب' },
+                        { name: 'بوست ۱۴ روزه (Level 1)', price: 340000, tag: 'پیشنهادی' },
+                        { name: 'بوست ۳۰ روزه (Level 1)', price: 620000, tag: 'ویژه' }
+                    ]
+                }
             ]
         };
 
         let SETTINGS = { ...DEFAULT_SETTINGS };
         let currentView = 'home';
-        let currentServiceSubTab = 'stars';
+        let currentServicesTab = 'prem';
         let selectedType = 'all';
         let selectedCollections = new Set();
         let tempSelectedCollections = new Set();
 
+        let appliedCouponCode = null;
+        let appliedDiscountPercent = 0;
         let selectedStarsCount = 50;
         let selectedPremiumMonths = 12;
+
         const STARS_PACKAGES = [50, 75, 100, 150, 250, 350, 500, 1000, 2500, 5000];
 
         let favorites = [];
-        try { favorites = JSON.parse(localStorage.getItem('duck_favs') || '[]'); } catch(e){}
+        try {
+            const f = JSON.parse(localStorage.getItem('duck_favs'));
+            if (Array.isArray(f)) favorites = f.filter(x => typeof x === 'string');
+        } catch (e) {}
 
         let cart = [];
-        try { cart = JSON.parse(localStorage.getItem('duck_cart') || '[]'); } catch(e){}
+        try {
+            const c = JSON.parse(localStorage.getItem('duck_cart'));
+            if (Array.isArray(c)) cart = c.filter(x => x && typeof x === 'object' && x.name);
+        } catch (e) {}
+
+        let currentFilteredDeals = [];
 
         function switchView(viewName) {
             triggerHaptic('selection');
             currentView = viewName;
             ['home', 'gifts', 'services', 'profile'].forEach(v => {
-                document.getElementById(`view-${v}`).classList.add('hidden');
-                document.getElementById(`nav-${v}`).classList.remove('active');
+                const sec = document.getElementById(`view-${v}`);
+                if (sec) sec.classList.add('hidden');
+                const nav = document.getElementById(`nav-${v}`);
+                if (nav) nav.classList.remove('active');
             });
-            document.getElementById(`view-${viewName}`).classList.remove('hidden');
-            document.getElementById(`nav-${viewName}`).classList.add('active');
+
+            const activeSec = document.getElementById(`view-${viewName}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-${viewName}`);
+            if (activeNav) activeNav.classList.add('active');
+
+            if (viewName === 'profile') renderProfileView();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function openCategoryTab(cat) {
-            if (cat === 'gift') {
-                switchView('gifts');
-            } else {
-                switchView('services');
-                switchServiceSubTab(cat);
-            }
-        }
-
-        function switchServiceSubTab(tab) {
+        function switchServicesTab(tab) {
             triggerHaptic('selection');
-            currentServiceSubTab = tab;
-            document.querySelectorAll('.service-subtab-btn').forEach(btn => {
-                btn.classList.remove('bg-[#181d28]', 'text-white', 'font-black');
-                btn.classList.add('bg-white', 'text-slate-600', 'font-bold');
+            currentServicesTab = tab;
+            ['prem', 'stars', 'custom'].forEach(t => {
+                const sec = document.getElementById(`serviceSec-${t}`);
+                if (sec) sec.classList.add('hidden');
+                const btn = document.getElementById(`subtabBtn-${t}`);
+                if (btn) {
+                    btn.className = 'subtab-btn flex-1 py-2 px-3 rounded-xl text-xs font-bold text-slate-400 hover:text-white whitespace-nowrap transition';
+                }
             });
 
-            const activeBtn = document.getElementById(`subtab-${tab}`);
+            const activeSec = document.getElementById(`serviceSec-${tab}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+            const activeBtn = document.getElementById(`subtabBtn-${tab}`);
             if (activeBtn) {
-                activeBtn.classList.add('bg-[#181d28]', 'text-white', 'font-black');
-                activeBtn.classList.remove('bg-white', 'text-slate-600');
-            }
-
-            document.getElementById('subview-stars').classList.add('hidden');
-            document.getElementById('subview-premium').classList.add('hidden');
-            document.getElementById('subview-custom').classList.add('hidden');
-
-            if (tab === 'stars') {
-                document.getElementById('subview-stars').classList.remove('hidden');
-            } else if (tab === 'premium') {
-                document.getElementById('subview-premium').classList.remove('hidden');
-            } else {
-                document.getElementById('subview-custom').classList.remove('hidden');
-                renderCustomServices(tab);
+                activeBtn.className = 'subtab-btn active flex-1 py-2 px-3 rounded-xl text-xs font-black bg-amber-400 text-slate-950 whitespace-nowrap transition';
             }
         }
 
         async function fetchCloudSettings() {
             try {
-                const res = await fetch(`${WORKER_URL}/api/settings`);
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 3500);
+                const res = await fetch(`${WORKER_URL}/api/settings`, { signal: controller.signal });
+                clearTimeout(timeoutId);
                 if (res.ok) {
-                    const data = await res.json();
-                    if (data && typeof data === 'object') {
-                        SETTINGS = { ...DEFAULT_SETTINGS, ...data };
+                    const parsed = await res.json();
+                    if (parsed && typeof parsed === 'object') {
+                        SETTINGS = { ...DEFAULT_SETTINGS, ...parsed };
+                        updateUIWithLatestSettings();
                     }
                 }
-            } catch(e) {}
-            updateUI();
+            } catch (err) {}
         }
 
-        function updateUI() {
-            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
-            document.getElementById('headerSupportLink').href = `https://t.me/${adminUser}`;
-            document.getElementById('profileSupportBtn').href = `https://t.me/${adminUser}`;
+        function updateUIWithLatestSettings() {
+            try {
+                const adminUser = escapeHtml((SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim());
+                const supportLink = document.getElementById('headerSupportLink');
+                if (supportLink) supportLink.href = `https://t.me/${adminUser}`;
+                const profileSupport = document.getElementById('profileSupportBtn');
+                if (profileSupport) profileSupport.href = `https://t.me/${adminUser}`;
 
-            const promo = document.getElementById('promoBanner');
-            if (SETTINGS.announcementActive && SETTINGS.announcementText) {
-                document.getElementById('promoBannerText').innerText = SETTINGS.announcementText;
-                promo.classList.remove('hidden');
-            } else {
-                promo.classList.add('hidden');
-            }
+                const promo = document.getElementById('promoBanner');
+                if (promo) {
+                    if (SETTINGS.announcementActive && SETTINGS.announcementText) {
+                        const promoText = document.getElementById('promoBannerText');
+                        if (promoText) promoText.innerText = SETTINGS.announcementText;
+                        promo.classList.remove('hidden');
+                    } else {
+                        promo.classList.add('hidden');
+                    }
+                }
 
-            renderCards(getFilteredDeals());
-            renderStarsPackages();
-            renderPremiumOptions();
-            updateCartUI();
+                renderCards(getFilteredDeals());
+                renderHomeDeals();
+                renderStarsPackages();
+                renderPremiumOptions();
+                renderCustomServices();
+                updateCartPopup();
+            } catch (e) {}
         }
 
-        // ================= استارز =================
-        function renderStarsPackages() {
-            const container = document.getElementById('starsPackagesList');
-            container.innerHTML = STARS_PACKAGES.map(qty => {
-                const totalToman = (qty * SETTINGS.ratePerStar).toLocaleString('en-US');
-                return `
-                <div onclick="selectStarsPackage(${qty})" class="neo-card p-3 flex items-center justify-between cursor-pointer hover:border-slate-400">
-                    <span class="text-xs font-bold text-slate-800">⭐ ${qty} Stars</span>
-                    <span class="text-xs font-black text-slate-900">${totalToman} ت</span>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function selectStarsPackage(qty) {
-            triggerHaptic('selection');
-            selectedStarsCount = qty;
-            const total = (qty * SETTINGS.ratePerStar).toLocaleString('en-US');
-            document.getElementById('customStarsInput').value = qty;
-            document.getElementById('customStarsPrice').innerText = `${total} تومان`;
-            document.getElementById('customStarsCalcBox').classList.remove('hidden');
-        }
-
-        document.getElementById('customStarsInput').addEventListener('input', (e) => {
-            const val = parseInt(e.target.value);
-            if (val && val >= 50) {
-                selectedStarsCount = val;
-                const total = (val * SETTINGS.ratePerStar).toLocaleString('en-US');
-                document.getElementById('customStarsPrice').innerText = `${total} تومان`;
-                document.getElementById('customStarsCalcBox').classList.remove('hidden');
-            } else {
-                document.getElementById('customStarsCalcBox').classList.add('hidden');
-            }
-        });
-
-        function orderStars() {
-            triggerHaptic('heavy');
-            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
-            const total = (selectedStarsCount * SETTINGS.ratePerStar).toLocaleString('en-US');
-            const nl = String.fromCharCode(10);
-            const msg = encodeURIComponent(
-                "سلام، درخواست خرید استارز تلگرام دارم:" + nl + nl +
-                getBuyerDetailsText() + nl + nl +
-                "تعداد: " + selectedStarsCount + " Stars" + nl +
-                "مبلغ: " + total + " تومان"
-            );
-            openTgLink("https://t.me/" + adminUser + "?text=" + msg);
-        }
-
-        // ================= پرمیوم =================
-        function renderPremiumOptions() {
-            const container = document.getElementById('premiumOptionsList');
-            const options = [
-                { months: 12, label: '۱۲ ماهه (۱ ساله)', price: SETTINGS.prem12 },
-                { months: 6, label: '۶ ماهه', price: SETTINGS.prem6 },
-                { months: 3, label: '۳ ماهه', price: SETTINGS.prem3 }
-            ];
-
-            container.innerHTML = options.map(opt => {
-                const isSelected = selectedPremiumMonths === opt.months;
-                return `
-                <div onclick="selectPremiumPlan(${opt.months})" class="neo-card p-3.5 flex items-center justify-between cursor-pointer ${isSelected ? 'border-slate-900 bg-slate-50' : ''}">
-                    <span class="text-xs font-bold text-slate-800">${opt.label}</span>
-                    <span class="text-xs font-black text-slate-900">${opt.price.toLocaleString('en-US')} تومان</span>
-                </div>
-                `;
-            }).join('');
-        }
-
-        function selectPremiumPlan(m) {
-            triggerHaptic('selection');
-            selectedPremiumMonths = m;
-            renderPremiumOptions();
-        }
-
-        function orderPremium() {
-            triggerHaptic('heavy');
-            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
-            let price = SETTINGS.prem12;
-            let title = '1 ساله';
-            if (selectedPremiumMonths === 6) { price = SETTINGS.prem6; title = '6 ماهه'; }
-            if (selectedPremiumMonths === 3) { price = SETTINGS.prem3; title = '3 ماهه'; }
-            const nl = String.fromCharCode(10);
-            const msg = encodeURIComponent(
-                "سلام، درخواست خرید تلگرام پرمیوم دارم:" + nl + nl +
-                getBuyerDetailsText() + nl + nl +
-                "مدت اشتراک: " + title + nl +
-                "مبلغ: " + price.toLocaleString('en-US') + " تومان"
-            );
-            openTgLink("https://t.me/" + adminUser + "?text=" + msg);
-        }
-
-        // ================= خدمات سفارشی داینامیک ادمین =================
-        function renderCustomServices(category) {
+        // ================= رندر خدمات سفارشی داینامیک =================
+        function renderCustomServices() {
             const container = document.getElementById('customServicesContainer');
-            const list = (SETTINGS.customServices || []).filter(s => s.category === category);
+            if (!container) return;
 
-            if (list.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">موردی برای این بخش تعریف نشده است.</p>';
-                return;
-            }
+            const list = Array.isArray(SETTINGS.customServices) && SETTINGS.customServices.length > 0 
+                ? SETTINGS.customServices 
+                : DEFAULT_SETTINGS.customServices;
 
-            container.innerHTML = list.map(item => `
-                <div class="neo-card p-3.5 flex items-center justify-between">
-                    <div>
-                        <h4 class="text-xs font-bold text-slate-900">${item.title}</h4>
-                        <p class="text-[10px] text-slate-500 mt-0.5">${item.desc || ''}</p>
-                        <span class="text-xs font-black text-slate-800 mt-1 block">${Number(item.price).toLocaleString('en-US')} تومان</span>
+            container.innerHTML = list.map(cat => `
+                <div class="app-card p-5 space-y-3.5 border-cyan-500/20">
+                    <div class="flex items-center gap-2.5 border-b border-white/5 pb-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-cyan-400/10 text-cyan-400 flex items-center justify-center text-sm">
+                            <i class="fa-solid ${escapeHtml(cat.icon || 'fa-bolt')}"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-black text-white">${escapeHtml(cat.title)}</h4>
+                            <p class="text-[10px] text-slate-400 mt-0.5">${escapeHtml(cat.description || '')}</p>
+                        </div>
                     </div>
-                    <button onclick='addToCartCustom(${JSON.stringify(item)})' class="px-3.5 py-1.5 rounded-xl bg-[#181d28] hover:bg-black text-white font-bold text-xs transition">
-                        + خرید
-                    </button>
+                    <div class="space-y-2">
+                        ${(cat.packages || []).map((pkg, i) => `
+                            <div class="p-3 rounded-2xl bg-white/[0.02] border border-white/5 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-white">${escapeHtml(pkg.name)}</span>
+                                    ${pkg.tag ? `<span class="text-[9px] px-2 py-0.5 rounded-full bg-cyan-400/10 text-cyan-300 font-bold mr-1.5">${escapeHtml(pkg.tag)}</span>` : ''}
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xs font-black text-cyan-400">${Number(pkg.price || 0).toLocaleString('en-US')} ت</span>
+                                    <button onclick="orderCustomPackage('${escapeHtml(cat.title)}', '${escapeHtml(pkg.name)}', ${pkg.price})" class="px-3 py-1 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-[11px] transition">
+                                        سفارش
+                                    </button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             `).join('');
         }
 
-        function addToCartCustom(item) {
-            triggerHaptic('selection');
-            cart.push({ name: item.title, price: Number(item.price), type: 'custom' });
-            localStorage.setItem('duck_cart', JSON.stringify(cart));
-            updateCartUI();
+        function orderCustomPackage(catTitle, pkgName, price) {
+            triggerHaptic('heavy');
+            const adminUser = escapeHtml((SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim());
+            const buyer = getBuyerDetailsText();
+            const nl = String.fromCharCode(10);
+            const msg = encodeURIComponent(
+                "سلام، متقاضی سفارش خدمت زیر هستم:" + nl + nl +
+                buyer + nl + nl +
+                "دسته: " + catTitle + nl +
+                "پکیج: " + pkgName + nl +
+                "مبلغ: " + Number(price || 0).toLocaleString('en-US') + " تومان"
+            );
+            openTgLink(`https://t.me/${adminUser}?text=${msg}`);
         }
 
-        // ================= گیفت‌ها و سبد خرید =================
-        function renderCards(items) {
-            const container = document.getElementById('dealsGrid');
-            if (!container) return;
-            if (items.length === 0) {
-                container.innerHTML = '<div class="col-span-full py-12 text-center text-slate-400 text-xs font-bold">گیفتی پیدا نشد.</div>';
-                return;
+        // ================= رندر پروفایل =================
+        function renderProfileView() {
+            if (tgUser) {
+                const name = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || 'کاربر تلگرام';
+                document.getElementById('profileFullName').innerText = name;
+                document.getElementById('profileUsername').innerText = tgUser.username ? `@${tgUser.username}` : 'بدون یوزرنیم';
+                document.getElementById('profileUserId').innerText = `آیدی کاربری: ${tgUser.id}`;
+                document.getElementById('profileAvatarInitial').innerText = (tgUser.first_name || 'U').charAt(0).toUpperCase();
             }
-
-            const giftPriceFormatted = Number(SETTINGS.giftMonthlyPrice || 160000).toLocaleString('en-US');
-
-            container.innerHTML = items.map(deal => {
-                const isFav = favorites.includes(deal.name);
-                const isInCart = cart.some(c => c.name === deal.name);
-
-                return `
-                <div class="neo-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-slate-800' : ''}">
-                    <div>
-                        <div class="relative w-full h-36 bg-[#f4f7fb] flex items-center justify-center border-b border-slate-100">
-                            ${deal.rarity ? `<span class="absolute top-2 left-2 px-2 py-0.5 rounded-md text-[9px] font-bold bg-white text-slate-800 shadow-sm border border-slate-200">${deal.rarity}</span>` : ''}
-                            <button onclick="toggleFavorite('${deal.name}')" class="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/80 shadow-sm flex items-center justify-center text-xs ${isFav ? 'text-rose-500' : 'text-slate-400'}">
-                                <i class="fa-solid fa-heart"></i>
-                            </button>
-                            <img src="${deal.image_url}" alt="${deal.name}" class="w-24 h-24 object-contain" onerror="this.src='https://marketapp.org/favicon.ico'">
-                        </div>
-                        <div class="p-2.5">
-                            <h4 class="text-xs font-bold text-slate-800 truncate text-center">${deal.name}</h4>
-                            <span class="text-xs font-black text-slate-900 text-center block mt-1">${giftPriceFormatted} ت/ماه</span>
-                        </div>
-                    </div>
-                    <div class="p-2.5 pt-0 grid grid-cols-2 gap-1.5">
-                        <a href="${deal.tg_link}" target="_blank" class="py-1.5 text-center text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-bold transition">دیدن</a>
-                        <button onclick='toggleCartGift(${JSON.stringify(deal)})' class="py-1.5 text-center ${isInCart ? 'bg-rose-500 text-white font-black' : 'bg-[#181d28] hover:bg-black text-white font-bold'} rounded-lg text-xs transition">
-                            ${isInCart ? 'حذف' : 'اجاره'}
-                        </button>
-                    </div>
-                </div>
-                `;
-            }).join('');
+            document.getElementById('profileFavsCount').innerText = `${favorites.length} عدد`;
+            document.getElementById('profileCartCount').innerText = `${cart.length} مورد`;
         }
 
-        function toggleCartGift(deal) {
+        // ================= پاپ‌آپ سبد خرید هوشمند =================
+        function toggleCart(item) {
+            if (!item || !item.name) return;
             triggerHaptic('selection');
-            const idx = cart.findIndex(c => c.name === deal.name);
+            const idx = cart.findIndex(c => c && c.name === item.name);
             if (idx > -1) {
                 cart.splice(idx, 1);
             } else {
-                cart.push({ name: deal.name, price: Number(SETTINGS.giftMonthlyPrice || 160000), tg_link: deal.tg_link, type: 'gift' });
+                cart.push(item);
             }
             localStorage.setItem('duck_cart', JSON.stringify(cart));
-            updateCartUI();
+            updateCartPopup(true); // هنگام افزودن، پاپ‌آپ بالا می‌آید
             renderCards(getFilteredDeals());
+            renderCartDrawerItems();
         }
 
-        function toggleFavorite(name) {
-            triggerHaptic('medium');
-            const idx = favorites.indexOf(name);
-            if (idx > -1) favorites.splice(idx, 1);
-            else favorites.push(name);
-            localStorage.setItem('duck_favs', JSON.stringify(favorites));
-            document.getElementById('favCount').innerText = favorites.length;
-            renderCards(getFilteredDeals());
-        }
-
-        // پاپ‌آپ خودکار سبد خرید
-        function updateCartUI() {
-            const bar = document.getElementById('floatingCartBar');
+        function updateCartPopup(shouldShow = false) {
+            const popup = document.getElementById('cartPopupDrawer');
+            if (!popup) return;
             const count = cart.length;
-            document.getElementById('cartCountBadge').innerText = count;
-            document.getElementById('profileCartCount').innerText = `${count} قلم در سبد`;
+            document.getElementById('cartDrawerCount').innerText = count;
 
-            let total = 0;
-            cart.forEach(item => { total += Number(item.price || 0); });
-            document.getElementById('cartTotalPrice').innerText = `${total.toLocaleString('en-US')} تومان`;
+            const basePrice = Number(SETTINGS.giftMonthlyPrice) || 160000;
+            const rawTotal = count * basePrice;
+            const finalTotal = appliedDiscountPercent > 0 ? Math.round(rawTotal * (1 - appliedDiscountPercent / 100)) : rawTotal;
+            document.getElementById('cartDrawerTotal').innerText = `${finalTotal.toLocaleString('en-US')} تومان`;
 
-            if (count > 0) {
-                bar.classList.remove('translate-y-36', 'opacity-0');
-                bar.classList.add('translate-y-0', 'opacity-100');
+            if (count > 0 && (shouldShow || currentView === 'gifts' || currentView === 'home')) {
+                popup.classList.remove('translate-y-48', 'opacity-0');
+                popup.classList.add('translate-y-0', 'opacity-100');
             } else {
-                bar.classList.remove('translate-y-0', 'opacity-100');
-                bar.classList.add('translate-y-36', 'opacity-0');
+                popup.classList.remove('translate-y-0', 'opacity-100');
+                popup.classList.add('translate-y-48', 'opacity-0');
+            }
+        }
+
+        function renderCartDrawerItems() {
+            const container = document.getElementById('cartDrawerItems');
+            if (!container) return;
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-[11px] text-slate-500 text-center py-2">سبد خالی است</p>';
+            } else {
+                container.innerHTML = cart.map((item, i) => `
+                    <div class="p-2 rounded-xl bg-white/[0.03] border border-white/5 flex items-center justify-between text-xs">
+                        <span class="font-bold text-slate-300 truncate max-w-[200px]">${i + 1}. ${escapeHtml(item.name)}</span>
+                        <button onclick="toggleCartByIndex(${DEALS.findIndex(d => d.name === item.name)})" class="text-rose-400 hover:text-rose-300 px-2 py-0.5">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                `).join('');
             }
         }
 
         function clearCart() {
             triggerHaptic('light');
             cart = [];
+            appliedCouponCode = null;
+            appliedDiscountPercent = 0;
             localStorage.setItem('duck_cart', JSON.stringify(cart));
-            updateCartUI();
+            updateCartPopup();
+            renderCartDrawerItems();
             renderCards(getFilteredDeals());
-        }
-
-        function getBuyerDetailsText() {
-            if (!tgUser) return "خریدار: کاربر وب";
-            const name = `${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || 'کاربر تلگرام';
-            const uname = tgUser.username ? `@${tgUser.username}` : 'بدون یوزرنیم';
-            return `خریدار: ${name} (${uname} - آیدی: ${tgUser.id})`;
         }
 
         function checkoutCart() {
             triggerHaptic('heavy');
             if (cart.length === 0) return alert('سبد خرید شما خالی است!');
-            const adminUser = (SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim();
-            let total = 0;
+            const adminUser = escapeHtml((SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim());
+            const basePrice = Number(SETTINGS.giftMonthlyPrice) || 160000;
+            const rawTotal = cart.length * basePrice;
+            const finalTotal = appliedDiscountPercent > 0 ? Math.round(rawTotal * (1 - appliedDiscountPercent / 100)) : rawTotal;
+            const buyer = getBuyerDetailsText();
             const nl = String.fromCharCode(10);
-            const list = cart.map((c, i) => {
-                total += Number(c.price || 0);
-                return `${i + 1}. 🎁 ${c.name} (${Number(c.price).toLocaleString('en-US')} ت)`;
-            }).join(nl);
+            const itemsList = cart.map((c, i) => `${i + 1}. 🎁 ${c.name} (${c.tg_link || 'https://t.me'})`).join(nl);
+            const coupon = appliedCouponCode ? (nl + `کد تخفیف: ${appliedCouponCode} (${appliedDiscountPercent}%)`) : '';
 
             const msg = encodeURIComponent(
-                "سلام، درخواست ثبت سفارش دارم:" + nl + nl +
-                getBuyerDetailsText() + nl + nl +
-                "اقلام سفارش (" + cart.length + " مورد):" + nl +
-                list + nl + nl +
-                "مبلغ کل: " + total.toLocaleString('en-US') + " تومان"
+                "سلام، درخواست اجاره گیفت دارم:" + nl + nl +
+                buyer + nl + nl +
+                "اقلام سفارش (" + cart.length + " عدد):" + nl +
+                itemsList + nl + nl +
+                "مبلغ نهایی: " + finalTotal.toLocaleString('en-US') + " تومان / ماه" +
+                coupon
             );
-            openTgLink("https://t.me/" + adminUser + "?text=" + msg);
+            openTgLink(`https://t.me/${adminUser}?text=${msg}`);
         }
 
-        // ================= کالکشن‌ها =================
-        function openModal() {
-            triggerHaptic('light');
-            tempSelectedCollections = new Set(selectedCollections);
-            document.getElementById('collectionModal').classList.remove('hidden');
-            renderModalCollections();
+        function applyCoupon() {
+            triggerHaptic('medium');
+            const input = (document.getElementById('couponInput')?.value || '').trim().toUpperCase();
+            if (SETTINGS.couponCode && input === SETTINGS.couponCode.toUpperCase()) {
+                appliedCouponCode = input;
+                appliedDiscountPercent = Number(SETTINGS.couponPercent) || 10;
+                alert(`کد تخفیف ${appliedDiscountPercent}٪ اعمال شد`);
+            } else {
+                alert('کد تخفیف نامعتبر است');
+            }
+            updateCartPopup();
         }
-        function closeModal() {
-            triggerHaptic('light');
-            document.getElementById('collectionModal').classList.add('hidden');
-        }
-        function renderModalCollections() {
-            const container = document.getElementById('modalCollectionsList');
-            container.innerHTML = COLLECTIONS.map(col => {
-                const isSelected = tempSelectedCollections.has(col.name);
+
+        // ================= استارز و پرمیوم =================
+        function renderStarsPackages() {
+            const container = document.getElementById('starsPackagesList');
+            if (!container) return;
+            container.innerHTML = STARS_PACKAGES.map(qty => {
+                const totalToman = (qty * Number(SETTINGS.ratePerStar || 1450)).toLocaleString('en-US');
+                const isSelected = selectedStarsCount === qty;
                 return `
-                <div onclick="toggleModalCollection('${col.name}')" class="p-2.5 rounded-xl border ${isSelected ? 'border-slate-900 bg-slate-100' : 'border-slate-200'} flex items-center justify-between cursor-pointer">
-                    <span class="text-xs font-bold text-slate-800">${col.name}</span>
-                    <span class="text-[10px] text-slate-500">${col.count}</span>
+                <div data-stars-qty="${qty}" class="stars-pkg-btn p-3 rounded-2xl bg-white/[0.02] border ${isSelected ? 'border-amber-400 bg-amber-400/10' : 'border-white/5'} flex items-center justify-between cursor-pointer transition">
+                    <span class="text-xs font-bold text-white">${qty} Stars</span>
+                    <span class="text-xs font-black text-amber-400">${totalToman} ت</span>
                 </div>
                 `;
             }).join('');
-        }
-        function toggleModalCollection(name) {
-            triggerHaptic('selection');
-            if (tempSelectedCollections.has(name)) tempSelectedCollections.delete(name);
-            else tempSelectedCollections.add(name);
-            renderModalCollections();
-        }
-        function selectAllCollections() {
-            COLLECTIONS.forEach(c => tempSelectedCollections.add(c.name));
-            renderModalCollections();
-        }
-        function clearCollectionSelection() {
-            tempSelectedCollections.clear();
-            renderModalCollections();
-        }
-        function applyCollectionModal() {
-            selectedCollections = new Set(tempSelectedCollections);
-            document.getElementById('selectedColText').innerText = selectedCollections.size === 0 ? 'کالکشن‌ها' : `${selectedCollections.size} کالکشن`;
-            closeModal();
-            renderCards(getFilteredDeals());
+
+            container.querySelectorAll('.stars-pkg-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const qty = Number(e.currentTarget.getAttribute('data-stars-qty'));
+                    triggerHaptic('selection');
+                    selectedStarsCount = qty;
+                    renderStarsPackages();
+                });
+            });
+            updateStarsFinalPrice();
         }
 
-        function filterType(type, btn) {
-            triggerHaptic('selection');
-            selectedType = type;
-            document.querySelectorAll('.type-btn').forEach(b => {
-                b.classList.remove('bg-[#181d28]', 'text-white', 'font-black');
-                b.classList.add('bg-white', 'text-slate-600', 'font-bold');
+        function updateStarsFinalPrice() {
+            const total = (selectedStarsCount * Number(SETTINGS.ratePerStar || 1450)).toLocaleString('en-US');
+            const target = document.getElementById('selectedStarsFinalToman');
+            if (target) target.innerText = `${total} تومان`;
+        }
+
+        function orderStars() {
+            triggerHaptic('heavy');
+            const adminUser = escapeHtml((SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim());
+            const total = (selectedStarsCount * Number(SETTINGS.ratePerStar || 1450)).toLocaleString('en-US');
+            const buyer = getBuyerDetailsText();
+            const nl = String.fromCharCode(10);
+            const msg = encodeURIComponent(
+                "سلام، درخواست خرید استارز تلگرام دارم:" + nl + nl +
+                buyer + nl + nl +
+                "تعداد استارز: " + selectedStarsCount + " Stars" + nl +
+                "مبلغ قابل پرداخت: " + total + " تومان"
+            );
+            openTgLink(`https://t.me/${adminUser}?text=${msg}`);
+        }
+
+        function renderPremiumOptions() {
+            const container = document.getElementById('premiumOptionsList');
+            if (!container) return;
+            const options = [
+                { months: 12, label: '۱۲ ماهه (1 Year)', discount: '-52%', price: Number(SETTINGS.prem12) || 1690000 },
+                { months: 6, label: '۶ ماهه (6 Months)', discount: '-47%', price: Number(SETTINGS.prem6) || 950000 },
+                { months: 3, label: '۳ ماهه (3 Months)', discount: '-20%', price: Number(SETTINGS.prem3) || 620000 }
+            ];
+
+            container.innerHTML = options.map(opt => {
+                const isSelected = selectedPremiumMonths === opt.months;
+                const totalToman = opt.price.toLocaleString('en-US');
+                return `
+                <div data-prem-months="${opt.months}" class="prem-plan-btn p-3.5 rounded-2xl bg-white/[0.02] border ${isSelected ? 'border-purple-400 bg-purple-500/10' : 'border-white/5'} flex items-center justify-between cursor-pointer transition">
+                    <div>
+                        <span class="text-xs font-bold text-white">${escapeHtml(opt.label)}</span>
+                        <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-bold mr-2">${escapeHtml(opt.discount)}</span>
+                    </div>
+                    <span class="text-xs font-black text-purple-300">${totalToman} ت</span>
+                </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.prem-plan-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const months = Number(e.currentTarget.getAttribute('data-prem-months'));
+                    triggerHaptic('selection');
+                    selectedPremiumMonths = months;
+                    renderPremiumOptions();
+                });
             });
-            if (btn) {
-                btn.classList.remove('bg-white', 'text-slate-600');
-                btn.classList.add('bg-[#181d28]', 'text-white', 'font-black');
+            updatePremiumFinalPrice();
+        }
+
+        function updatePremiumFinalPrice() {
+            let price = Number(SETTINGS.prem12) || 1690000;
+            if (selectedPremiumMonths === 6) price = Number(SETTINGS.prem6) || 950000;
+            if (selectedPremiumMonths === 3) price = Number(SETTINGS.prem3) || 620000;
+            const target = document.getElementById('selectedPremiumFinalToman');
+            if (target) target.innerText = `${price.toLocaleString('en-US')} تومان`;
+        }
+
+        function orderPremium() {
+            triggerHaptic('heavy');
+            const adminUser = escapeHtml((SETTINGS.adminTg || 'Zanjani_a').replace('@', '').trim());
+            let planName = '1 ساله';
+            let price = Number(SETTINGS.prem12) || 1690000;
+            if (selectedPremiumMonths === 6) { planName = '6 ماهه'; price = Number(SETTINGS.prem6) || 950000; }
+            if (selectedPremiumMonths === 3) { planName = '3 ماهه'; price = Number(SETTINGS.prem3) || 620000; }
+            const total = price.toLocaleString('en-US');
+            const buyer = getBuyerDetailsText();
+            const nl = String.fromCharCode(10);
+            const msg = encodeURIComponent(
+                "سلام، درخواست خرید تلگرام پرمیوم دارم:" + nl + nl +
+                buyer + nl + nl +
+                "نوع اشتراک: " + planName + nl +
+                "مبلغ قابل پرداخت: " + total + " تومان"
+            );
+            openTgLink(`https://t.me/${adminUser}?text=${msg}`);
+        }
+
+        function getBuyerDetailsText() {
+            if (!tgUser) return "خریدار: کاربر وب";
+            const name = escapeHtml(`${tgUser.first_name || ''} ${tgUser.last_name || ''}`.trim() || 'کاربر تلگرام');
+            const uname = tgUser.username ? `@${escapeHtml(tgUser.username)}` : 'بدون یوزرنیم';
+            return `خریدار: ${name} (${uname} - آیدی: ${tgUser.id})`;
+        }
+
+        // ================= رندر کارت‌ها و خانه =================
+        function renderHomeDeals() {
+            const container = document.getElementById('homeRecentDeals');
+            if (!container) return;
+            const topDeals = DEALS.slice(0, 6);
+            container.innerHTML = topDeals.map((d, i) => `
+                <div class="app-card p-3 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <img src="${escapeHtml(d.image_url || 'https://marketapp.org/favicon.ico')}" class="w-12 h-12 rounded-xl object-contain bg-black/40 p-1" onerror="this.src='https://marketapp.org/favicon.ico'">
+                        <div>
+                            <h4 class="text-xs font-bold text-white">${escapeHtml(d.name)}</h4>
+                            <span class="text-[10px] text-amber-400 font-bold">${Number(SETTINGS.giftMonthlyPrice || 160000).toLocaleString('en-US')} ت/ماه</span>
+                        </div>
+                    </div>
+                    <button data-home-idx="${i}" class="home-add-btn px-3 py-1.5 rounded-xl bg-amber-400/10 text-amber-300 border border-amber-400/20 text-xs font-bold hover:bg-amber-400 hover:text-slate-950 transition">
+                        + سبد
+                    </button>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.home-add-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = Number(e.currentTarget.getAttribute('data-home-idx'));
+                    if (topDeals[idx]) toggleCart(topDeals[idx]);
+                });
+            });
+        }
+
+        function renderCards(items) {
+            currentFilteredDeals = Array.isArray(items) ? items : [];
+            const container = document.getElementById('dealsGrid');
+            if (!container) return;
+
+            if (currentFilteredDeals.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-16 text-center text-slate-400 font-bold">گیفتی با این مشخصات پیدا نشد.</div>';
+                return;
             }
-            renderCards(getFilteredDeals());
+
+            const giftPriceFormatted = Number(SETTINGS.giftMonthlyPrice || 160000).toLocaleString('en-US');
+
+            let html = '';
+            for (let idx = 0; idx < currentFilteredDeals.length; idx++) {
+                const deal = currentFilteredDeals[idx];
+                if (!deal) continue;
+
+                const rarityBadge = deal.rarity 
+                    ? `<span class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 backdrop-blur-md">${escapeHtml(deal.rarity)}</span>` 
+                    : '';
+                
+                const isFav = favorites.includes(deal.name);
+                const isInCart = cart.some(c => c && c.name === deal.name);
+
+                html += `
+                <div class="app-card overflow-hidden flex flex-col justify-between ${isInCart ? 'border-amber-400 bg-amber-500/5' : ''}">
+                    <div>
+                        <div class="relative w-full h-44 bg-gradient-to-b from-white/[0.04] to-transparent flex items-center justify-center overflow-hidden border-b border-white/5">
+                            ${rarityBadge}
+                            <button data-fav-idx="${idx}" class="fav-btn absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/40 backdrop-blur-md flex items-center justify-center text-sm transition hover:scale-110 ${isFav ? 'text-rose-500' : 'text-slate-400 hover:text-white'}">
+                                <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart"></i>
+                            </button>
+                            <img src="${escapeHtml(deal.image_url || 'https://marketapp.org/favicon.ico')}" alt="${escapeHtml(deal.name)}" class="w-28 h-28 object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.8)]" onerror="this.src='https://marketapp.org/favicon.ico'">
+                        </div>
+                        <div class="p-3.5 space-y-2">
+                            <h3 class="font-bold text-xs text-white truncate text-center">${escapeHtml(deal.name)}</h3>
+                            <div class="flex justify-between items-center text-[11px] bg-black/30 p-2 rounded-xl border border-white/5">
+                                <span class="text-slate-400">اجاره ماهانه:</span>
+                                <span class="font-black text-amber-300">${giftPriceFormatted} ت</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="p-3.5 pt-0 grid grid-cols-2 gap-2">
+                        <a href="${escapeHtml(deal.tg_link || 'https://t.me')}" target="_blank" class="py-2 rounded-xl bg-white/[0.04] text-slate-300 text-xs font-bold text-center border border-white/10">مشاهده</a>
+                        <button data-cart-idx="${idx}" class="cart-btn py-2 rounded-xl ${isInCart ? 'bg-amber-400 text-slate-950 font-black' : 'bg-white text-slate-950 font-bold'} text-xs text-center transition">
+                            ${isInCart ? 'انتخاب شد' : 'اجاره'}
+                        </button>
+                    </div>
+                </div>
+                `;
+            }
+            container.innerHTML = html;
+
+            container.querySelectorAll('.fav-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = Number(e.currentTarget.getAttribute('data-fav-idx'));
+                    const deal = currentFilteredDeals[idx];
+                    if (deal && deal.name) {
+                        triggerHaptic('medium');
+                        const fIdx = favorites.indexOf(deal.name);
+                        if (fIdx > -1) favorites.splice(fIdx, 1);
+                        else favorites.push(deal.name);
+                        localStorage.setItem('duck_favs', JSON.stringify(favorites));
+                        updateFavCount();
+                        renderCards(getFilteredDeals());
+                    }
+                });
+            });
+
+            container.querySelectorAll('.cart-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const idx = Number(e.currentTarget.getAttribute('data-cart-idx'));
+                    const deal = currentFilteredDeals[idx];
+                    if (deal) toggleCart(deal);
+                });
+            });
+        }
+
+        function toggleCartByIndex(idx) {
+            if (DEALS[idx]) toggleCart(DEALS[idx]);
+        }
+
+        function updateFavCount() {
+            const el = document.getElementById('favCount');
+            if (el) el.innerText = favorites.length;
+        }
+
+        function openModal() {
+            triggerHaptic('light');
+            tempSelectedCollections = new Set(selectedCollections);
+            const m = document.getElementById('collectionModal');
+            if (m) m.classList.remove('hidden');
+            renderModalCollections();
+        }
+
+        function closeModal() {
+            triggerHaptic('light');
+            const m = document.getElementById('collectionModal');
+            if (m) m.classList.add('hidden');
+        }
+
+        function renderModalCollections() {
+            const container = document.getElementById('modalCollectionsList');
+            if (!container) return;
+            container.innerHTML = COLLECTIONS.map((col, idx) => {
+                const isSelected = tempSelectedCollections.has(col.name);
+                return `
+                <div data-col-idx="${idx}" class="col-item-row p-2.5 rounded-xl border ${isSelected ? 'border-amber-400 bg-amber-500/10' : 'border-white/5'} flex items-center justify-between cursor-pointer">
+                    <span class="text-xs font-bold text-slate-200">${escapeHtml(col.name)}</span>
+                    <span class="text-[10px] text-slate-400">${Number(col.count) || 0}</span>
+                </div>
+                `;
+            }).join('');
+
+            container.querySelectorAll('.col-item-row').forEach(row => {
+                row.addEventListener('click', (e) => {
+                    const idx = Number(e.currentTarget.getAttribute('data-col-idx'));
+                    const col = COLLECTIONS[idx];
+                    if (col && col.name) {
+                        triggerHaptic('selection');
+                        if (tempSelectedCollections.has(col.name)) tempSelectedCollections.delete(col.name);
+                        else tempSelectedCollections.add(col.name);
+                        renderModalCollections();
+                    }
+                });
+            });
+        }
+
+        function applyCollectionModal() {
+            selectedCollections = new Set(tempSelectedCollections);
+            const label = document.getElementById('selectedColText');
+            if (label) {
+                label.innerText = selectedCollections.size === 0 ? 'کالکشن‌ها' : `${selectedCollections.size} کالکشن`;
+            }
+            closeModal();
+            applyFilters();
         }
 
         function getFilteredDeals() {
-            const q = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
-            return DEALS.filter(d => {
-                const match = d.name.toLowerCase().includes(q) || d.number.includes(q) || d.gift_title.toLowerCase().includes(q);
-                if (!match) return false;
-                if (selectedType === 'rare' && d.rarity === '') return false;
-                if (selectedType === 'favs' && !favorites.includes(d.name)) return false;
-                if (selectedCollections.size > 0 && selectedCollections.size < COLLECTIONS.length) {
-                    if (!selectedCollections.has(d.gift_title)) return false;
+            try {
+                const query = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
+                return DEALS.filter(d => {
+                    if (!d) return false;
+                    const dName = String(d.name || '').toLowerCase();
+                    const dNum = String(d.number || '').toLowerCase();
+                    const dTitle = String(d.gift_title || '').toLowerCase();
+
+                    if (query && !dName.includes(query) && !dNum.includes(query) && !dTitle.includes(query)) {
+                        return false;
+                    }
+                    if (selectedType === 'rare' && !d.rarity) return false;
+                    if (selectedType === 'favs' && !favorites.includes(d.name)) return false;
+                    if (selectedCollections.size > 0 && selectedCollections.size < COLLECTIONS.length) {
+                        if (!selectedCollections.has(d.gift_title)) return false;
+                    }
+                    return true;
+                });
+            } catch (err) {
+                return DEALS;
+            }
+        }
+
+        function applyFilters() {
+            renderCards(getFilteredDeals());
+        }
+
+        function setupEventListeners() {
+            // ناوبری اصلی پایین
+            document.getElementById('nav-home')?.addEventListener('click', () => switchView('home'));
+            document.getElementById('nav-gifts')?.addEventListener('click', () => switchView('gifts'));
+            document.getElementById('nav-services')?.addEventListener('click', () => switchView('services'));
+            document.getElementById('nav-profile')?.addEventListener('click', () => switchView('profile'));
+
+            // زیرتب‌های خدمات
+            document.getElementById('subtabBtn-prem')?.addEventListener('click', () => switchServicesTab('prem'));
+            document.getElementById('subtabBtn-stars')?.addEventListener('click', () => switchServicesTab('stars'));
+            document.getElementById('subtabBtn-custom')?.addEventListener('click', () => switchServicesTab('custom'));
+
+            // میانبرهای صفحه خانه
+            document.getElementById('shortcutGifts')?.addEventListener('click', () => switchView('gifts'));
+            document.getElementById('shortcutPremium')?.addEventListener('click', () => { switchView('services'); switchServicesTab('prem'); });
+            document.getElementById('shortcutStars')?.addEventListener('click', () => { switchView('services'); switchServicesTab('stars'); });
+            document.getElementById('shortcutServices')?.addEventListener('click', () => { switchView('services'); switchServicesTab('custom'); });
+            document.getElementById('seeAllDealsBtn')?.addEventListener('click', () => switchView('gifts'));
+            document.getElementById('promoActionBtn')?.addEventListener('click', () => switchView('gifts'));
+
+            // پاپ‌آپ کشویی سبد خرید
+            document.getElementById('drawerToggleListBtn')?.addEventListener('click', () => {
+                const list = document.getElementById('cartDrawerItems');
+                const icon = document.getElementById('drawerToggleIcon');
+                if (list) {
+                    list.classList.toggle('hidden');
+                    renderCartDrawerItems();
+                    if (icon) {
+                        icon.classList.toggle('fa-chevron-up');
+                        icon.classList.toggle('fa-chevron-down');
+                    }
                 }
-                return true;
+            });
+            document.getElementById('drawerClearBtn')?.addEventListener('click', clearCart);
+            document.getElementById('checkoutCartBtn')?.addEventListener('click', checkoutCart);
+            document.getElementById('applyCouponBtn')?.addEventListener('click', applyCoupon);
+
+            // کالکشن‌ها
+            document.getElementById('openColModalBtn')?.addEventListener('click', openModal);
+            document.getElementById('closeCollectionModalBtn')?.addEventListener('click', closeModal);
+            document.getElementById('selectAllColsBtn')?.addEventListener('click', () => {
+                COLLECTIONS.forEach(c => { if (c && c.name) tempSelectedCollections.add(c.name); });
+                renderModalCollections();
+            });
+            document.getElementById('clearColsBtn')?.addEventListener('click', () => {
+                tempSelectedCollections.clear();
+                renderModalCollections();
+            });
+            document.getElementById('applyColsModalBtn')?.addEventListener('click', applyCollectionModal);
+
+            // فیلترهای بالا
+            const filterMap = [
+                { id: 'filterBtnAll', type: 'all' },
+                { id: 'filterBtnRare', type: 'rare' },
+                { id: 'filterBtnFavs', type: 'favs' }
+            ];
+            filterMap.forEach(item => {
+                document.getElementById(item.id)?.addEventListener('click', (e) => {
+                    triggerHaptic('selection');
+                    selectedType = item.type;
+                    document.querySelectorAll('.type-btn').forEach(b => {
+                        b.classList.remove('bg-amber-400', 'text-slate-950');
+                        b.classList.add('bg-white/[0.04]', 'text-slate-300');
+                    });
+                    e.currentTarget.classList.remove('bg-white/[0.04]', 'text-slate-300');
+                    e.currentTarget.classList.add('bg-amber-400', 'text-slate-950');
+                    applyFilters();
+                });
+            });
+
+            // سرویس‌ها
+            document.getElementById('orderPremiumBtn')?.addEventListener('click', orderPremium);
+            document.getElementById('orderStarsBtn')?.addEventListener('click', orderStars);
+
+            // جستجو
+            let searchTimer = null;
+            document.getElementById('searchInput')?.addEventListener('input', () => {
+                clearTimeout(searchTimer);
+                searchTimer = setTimeout(applyFilters, 100);
+            });
+
+            // محاسبه استارز
+            document.getElementById('customStarsInput')?.addEventListener('input', (e) => {
+                const val = parseInt(e.target.value);
+                if (val && val >= 50) {
+                    selectedStarsCount = val;
+                    const total = (val * Number(SETTINGS.ratePerStar || 1450)).toLocaleString('en-US');
+                    const priceEl = document.getElementById('customStarsPrice');
+                    if (priceEl) priceEl.innerText = `${total} تومان`;
+                    document.getElementById('customStarsCalcBox')?.classList.remove('hidden');
+                } else {
+                    document.getElementById('customStarsCalcBox')?.classList.add('hidden');
+                }
+                updateStarsFinalPrice();
+            });
+
+            // دکمه اشتراک‌گذاری پروفایل
+            document.getElementById('profileShareBtn')?.addEventListener('click', () => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'Duck Store',
+                        text: 'مرجع گیفت، استارز و پرمیوم تلگرام',
+                        url: window.location.href
+                    }).catch(() => {});
+                } else {
+                    alert('لینک فروشگاه کپی شد');
+                }
             });
         }
 
-        document.getElementById('searchInput').addEventListener('input', () => {
-            renderCards(getFilteredDeals());
-        });
-
-        // ⏳ لودینگ نرم و انتقال به صفحه خوش‌آمدگویی
-        let loadingProgress = 5;
-        function startLoading() {
-            const bar = document.getElementById('loadingProgressBar');
-            const pct = document.getElementById('loadingPercent');
-            const interval = setInterval(() => {
-                loadingProgress += Math.floor(Math.random() * 15) + 10;
-                if (loadingProgress >= 100) {
-                    loadingProgress = 100;
-                    clearInterval(interval);
-                    if (bar) bar.style.width = '100%';
-                    if (pct) pct.innerText = '100%';
-                    setTimeout(() => {
-                        const loader = document.getElementById('loadingScreen');
-                        const welcome = document.getElementById('welcomeScreen');
-                        if (loader) {
-                            loader.classList.add('opacity-0', 'pointer-events-none');
-                            setTimeout(() => { loader.style.display = 'none'; }, 400);
-                        }
-                        if (welcome) {
-                            welcome.classList.remove('hidden');
-                            setTimeout(() => { welcome.classList.remove('opacity-0', 'scale-95'); }, 50);
-                        }
-                    }, 250);
-                } else {
-                    if (bar) bar.style.width = `${loadingProgress}%`;
-                    if (pct) pct.innerText = `${loadingProgress}%`;
-                }
-            }, 80);
+        function initApp() {
+            setupEventListeners();
+            applyFilters();
+            renderHomeDeals();
+            renderStarsPackages();
+            renderPremiumOptions();
+            renderCustomServices();
+            updateFavCount();
+            updateCartPopup();
+            fetchCloudSettings();
+            if (tgUser) {
+                const el = document.getElementById('headerGreeting');
+                if (el) el.innerText = `${tgUser.first_name || 'کاربر'} 👋`;
+            }
         }
 
-        document.getElementById('enterStoreBtn').addEventListener('click', () => {
-            triggerHaptic('heavy');
-            const welcome = document.getElementById('welcomeScreen');
-            if (welcome) {
-                welcome.classList.add('opacity-0', 'scale-95', 'pointer-events-none');
-                setTimeout(() => { welcome.style.display = 'none'; }, 400);
-            }
-        });
-
-        // لود اولیه
-        updateUI();
-        fetchCloudSettings();
-        startLoading();
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
 </body>
 </html>"""
@@ -1049,32 +1287,47 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
         .replace("__WORKER_URL__", CONFIG["WORKER_URL"])
     )
 
-    with open(CONFIG["EXPORT_HTML"], "w", encoding="utf-8") as f:
-        f.write(html_content)
+    try:
+        with open(CONFIG["EXPORT_HTML"], "w", encoding="utf-8") as f:
+            f.write(html_content)
+    except Exception as e:
+        print(f"❌ خطا در ذخیره HTML: {e}")
 
-    with open(CONFIG["EXPORT_JSON"], "w", encoding="utf-8") as f:
-        json.dump(deals, f, ensure_ascii=False, indent=2)
+    try:
+        with open(CONFIG["EXPORT_JSON"], "w", encoding="utf-8") as f:
+            json.dump(deals, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"❌ خطا در ذخیره JSON: {e}")
 
 
 def send_telegram_package(deals: List[Dict[str, Any]]):
     token = CONFIG.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = CONFIG.get("TELEGRAM_CHAT_ID", "").strip()
-    if not token or not chat_id: return
+    if not token or not chat_id:
+        return
 
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     gh_repo = CONFIG.get("GITHUB_REPOSITORY", "")
-    pages_url = f"https://{gh_repo.split('/')[0]}.github.io/{gh_repo.split('/')[1]}/" if "/" in gh_repo else "https://zanjania0.github.io/duck-store/"
+    pages_url = "https://zanjania0.github.io/duck-store/"
+    if "/" in gh_repo and len(gh_repo.split("/")) >= 2:
+        parts = gh_repo.split("/")
+        pages_url = f"https://{parts[0]}.github.io/{parts[1]}/"
 
-    rare_count = sum(1 for d in deals if d["rarity"])
+    rare_count = sum(1 for d in deals if d.get("rarity"))
     full_text = (
         f"🦆 <b>گزارش جدید فروشگاه Duck Store</b>\n"
         f"📅 <i>{timestamp}</i>\n\n"
-        f"🌐 <b>ورود به فروشگاه:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n\n"
-        f"🎯 موجودی گیفت‌های فعال: {len(deals)} مورد (کمیاب: {rare_count})\n"
+        f"🌐 <b>لینک ورود به مینی‌اپ:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n\n"
+        f"🎯 موجودی کل: {len(deals)} مورد (کمیاب: {rare_count})\n"
     )
 
     send_chunks_to_telegram(full_text, token, chat_id)
-    send_telegram_csv_attachment(CONFIG["EXPORT_CSV"], token, chat_id, f"📊 فایل اکسل ۲۰۰ گیفت Duck Store ({timestamp})")
+    send_telegram_csv_attachment(
+        CONFIG["EXPORT_CSV"],
+        token,
+        chat_id,
+        f"📊 فایل اکسل ۲۰۰ گیفت Duck Store ({timestamp})",
+    )
 
 
 def send_chunks_to_telegram(text: str, token: str, chat_id: str):
@@ -1087,23 +1340,37 @@ def send_chunks_to_telegram(text: str, token: str, chat_id: str):
         else:
             current_chunk += paragraph + "\n\n"
 
-    if current_chunk.strip(): chunks.append(current_chunk.strip())
+    if current_chunk.strip():
+        chunks.append(current_chunk.strip())
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     for part in chunks:
-        payload = urllib.parse.urlencode({"chat_id": chat_id, "text": part, "parse_mode": "HTML", "disable_web_page_preview": "true"}).encode("utf-8")
+        payload = urllib.parse.urlencode(
+            {
+                "chat_id": chat_id,
+                "text": part,
+                "parse_mode": "HTML",
+                "disable_web_page_preview": "true",
+            }
+        ).encode("utf-8")
         try:
             req = urllib.request.Request(url, data=payload)
-            with urllib.request.urlopen(req, timeout=15): pass
+            with urllib.request.urlopen(req, timeout=15):
+                pass
             time.sleep(0.5)
-        except Exception: pass
+        except Exception as e:
+            print(f"❌ خطا در تلگرام: {e}")
 
 
-def send_telegram_csv_attachment(file_path: str, token: str, chat_id: str, caption: str):
-    if not os.path.exists(file_path): return
+def send_telegram_csv_attachment(
+    file_path: str, token: str, chat_id: str, caption: str
+):
+    if not os.path.exists(file_path):
+        return
     boundary = "----DuckStoreBoundaryXYZ"
     try:
-        with open(file_path, "rb") as f: file_bytes = f.read()
+        with open(file_path, "rb") as f:
+            file_bytes = f.read()
 
         body = (
             f"--{boundary}\r\n"
@@ -1115,13 +1382,19 @@ def send_telegram_csv_attachment(file_path: str, token: str, chat_id: str, capti
             f"Content-Type: text/csv\r\n\r\n"
         ).encode("utf-8") + file_bytes + f"\r\n--{boundary}--\r\n".encode("utf-8")
 
-        req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendDocument", data=body, headers={"Content-Type": f"multipart/form-data; boundary={boundary}"})
-        with urllib.request.urlopen(req, timeout=30): pass
-    except Exception: pass
+        req = urllib.request.Request(
+            f"https://api.telegram.org/bot{token}/sendDocument",
+            data=body,
+            headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
+        )
+        with urllib.request.urlopen(req, timeout=30):
+            pass
+    except Exception as e:
+        print(f"❌ خطا در ارسال اکسل: {e}")
 
 
 # ==========================================
-# ⚡ موتور اسکرپر
+# ⚡ موتور اسکرپر پایدار
 # ==========================================
 async def main():
     deals_found: List[Dict[str, Any]] = []
@@ -1129,22 +1402,43 @@ async def main():
     browser = None
 
     print("\n" + "═" * 65)
-    print("  🦆 PEARL STORE TURBO SCRAPER (SOFT NEUMORPHIC LUXURY) 🦆")
+    print("  🦆 DUCK STORE TURBO SCRAPER (STABLE ENGINE) 🦆")
     print("═" * 65 + "\n")
 
-    launch_args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage", "--disable-accelerated-2d-canvas", "--no-first-run", "--no-zygote"]
+    launch_args = [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-accelerated-2d-canvas",
+        "--no-first-run",
+        "--no-zygote",
+    ]
 
     async with async_playwright() as p:
         try:
-            browser = await p.chromium.launch(headless=True, args=launch_args)
+            try:
+                browser = await p.chromium.launch(headless=True, args=launch_args)
+            except Exception:
+                browser = await p.chromium.launch(
+                    headless=True, channel="chrome", args=launch_args
+                )
+
             page = await browser.new_page()
 
-            print("🌐 بارگذاری اولیه مارکت...")
-            await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=60000)
+            print("🌐 در حال بارگذاری مارکت...")
+            await page.goto(
+                CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=60000
+            )
             await page.wait_for_timeout(3000)
 
             scroll_attempts = 0
-            while len(deals_found) < CONFIG["TARGET_DEALS_COUNT"] and scroll_attempts < CONFIG["MAX_SCROLL_ATTEMPTS"]:
+            last_count = 0
+            no_new_counter = 0
+
+            while (
+                len(deals_found) < CONFIG["TARGET_DEALS_COUNT"]
+                and scroll_attempts < CONFIG["MAX_SCROLL_ATTEMPTS"]
+            ):
                 scroll_attempts += 1
                 raw_cards = await page.evaluate(
                     """() => {
@@ -1159,13 +1453,20 @@ async def main():
 
                 for c in raw_cards:
                     href = c.get("href", "")
-                    if not href: continue
+                    if not href:
+                        continue
 
-                    full_link = href if href.startswith("http") else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
-                    if full_link in seen_links: continue
+                    full_link = (
+                        href
+                        if href.startswith("http")
+                        else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
+                    )
+                    if full_link in seen_links:
+                        continue
 
                     text = c.get("text", "")
-                    if not text.strip(): continue
+                    if not text.strip():
+                        continue
 
                     discount_match = re.search(r"-(\d+(?:\.\d+)?)%", text)
                     if discount_match:
@@ -1173,17 +1474,31 @@ async def main():
                         if discount_val >= CONFIG["MIN_DISCOUNT_PERCENT"]:
                             num_match = re.search(r"#(\d+)", text)
                             item_num = num_match.group(1) if num_match else "0"
-                            days_match = re.search(r"Days:\s*(\d+\s*–\s*\d+)", text)
-                            days_range = days_match.group(1) if days_match else "1 – 180"
+                            days_match = re.search(
+                                r"Days:\s*(\d+\s*–\s*\d+)", text
+                            )
+                            days_range = (
+                                days_match.group(1) if days_match else "1 – 180"
+                            )
 
-                            lines = [l.strip() for l in text.split("\n") if l.strip()]
+                            lines = [
+                                l.strip() for l in text.split("\n") if l.strip()
+                            ]
                             name_candidates = [
-                                l for l in lines
-                                if not l.startswith("Days:") and not l.startswith("-") and not l.startswith("#")
-                                and l.lower() not in ["per day", "min. price"] and not re.match(r"^\d+(\.\d+)?$", l)
+                                l
+                                for l in lines
+                                if not l.startswith("Days:")
+                                and not l.startswith("-")
+                                and not l.startswith("#")
+                                and l.lower() not in ["per day", "min. price"]
+                                and not re.match(r"^\d+(\.\d+)?$", l)
                             ]
 
-                            gift_name = name_candidates[0] if name_candidates else "NFT Gift"
+                            gift_name = (
+                                name_candidates[0]
+                                if name_candidates
+                                else "NFT Gift"
+                            )
                             deal = {
                                 "name": f"{gift_name} #{item_num}",
                                 "gift_title": gift_name,
@@ -1192,20 +1507,34 @@ async def main():
                                 "discount_num": discount_val,
                                 "price_per_day": "0.01",
                                 "days_range": days_range,
-                                "tg_link": generate_tg_nft_link(gift_name, item_num),
+                                "tg_link": generate_tg_nft_link(
+                                    gift_name, item_num
+                                ),
                                 "market_link": full_link,
-                                "image_url": c.get("img") or "https://marketapp.org/favicon.ico",
+                                "image_url": c.get("img")
+                                or "https://marketapp.org/favicon.ico",
                                 "rarity": detect_rarity_badge(item_num),
                             }
 
                             seen_links.add(full_link)
                             deals_found.append(deal)
 
-                            if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]: break
+                            if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]:
+                                break
                     else:
                         seen_links.add(full_link)
 
-                if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]: break
+                if len(deals_found) >= CONFIG["TARGET_DEALS_COUNT"]:
+                    break
+
+                if len(deals_found) == last_count:
+                    no_new_counter += 1
+                    if no_new_counter >= 8:
+                        break
+                else:
+                    no_new_counter = 0
+                    last_count = len(deals_found)
+
                 await page.evaluate("window.scrollBy(0, window.innerHeight * 3);")
                 await page.wait_for_timeout(350)
 
@@ -1218,14 +1547,39 @@ async def main():
         generate_duck_store_html(sorted_deals)
 
         try:
-            with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline="") as f:
+            with open(
+                CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline=""
+            ) as f:
                 writer = csv.writer(f)
-                writer.writerow(["ردیف", "کالکشن", "نام گیفت", "شماره", "تخفیف", "کمیابی", "لینک تلگرام", "لینک MarketApp"])
+                writer.writerow(
+                    [
+                        "ردیف",
+                        "کالکشن",
+                        "نام گیفت",
+                        "شماره",
+                        "تخفیف",
+                        "کمیابی",
+                        "لینک تلگرام",
+                        "لینک MarketApp",
+                    ]
+                )
                 for idx, d in enumerate(sorted_deals, 1):
-                    writer.writerow([idx, d["gift_title"], d["name"], d["number"], d["discount"], d["rarity"] or "معمولی", d["tg_link"], d["market_link"]])
-        except Exception: pass
+                    writer.writerow(
+                        [
+                            idx,
+                            d["gift_title"],
+                            d["name"],
+                            d["number"],
+                            d["discount"],
+                            d["rarity"] or "معمولی",
+                            d["tg_link"],
+                            d["market_link"],
+                        ]
+                    )
+        except Exception as e:
+            print(f"❌ خطا در نوشتن CSV: {e}")
 
-        print("\n⚡ فروشگاه با استایل لوکس مرواریدی و سیستم یکپارچه با موفقیت ساخته شد!")
+        print("\n⚡ فروشگاه Duck Store با موفقیت آماده و منتشر شد!")
         send_telegram_package(sorted_deals)
 
 
