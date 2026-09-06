@@ -325,7 +325,7 @@ body{
   <div class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
     <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn chip">پرمیوم</button>
-    <button onclick="switchServiceSubTab('boost')" id="subtab-boost" class="service-subtab-btn chip">بوست تلگرام</button>
+    <button onclick="switchServiceSubTab('boost')" id="subtab-boost" class="service-subtab-btn chip">خدمات</button>
   </div>
 
   <div id="subview-stars" class="space-y-3">
