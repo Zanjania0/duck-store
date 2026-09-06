@@ -38,7 +38,6 @@
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-8">
 
-    <!-- فرم لاگین -->
     <div id="loginCard" class="glass-box w-full max-w-md p-6 sm:p-8 space-y-6">
         <div class="text-center space-y-2">
             <div class="w-16 h-16 rounded-[22px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 flex items-center justify-center text-3xl shadow-xl shadow-cyan-500/25 mx-auto">
@@ -64,10 +63,9 @@
         </div>
     </div>
 
-    <!-- داشبورد اصلی مدیریت -->
+    <!-- داشبورد مدیریت -->
     <div id="dashboardCard" class="hidden glass-box w-full max-w-4xl p-5 sm:p-8 space-y-6">
         
-        <!-- هدر -->
         <div class="flex items-center justify-between border-b border-white/5 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/20">
@@ -93,26 +91,25 @@
             </div>
         </div>
 
-        <!-- ۱. مدیریت کامل خدمات سفارشی با تعیین حداقل تعداد سفارش -->
+        <!-- ۱. مدیریت کامل خدمات با تب‌های اختصاصی و حداقل تعداد -->
         <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-cyan-500/30 space-y-4">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xs sm:text-sm font-black text-cyan-400 flex items-center gap-2">
                         <i class="fa-solid fa-rocket"></i>
-                        <span>مدیریت خدمات ویژه (بوست تلگرام، ممبر و...)</span>
+                        <span>مدیریت خدمات ویژه و تب‌های داینامیک (بوست، ممبر و...)</span>
                     </h3>
-                    <p class="text-[11px] text-slate-400 mt-1">تعریف دسته‌ها، پکیج‌ها، نرخ واحد و <b>حداقل تعداد خرید مجاز برای کاربر</b></p>
+                    <p class="text-[11px] text-slate-400 mt-1">تعریف سرویس جدید (تب مجزا در سایت) + افزودن محصولات به همراه تعیین حداقل تعداد سفارش</p>
                 </div>
                 <button type="button" id="addCategoryBtn" class="px-3.5 py-1.5 rounded-xl bg-cyan-400 text-slate-950 font-black text-xs transition shadow-md shadow-cyan-400/20">
-                    + افزودن دسته جدید
+                    + افزودن دسته جدید (تب جدید)
                 </button>
             </div>
 
-            <!-- لیست دسته‌بندی‌ها و پکیج‌ها -->
             <div id="servicesBuilderContainer" class="space-y-4 pt-2"></div>
         </div>
 
-        <!-- ۲. قیمت‌های تلگرام پرمیوم (دستی) -->
+        <!-- ۲. پرمیوم دستی -->
         <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-purple-500/30 space-y-3">
             <h3 class="text-xs font-black text-purple-400 flex items-center gap-2">
                 <i class="fa-solid fa-crown"></i>
@@ -177,7 +174,7 @@
             </div>
         </div>
 
-        <!-- ۵. آیدی دریافت سفارشات تلگرام -->
+        <!-- ۵. پشتیبانی تلگرام -->
         <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
             <label class="block text-slate-300 font-bold">آیدی تلگرام دریافت سفارشات (بدون @):</label>
             <div class="relative">
@@ -186,7 +183,6 @@
             </div>
         </div>
 
-        <!-- دکمه ذخیره کلی -->
         <button type="button" id="saveBtn" class="w-full py-4 bg-gradient-to-r from-cyan-400 to-blue-500 hover:opacity-90 text-slate-950 font-black text-xs rounded-2xl transition shadow-xl shadow-cyan-400/25 flex items-center justify-center gap-2">
             <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
             <span>ذخیره نهایی در دیتابیس ابری</span>
@@ -282,25 +278,23 @@
                         ? s.customServices 
                         : [
                             {
-                                id: "boost",
-                                title: "بوست کانال و گروه تلگرام",
+                                id: "cat_boost",
+                                title: "بوست تلگرام",
                                 icon: "fa-rocket",
                                 items: [
-                                    { id: "b1", name: "بوست تلگرام (1 روز)", duration: "1 روز", price: 45000, minQty: 1 },
-                                    { id: "b7", name: "بوست تلگرام (7 روز)", duration: "7 روز", price: 180000, minQty: 1 },
-                                    { id: "b14", name: "بوست تلگرام (14 روز)", duration: "14 روز", price: 320000, minQty: 1 },
-                                    { id: "b30", name: "بوست تلگرام (30 روز)", duration: "30 روز", price: 590000, minQty: 1 }
+                                    { id: "b1", name: "بوست تلگرام (1 روزه)", duration: "1 روز", price: 45000, minQty: 1 },
+                                    { id: "b7", name: "بوست تلگرام (7 روزه)", duration: "7 روز", price: 180000, minQty: 1 },
+                                    { id: "b30", name: "بوست تلگرام (30 روزه)", duration: "30 روز", price: 590000, minQty: 1 }
                                 ]
                             }
                         ];
                     renderServicesBuilder();
                 }
             } catch (e) {
-                console.warn("خطا در بارگذاری اولیه تنظیمات");
+                console.warn("خطا در بارگذاری تنظیمات");
             }
         }
 
-        // ================= سازنده گرافیکی خدمات با حداقل تعداد =================
         function renderServicesBuilder() {
             const container = document.getElementById("servicesBuilderContainer");
             if (!container) return;
@@ -318,10 +312,10 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="addPackageItem(${catIdx})" class="text-[11px] px-2.5 py-1 rounded-lg bg-cyan-400/10 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 transition font-bold">
-                                + پلن جدید
+                                + محصول جدید به این دسته
                             </button>
                             <button type="button" onclick="deleteCategory(${catIdx})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
-                                <i class="fa-solid fa-trash-can"></i>
+                                <i class="fa-solid fa-trash-can"></i> حذف دسته
                             </button>
                         </div>
                     </div>
@@ -374,17 +368,17 @@
         function addCategory() {
             localServices.push({
                 id: "cat_" + Date.now(),
-                title: "دسته‌بندی جدید",
+                title: "دسته جدید",
                 icon: "fa-rocket",
                 items: [
-                    { id: "item_" + Date.now(), name: "پلن جدید", duration: "۱ روز", price: 50000, minQty: 1 }
+                    { id: "item_" + Date.now(), name: "محصول ۱", duration: "۱ ماهه", price: 50000, minQty: 1 }
                 ]
             });
             renderServicesBuilder();
         }
 
         function deleteCategory(catIdx) {
-            if (confirm("آیا این دسته‌بندی حذف شود؟")) {
+            if (confirm("آیا این دسته‌بندی و تمام محصولات آن حذف شوند؟")) {
                 localServices.splice(catIdx, 1);
                 renderServicesBuilder();
             }
@@ -440,13 +434,13 @@
                 });
                 if (res.ok) {
                     sessionStorage.setItem("duck_admin_time", String(Date.now()));
-                    alert("✅ تنظیمات، خدمات و حداقل تعداد خرید با موفقیت ذخیره شدند!");
+                    alert("✅ تغییرات دسته‌ها، حداقل تعداد و قیمت‌ها با موفقیت ذخیره شد!");
                 } else {
                     alert("خطا در ذخیره‌سازی.");
                     logout();
                 }
             } catch (err) {
-                alert("خطا در اتصال به سرور.");
+                alert("خطا در ارتباط با سرور کلادفلر.");
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-sm"></i><span>ذخیره نهایی در دیتابیس ابری</span>';
