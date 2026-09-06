@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="color-scheme" content="dark">
-    <title>پنل مدیریت پیشرفته Duck Store</title>
+    <title>پنل مدیریت جامع Duck Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -17,78 +17,74 @@
                 radial-gradient(circle at 85% 30%, rgba(124, 58, 237, 0.22) 0%, transparent 50%);
             color: #f8fafc;
         }
-        .ios-card {
-            background: rgba(14, 20, 42, 0.78);
+        .glass-box {
+            background: rgba(14, 20, 42, 0.75);
             backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 28px;
-            box-shadow: 0 20px 45px -15px rgba(2, 6, 23, 0.8);
+            border-radius: 26px;
         }
-        .section-box {
-            background: rgba(6, 9, 19, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 20px;
-        }
-        .input-dark {
+        .input-box {
             background: rgba(3, 5, 12, 0.7);
             border: 1px solid rgba(255, 255, 255, 0.1);
             color: #ffffff;
             transition: all 0.2s ease;
         }
-        .input-dark:focus {
+        .input-box:focus {
             outline: none;
-            border-color: #fbbf24;
-            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+            border-color: #38bdf8;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
         }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4 py-8">
 
-    <!-- فرم ورود ادمین -->
-    <div id="loginCard" class="ios-card w-full max-w-md p-6 sm:p-8 space-y-6">
+    <!-- فرم لاگین -->
+    <div id="loginCard" class="glass-box w-full max-w-md p-6 sm:p-8 space-y-6">
         <div class="text-center space-y-2">
-            <div class="w-16 h-16 rounded-[22px] bg-gradient-to-tr from-amber-400 via-amber-500 to-purple-600 flex items-center justify-center text-3xl shadow-xl shadow-amber-500/25 mx-auto">
+            <div class="w-16 h-16 rounded-[22px] bg-gradient-to-tr from-cyan-400 via-blue-500 to-indigo-600 flex items-center justify-center text-3xl shadow-xl shadow-cyan-500/25 mx-auto">
                 🦆
             </div>
-            <h1 class="text-lg font-black text-white">پنل مدیریت پیشرفته Duck Store</h1>
-            <p class="text-xs text-slate-400">ورود به پنل ابری تنظیم قیمت‌ها و خدمات</p>
+            <h1 class="text-lg font-black text-white">پنل ادمین Duck Store</h1>
+            <p class="text-xs text-slate-400">ورود به پنل مدیریت خدمات و قیمت‌ها</p>
         </div>
 
         <div class="space-y-4">
             <div class="relative">
-                <input type="password" id="adminPass" maxlength="50" placeholder="رمز عبور..." 
-                       class="input-dark w-full rounded-2xl px-4 py-3.5 text-sm text-center text-white placeholder-slate-500 pr-10 pl-10 font-bold">
+                <input type="password" id="adminPass" maxlength="50" placeholder="رمز عبور ادمین..." 
+                       class="input-box w-full rounded-2xl px-4 py-3.5 text-sm text-center text-white placeholder-slate-500 pr-10 pl-10 font-bold">
                 <button type="button" id="togglePassBtn" class="absolute left-3.5 top-3.5 text-slate-400 hover:text-white transition">
                     <i id="passEyeIcon" class="fa-solid fa-eye text-xs"></i>
                 </button>
             </div>
 
-            <button type="button" id="loginBtn" class="w-full py-3.5 bg-gradient-to-r from-amber-400 to-yellow-500 hover:opacity-90 text-slate-950 font-black text-xs rounded-2xl transition shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2">
-                <span>ورود به مدیریت</span>
+            <button type="button" id="loginBtn" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-2xl transition shadow-xl shadow-cyan-400/25 flex items-center justify-center gap-2">
+                <span>ورود به پنل</span>
                 <i class="fa-solid fa-arrow-left text-xs"></i>
             </button>
         </div>
     </div>
 
     <!-- داشبورد اصلی مدیریت -->
-    <div id="dashboardCard" class="hidden ios-card w-full max-w-2xl p-5 sm:p-7 space-y-6">
+    <div id="dashboardCard" class="hidden glass-box w-full max-w-4xl p-5 sm:p-8 space-y-6">
+        
+        <!-- هدر -->
         <div class="flex items-center justify-between border-b border-white/5 pb-4">
             <div class="flex items-center gap-3">
-                <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-amber-400 to-purple-600 flex items-center justify-center text-xl shadow-lg shadow-amber-500/20">
+                <div class="w-11 h-11 rounded-[16px] bg-gradient-to-tr from-cyan-400 to-blue-600 flex items-center justify-center text-xl shadow-lg shadow-cyan-500/20">
                     🦆
                 </div>
                 <div>
                     <h2 class="text-sm font-black text-white flex items-center gap-2">
-                        <span>مدیریت فروشگاه و خدمات</span>
+                        <span>مدیریت پیشرفته خدمات</span>
                         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                     </h2>
-                    <p class="text-[11px] text-slate-400">متصل به پایگاه داده ابری Cloudflare KV</p>
+                    <p class="text-[11px] text-slate-400">Cloudflare KV Database Active</p>
                 </div>
             </div>
             
             <div class="flex items-center gap-2">
                 <a href="index.html" target="_blank" class="px-3.5 py-1.5 rounded-xl bg-white/[0.04] text-slate-200 border border-white/10 text-xs font-bold transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-eye text-amber-400 text-xs"></i>
+                    <i class="fa-solid fa-eye text-cyan-400 text-xs"></i>
                     <span>ویترین سایت</span>
                 </a>
                 <button type="button" id="logoutBtn" class="px-3.5 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold transition">
@@ -97,117 +93,111 @@
             </div>
         </div>
 
-        <!-- تب‌های کنترل پنل ادمین -->
-        <div class="flex items-center gap-2 bg-[#0a0d1d] p-1.5 rounded-2xl border border-white/5">
-            <button id="admTabBtn-pricing" class="flex-1 py-2 rounded-xl text-xs font-black bg-amber-400 text-slate-950 transition">قیمت‌ها و پایه</button>
-            <button id="admTabBtn-services" class="flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition">مدیریت خدمات دلخواه (بوست و...)</button>
-        </div>
-
-        <!-- بخش اول: قیمت‌ها و تنظیمات عمومی -->
-        <div id="admSec-pricing" class="space-y-4">
-            <!-- تعرفه پرمیوم -->
-            <div class="section-box p-4 sm:p-5 space-y-3 border-purple-500/20">
-                <h3 class="text-xs font-black text-purple-300 flex items-center gap-1.5">
-                    <i class="fa-solid fa-crown text-purple-400 text-sm"></i>
-                    <span>تعرفه تلگرام پرمیوم (تومان)</span>
-                </h3>
-                <div class="grid grid-cols-3 gap-2.5 text-xs">
-                    <div>
-                        <span class="block text-[11px] text-slate-400 mb-1 font-bold">۳ ماهه:</span>
-                        <input type="number" id="prem3" min="10000" class="input-dark w-full rounded-xl p-2.5 text-center font-bold">
-                    </div>
-                    <div>
-                        <span class="block text-[11px] text-slate-400 mb-1 font-bold">۶ ماهه:</span>
-                        <input type="number" id="prem6" min="10000" class="input-dark w-full rounded-xl p-2.5 text-center font-bold">
-                    </div>
-                    <div>
-                        <span class="block text-[11px] text-slate-400 mb-1 font-bold">۱۲ ماهه:</span>
-                        <input type="number" id="prem12" min="10000" class="input-dark w-full rounded-xl p-2.5 text-center font-bold">
-                    </div>
-                </div>
-            </div>
-
-            <!-- تعرفه استارز و گیفت -->
-            <div class="section-box p-4 sm:p-5 space-y-3">
-                <h3 class="text-xs font-black text-slate-300 flex items-center gap-1.5">
-                    <i class="fa-solid fa-coins text-amber-400 text-sm"></i>
-                    <span>تعرفه استارز و اجاره گیفت (تومان)</span>
-                </h3>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">نرخ هر ۱ عدد استارز (تومان):</label>
-                        <input type="number" id="ratePerStar" min="100" class="input-dark w-full rounded-xl px-3 py-2.5 text-white font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">اجاره ماهانه هر گیفت (تومان):</label>
-                        <input type="number" id="giftMonthlyPrice" min="1000" class="input-dark w-full rounded-xl px-3 py-2.5 text-white font-bold">
-                    </div>
-                </div>
-            </div>
-
-            <!-- بنر و کوپن -->
-            <div class="section-box p-4 sm:p-5 space-y-3 border-amber-500/20">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-xs font-black text-amber-400 flex items-center gap-1.5">
-                        <i class="fa-solid fa-bullhorn text-sm"></i>
-                        <span>بنر اطلاعیه بالای سایت</span>
-                    </h3>
-                    <label class="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                        <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded text-amber-400 focus:ring-0">
-                        <span class="text-amber-300 font-bold">فعال</span>
-                    </label>
-                </div>
-                <input type="text" id="announcementText" maxlength="150" placeholder="متن بنر اطلاعیه..." class="input-dark w-full rounded-xl px-4 py-2.5 text-xs">
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 text-xs">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">کد کوپن تخفیف:</label>
-                        <input type="text" id="couponCode" maxlength="20" placeholder="DUCK" class="input-dark w-full rounded-xl px-3 py-2.5 text-center uppercase font-black text-amber-400">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">درصد تخفیف (%):</label>
-                        <input type="number" id="couponPercent" min="1" max="90" class="input-dark w-full rounded-xl px-3 py-2.5 text-center font-black">
-                    </div>
-                </div>
-            </div>
-
-            <!-- آیدی پشتیبان -->
-            <div class="section-box p-4 sm:p-5 space-y-2">
-                <label class="block text-slate-300 font-bold text-xs">آیدی تلگرام دریافت سفارشات (بدون @):</label>
-                <div class="relative">
-                    <span class="absolute left-3.5 top-2.5 text-slate-500 text-xs font-bold">@</span>
-                    <input type="text" id="adminTg" maxlength="40" placeholder="Zanjani_a" class="input-dark w-full rounded-xl px-3 py-2.5 text-xs text-white font-bold dir-ltr text-left pl-8">
-                </div>
-            </div>
-        </div>
-
-        <!-- بخش دوم: خدمات سفارشی داینامیک (بوست کانال و...) -->
-        <div id="admSec-services" class="hidden space-y-4">
+        <!-- ۱. مدیریت کامل خدمات سفارشی با تعیین حداقل تعداد سفارش -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-cyan-500/30 space-y-4">
             <div class="flex items-center justify-between">
                 <div>
-                    <h3 class="text-xs font-black text-white">خدمات و پکیج‌های اختصاصی</h3>
-                    <p class="text-[11px] text-slate-400 mt-0.5">افزودن پکیج‌های بوست ۱، ۷ و ۱۴ روزه یا هر خدمت دلخواه</p>
+                    <h3 class="text-xs sm:text-sm font-black text-cyan-400 flex items-center gap-2">
+                        <i class="fa-solid fa-rocket"></i>
+                        <span>مدیریت خدمات ویژه (بوست تلگرام، ممبر و...)</span>
+                    </h3>
+                    <p class="text-[11px] text-slate-400 mt-1">تعریف دسته‌ها، پکیج‌ها، نرخ واحد و <b>حداقل تعداد خرید مجاز برای کاربر</b></p>
                 </div>
-                <button type="button" id="addNewServiceCatBtn" class="px-3 py-1.5 rounded-xl bg-cyan-400 text-slate-950 text-xs font-black transition">
+                <button type="button" id="addCategoryBtn" class="px-3.5 py-1.5 rounded-xl bg-cyan-400 text-slate-950 font-black text-xs transition shadow-md shadow-cyan-400/20">
                     + افزودن دسته جدید
                 </button>
             </div>
 
             <!-- لیست دسته‌بندی‌ها و پکیج‌ها -->
-            <div id="customServicesEditorList" class="space-y-4"></div>
+            <div id="servicesBuilderContainer" class="space-y-4 pt-2"></div>
         </div>
 
-        <!-- دکمه ذخیره کل تنظیمات -->
-        <button type="button" id="saveAllBtn" class="w-full py-4 bg-gradient-to-r from-amber-400 to-yellow-500 hover:opacity-90 text-slate-950 font-black text-xs rounded-2xl transition shadow-xl shadow-amber-500/25 flex items-center justify-center gap-2">
+        <!-- ۲. قیمت‌های تلگرام پرمیوم (دستی) -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-purple-500/30 space-y-3">
+            <h3 class="text-xs font-black text-purple-400 flex items-center gap-2">
+                <i class="fa-solid fa-crown"></i>
+                <span>تعرفه تلگرام پرمیوم (تومان)</span>
+            </h3>
+            <div class="grid grid-cols-3 gap-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">۳ ماهه:</label>
+                    <input type="number" id="prem3" class="input-box w-full rounded-xl p-2.5 text-center font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">۶ ماهه:</label>
+                    <input type="number" id="prem6" class="input-box w-full rounded-xl p-2.5 text-center font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">۱۲ ماهه (۱ ساله):</label>
+                    <input type="number" id="prem12" class="input-box w-full rounded-xl p-2.5 text-center font-bold">
+                </div>
+            </div>
+        </div>
+
+        <!-- ۳. نرخ استارز و اجاره گیفت -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
+            <h3 class="text-xs font-black text-amber-400 flex items-center gap-2">
+                <i class="fa-solid fa-coins"></i>
+                <span>تعرفه پایه استارز و گیفت (تومان)</span>
+            </h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">نرخ هر ۱ استارز (تومان):</label>
+                    <input type="number" id="ratePerStar" class="input-box w-full rounded-xl px-3 py-2.5 font-bold">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">اجاره ماهانه هر گیفت (تومان):</label>
+                    <input type="number" id="giftMonthlyPrice" class="input-box w-full rounded-xl px-3 py-2.5 font-bold">
+                </div>
+            </div>
+        </div>
+
+        <!-- ۴. کد تخفیف و بنر -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-4 text-xs">
+            <div class="space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="font-bold text-slate-300">بنر بالای سایت:</span>
+                    <label class="flex items-center gap-2 text-slate-300 cursor-pointer">
+                        <input type="checkbox" id="announcementActive" class="w-4 h-4 rounded text-cyan-400">
+                        <span>فعال</span>
+                    </label>
+                </div>
+                <input type="text" id="announcementText" maxlength="150" placeholder="متن بنر..." class="input-box w-full rounded-xl px-3 py-2.5">
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-white/5">
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">کد کوپن:</label>
+                    <input type="text" id="couponCode" maxlength="20" placeholder="DUCK" class="input-box w-full rounded-xl px-3 py-2.5 text-center uppercase font-bold text-cyan-400">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">درصد تخفیف (%):</label>
+                    <input type="number" id="couponPercent" min="1" max="90" class="input-box w-full rounded-xl px-3 py-2.5 text-center font-bold">
+                </div>
+            </div>
+        </div>
+
+        <!-- ۵. آیدی دریافت سفارشات تلگرام -->
+        <div class="p-4 sm:p-5 rounded-2xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
+            <label class="block text-slate-300 font-bold">آیدی تلگرام دریافت سفارشات (بدون @):</label>
+            <div class="relative">
+                <span class="absolute left-3.5 top-2.5 text-slate-500 font-bold">@</span>
+                <input type="text" id="adminTg" maxlength="40" placeholder="Zanjani_a" class="input-box w-full rounded-xl px-3 py-2.5 font-bold dir-ltr text-left pl-8">
+            </div>
+        </div>
+
+        <!-- دکمه ذخیره کلی -->
+        <button type="button" id="saveBtn" class="w-full py-4 bg-gradient-to-r from-cyan-400 to-blue-500 hover:opacity-90 text-slate-950 font-black text-xs rounded-2xl transition shadow-xl shadow-cyan-400/25 flex items-center justify-center gap-2">
             <i class="fa-solid fa-cloud-arrow-up text-sm"></i>
-            <span>ذخیره آنی تمامی تغییرات در دیتابیس ابری</span>
+            <span>ذخیره نهایی در دیتابیس ابری</span>
         </button>
+
     </div>
 
     <script>
         const WORKER_URL = "https://duck-api.ali-zanjani2007.workers.dev";
         const SESSION_TIMEOUT_MS = 30 * 60 * 1000;
-        let customServicesData = [];
+        let localServices = [];
 
         function checkSession() {
             const token = sessionStorage.getItem("duck_admin_token");
@@ -235,7 +225,8 @@
         }
 
         async function login() {
-            const pass = (document.getElementById("adminPass")?.value || "").trim();
+            const passInput = document.getElementById("adminPass");
+            const pass = (passInput ? passInput.value : "").trim();
             if (!pass) return alert("لطفاً رمز عبور را وارد کنید");
             
             const btn = document.getElementById("loginBtn");
@@ -256,14 +247,14 @@
                     sessionStorage.setItem("duck_admin_time", String(Date.now()));
                     showDashboard();
                 } else {
-                    alert(data.error || "رمز عبور نادرست است");
+                    alert(data.error || "رمز عبور اشتباه است");
                 }
             } catch (err) {
-                alert("خطا در اتصال به سرور ابری");
+                alert("خطا در ارتباط با سرور");
             } finally {
                 if (btn) {
                     btn.disabled = false;
-                    btn.innerHTML = '<span>ورود به مدیریت</span><i class="fa-solid fa-arrow-left text-xs"></i>';
+                    btn.innerHTML = '<span>ورود به پنل</span><i class="fa-solid fa-arrow-left text-xs"></i>';
                 }
             }
         }
@@ -287,123 +278,156 @@
                     document.getElementById("couponCode").value = s.couponCode || "DUCK";
                     document.getElementById("couponPercent").value = s.couponPercent || 10;
 
-                    customServicesData = Array.isArray(s.customServices) ? s.customServices : [
-                        {
-                            id: 'boost',
-                            title: 'بوست کانال (Channel Boost)',
-                            icon: 'fa-bolt',
-                            description: 'جهت فعال‌سازی استوری و قابلیت‌های پریمیوم کانال',
-                            packages: [
-                                { name: 'بوست ۱ روزه', price: 45000, tag: 'تستی' },
-                                { name: 'بوست ۷ روزه', price: 180000, tag: 'محبوب' },
-                                { name: 'بوست ۱۴ روزه', price: 340000, tag: 'پیشنهادی' },
-                                { name: 'بوست ۳۰ روزه', price: 620000, tag: 'به‌صرفه' }
-                            ]
-                        }
-                    ];
-                    renderCustomServicesEditor();
+                    localServices = Array.isArray(s.customServices) && s.customServices.length > 0 
+                        ? s.customServices 
+                        : [
+                            {
+                                id: "boost",
+                                title: "بوست کانال و گروه تلگرام",
+                                icon: "fa-rocket",
+                                items: [
+                                    { id: "b1", name: "بوست تلگرام (1 روز)", duration: "1 روز", price: 45000, minQty: 1 },
+                                    { id: "b7", name: "بوست تلگرام (7 روز)", duration: "7 روز", price: 180000, minQty: 1 },
+                                    { id: "b14", name: "بوست تلگرام (14 روز)", duration: "14 روز", price: 320000, minQty: 1 },
+                                    { id: "b30", name: "بوست تلگرام (30 روز)", duration: "30 روز", price: 590000, minQty: 1 }
+                                ]
+                            }
+                        ];
+                    renderServicesBuilder();
                 }
-            } catch (e) {}
+            } catch (e) {
+                console.warn("خطا در بارگذاری اولیه تنظیمات");
+            }
         }
 
-        // ================= مدیریت داینامیک خدمات =================
-        function renderCustomServicesEditor() {
-            const container = document.getElementById("customServicesEditorList");
+        // ================= سازنده گرافیکی خدمات با حداقل تعداد =================
+        function renderServicesBuilder() {
+            const container = document.getElementById("servicesBuilderContainer");
             if (!container) return;
 
-            container.innerHTML = customServicesData.map((cat, cIdx) => `
-                <div class="section-box p-4 space-y-3 border-white/10">
-                    <div class="flex items-center justify-between border-b border-white/5 pb-2.5">
-                        <div class="flex items-center gap-2 flex-1 ml-2">
-                            <input type="text" value="${cat.title || ''}" onchange="updateCatTitle(${cIdx}, this.value)" placeholder="عنوان دسته (مثلاً: بوست کانال)" class="input-dark px-3 py-1.5 rounded-xl text-xs font-bold flex-1">
-                            <input type="text" value="${cat.icon || 'fa-bolt'}" onchange="updateCatIcon(${cIdx}, this.value)" placeholder="fa-bolt" class="input-dark px-2 py-1.5 rounded-xl text-xs text-center w-24">
+            if (localServices.length === 0) {
+                container.innerHTML = '<p class="text-xs text-slate-500 py-3 text-center">هیچ دسته‌ای ثبت نشده است. روی دکمه افزودن دسته جدید کلیک کنید.</p>';
+                return;
+            }
+
+            container.innerHTML = localServices.map((cat, catIdx) => `
+                <div class="p-4 rounded-xl bg-black/40 border border-white/5 space-y-3">
+                    <div class="flex items-center justify-between pb-2 border-b border-white/5">
+                        <div class="flex items-center gap-2 flex-1">
+                            <input type="text" value="${cat.title}" onchange="updateCatTitle(${catIdx}, this.value)" placeholder="نام دسته‌بندی (مثلاً بوست تلگرام)" class="input-box rounded-lg px-3 py-1 text-xs font-bold w-48 text-cyan-300">
                         </div>
-                        <button type="button" onclick="removeCategory(${cIdx})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="addPackageItem(${catIdx})" class="text-[11px] px-2.5 py-1 rounded-lg bg-cyan-400/10 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 transition font-bold">
+                                + پلن جدید
+                            </button>
+                            <button type="button" onclick="deleteCategory(${catIdx})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
                     </div>
 
-                    <input type="text" value="${cat.description || ''}" onchange="updateCatDesc(${cIdx}, this.value)" placeholder="توضیحات مختصر..." class="input-dark w-full px-3 py-1.5 rounded-xl text-xs">
-
-                    <!-- لیست پکیج‌ها -->
-                    <div class="space-y-2 pt-1">
-                        ${(cat.packages || []).map((pkg, pIdx) => `
-                            <div class="p-2 rounded-xl bg-black/40 border border-white/5 flex items-center gap-2 text-xs">
-                                <input type="text" value="${pkg.name || ''}" onchange="updatePkgName(${cIdx}, ${pIdx}, this.value)" placeholder="نام پکیج (مثلاً بوست ۷ روزه)" class="input-dark px-2.5 py-1 rounded-lg flex-1">
-                                <input type="number" value="${pkg.price || 0}" onchange="updatePkgPrice(${cIdx}, ${pIdx}, this.value)" placeholder="قیمت (تومان)" class="input-dark px-2 py-1 rounded-lg w-28 text-center font-bold text-amber-400">
-                                <input type="text" value="${pkg.tag || ''}" onchange="updatePkgTag(${cIdx}, ${pIdx}, this.value)" placeholder="تگ (محبوب)" class="input-dark px-2 py-1 rounded-lg w-20 text-center text-[10px]">
-                                <button type="button" onclick="removePackage(${cIdx}, ${pIdx})" class="text-rose-400 hover:text-rose-300 px-1">
-                                    <i class="fa-solid fa-xmark"></i>
-                                </button>
+                    <div class="space-y-2">
+                        ${(cat.items || []).map((item, itemIdx) => `
+                            <div class="grid grid-cols-1 sm:grid-cols-5 gap-2 items-center bg-white/[0.02] p-2.5 rounded-xl border border-white/5 text-xs">
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-0.5">نام پلن:</label>
+                                    <input type="text" value="${item.name}" onchange="updateItemField(${catIdx}, ${itemIdx}, 'name', this.value)" placeholder="مثلاً بوست ۳۰ روزه" class="input-box rounded px-2.5 py-1 w-full">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-0.5">مدت / توضیحات:</label>
+                                    <input type="text" value="${item.duration}" onchange="updateItemField(${catIdx}, ${itemIdx}, 'duration', this.value)" placeholder="مثلاً ۳۰ روز" class="input-box rounded px-2.5 py-1 w-full">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-slate-400 mb-0.5">قیمت هر واحد (تومان):</label>
+                                    <input type="number" value="${item.price}" onchange="updateItemField(${catIdx}, ${itemIdx}, 'price', this.value)" placeholder="قیمت" class="input-box rounded px-2.5 py-1 w-full font-bold text-amber-400">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] text-cyan-400 mb-0.5 font-bold">حداقل تعداد خرید:</label>
+                                    <input type="number" value="${item.minQty || 1}" min="1" onchange="updateItemField(${catIdx}, ${itemIdx}, 'minQty', this.value)" placeholder="حداقل تعداد" class="input-box rounded px-2.5 py-1 w-full font-black text-center text-cyan-300">
+                                </div>
+                                <div class="text-left pt-3 sm:pt-0">
+                                    <button type="button" onclick="deletePackageItem(${catIdx}, ${itemIdx})" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-1">
+                                        <i class="fa-solid fa-xmark"></i> حذف
+                                    </button>
+                                </div>
                             </div>
                         `).join('')}
                     </div>
-
-                    <button type="button" onclick="addPackageToCat(${cIdx})" class="text-[11px] font-bold text-cyan-400 hover:underline pt-1">
-                        + افزودن پکیج به این دسته
-                    </button>
                 </div>
             `).join('');
         }
 
-        function updateCatTitle(cIdx, val) { if (customServicesData[cIdx]) customServicesData[cIdx].title = val.trim(); }
-        function updateCatIcon(cIdx, val) { if (customServicesData[cIdx]) customServicesData[cIdx].icon = val.trim(); }
-        function updateCatDesc(cIdx, val) { if (customServicesData[cIdx]) customServicesData[cIdx].description = val.trim(); }
-        function updatePkgName(cIdx, pIdx, val) { if (customServicesData[cIdx]?.packages[pIdx]) customServicesData[cIdx].packages[pIdx].name = val.trim(); }
-        function updatePkgPrice(cIdx, pIdx, val) { if (customServicesData[cIdx]?.packages[pIdx]) customServicesData[cIdx].packages[pIdx].price = Number(val) || 0; }
-        function updatePkgTag(cIdx, pIdx, val) { if (customServicesData[cIdx]?.packages[pIdx]) customServicesData[cIdx].packages[pIdx].tag = val.trim(); }
-
-        function removeCategory(cIdx) {
-            customServicesData.splice(cIdx, 1);
-            renderCustomServicesEditor();
+        function updateCatTitle(catIdx, val) {
+            if (localServices[catIdx]) localServices[catIdx].title = val;
         }
 
-        function removePackage(cIdx, pIdx) {
-            customServicesData[cIdx]?.packages.splice(pIdx, 1);
-            renderCustomServicesEditor();
+        function updateItemField(catIdx, itemIdx, field, val) {
+            if (localServices[catIdx]?.items[itemIdx]) {
+                if (field === 'price' || field === 'minQty') {
+                    localServices[catIdx].items[itemIdx][field] = Math.max(1, Number(val) || 1);
+                } else {
+                    localServices[catIdx].items[itemIdx][field] = val;
+                }
+            }
         }
 
-        function addPackageToCat(cIdx) {
-            if (!customServicesData[cIdx].packages) customServicesData[cIdx].packages = [];
-            customServicesData[cIdx].packages.push({ name: 'پکیج جدید', price: 100000, tag: '' });
-            renderCustomServicesEditor();
-        }
-
-        document.getElementById("addNewServiceCatBtn")?.addEventListener("click", () => {
-            customServicesData.push({
-                id: `service_${Date.now()}`,
-                title: 'دسته خدمت جدید',
-                icon: 'fa-bolt',
-                description: 'توضیحات این خدمت...',
-                packages: [{ name: 'پلن اول', price: 50000, tag: 'ویژه' }]
+        function addCategory() {
+            localServices.push({
+                id: "cat_" + Date.now(),
+                title: "دسته‌بندی جدید",
+                icon: "fa-rocket",
+                items: [
+                    { id: "item_" + Date.now(), name: "پلن جدید", duration: "۱ روز", price: 50000, minQty: 1 }
+                ]
             });
-            renderCustomServicesEditor();
-        });
+            renderServicesBuilder();
+        }
 
-        // ================= ذخیره نهایی =================
-        async function saveAllSettings() {
+        function deleteCategory(catIdx) {
+            if (confirm("آیا این دسته‌بندی حذف شود؟")) {
+                localServices.splice(catIdx, 1);
+                renderServicesBuilder();
+            }
+        }
+
+        function addPackageItem(catIdx) {
+            if (!localServices[catIdx].items) localServices[catIdx].items = [];
+            localServices[catIdx].items.push({
+                id: "item_" + Date.now(),
+                name: "پلن جدید",
+                duration: "۷ روز",
+                price: 100000,
+                minQty: 1
+            });
+            renderServicesBuilder();
+        }
+
+        function deletePackageItem(catIdx, itemIdx) {
+            localServices[catIdx].items.splice(itemIdx, 1);
+            renderServicesBuilder();
+        }
+
+        async function saveSettings() {
             const token = checkSession();
             if (!token) return alert("نشست شما منقضی شده است.");
 
-            const saveBtn = document.getElementById("saveAllBtn");
-            if (saveBtn) {
-                saveBtn.disabled = true;
-                saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i><span>در حال ذخیره در دیتابیس ابری...</span>';
-            }
-
             const payload = {
-                prem3: Number(document.getElementById("prem3").value) || 620000,
-                prem6: Number(document.getElementById("prem6").value) || 950000,
-                prem12: Number(document.getElementById("prem12").value) || 1690000,
-                ratePerStar: Number(document.getElementById("ratePerStar").value) || 1450,
-                giftMonthlyPrice: Number(document.getElementById("giftMonthlyPrice").value) || 160000,
-                adminTg: (document.getElementById("adminTg").value || "Zanjani_a").replace("@", "").trim(),
-                announcementText: (document.getElementById("announcementText").value || "").trim(),
+                prem3: parseInt(document.getElementById("prem3").value) || 620000,
+                prem6: parseInt(document.getElementById("prem6").value) || 950000,
+                prem12: parseInt(document.getElementById("prem12").value) || 1690000,
+                ratePerStar: parseInt(document.getElementById("ratePerStar").value) || 1450,
+                giftMonthlyPrice: parseInt(document.getElementById("giftMonthlyPrice").value) || 160000,
+                adminTg: document.getElementById("adminTg").value.trim().replace("@", "") || "Zanjani_a",
+                announcementText: document.getElementById("announcementText").value.trim(),
                 announcementActive: document.getElementById("announcementActive").checked,
-                couponCode: (document.getElementById("couponCode").value || "DUCK").trim().toUpperCase(),
-                couponPercent: Number(document.getElementById("couponPercent").value) || 10,
-                customServices: customServicesData
+                couponCode: document.getElementById("couponCode").value.trim().toUpperCase() || "DUCK",
+                couponPercent: parseInt(document.getElementById("couponPercent").value) || 10,
+                customServices: localServices
             };
+
+            const saveBtn = document.getElementById("saveBtn");
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<i class="fa-solid fa-spinner animate-spin"></i><span>در حال ذخیره...</span>';
 
             try {
                 const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
@@ -416,17 +440,16 @@
                 });
                 if (res.ok) {
                     sessionStorage.setItem("duck_admin_time", String(Date.now()));
-                    alert("✅ تمام قیمت‌ها و خدمات با موفقیت ذخیره شدند و روی فروشگاه اعمال گردیدند!");
+                    alert("✅ تنظیمات، خدمات و حداقل تعداد خرید با موفقیت ذخیره شدند!");
                 } else {
-                    alert("خطا در ذخیره‌سازی اطلاعات.");
+                    alert("خطا در ذخیره‌سازی.");
+                    logout();
                 }
             } catch (err) {
-                alert("خطا در ارتباط با سرور کلادفلر");
+                alert("خطا در اتصال به سرور.");
             } finally {
-                if (saveBtn) {
-                    saveBtn.disabled = false;
-                    saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-sm"></i><span>ذخیره آنی تمامی تغییرات در دیتابیس ابری</span>';
-                }
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-sm"></i><span>ذخیره نهایی در دیتابیس ابری</span>';
             }
         }
 
@@ -437,26 +460,12 @@
             document.getElementById("dashboardCard")?.classList.add("hidden");
         }
 
-        // جابجایی تب‌های پنل ادمین
-        document.getElementById("admTabBtn-pricing")?.addEventListener("click", () => {
-            document.getElementById("admSec-pricing")?.classList.remove("hidden");
-            document.getElementById("admSec-services")?.classList.add("hidden");
-            document.getElementById("admTabBtn-pricing").className = "flex-1 py-2 rounded-xl text-xs font-black bg-amber-400 text-slate-950 transition";
-            document.getElementById("admTabBtn-services").className = "flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
-        });
-
-        document.getElementById("admTabBtn-services")?.addEventListener("click", () => {
-            document.getElementById("admSec-services")?.classList.remove("hidden");
-            document.getElementById("admSec-pricing")?.classList.add("hidden");
-            document.getElementById("admTabBtn-services").className = "flex-1 py-2 rounded-xl text-xs font-black bg-amber-400 text-slate-950 transition";
-            document.getElementById("admTabBtn-pricing").className = "flex-1 py-2 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition";
-        });
-
         document.addEventListener("DOMContentLoaded", () => {
             document.getElementById("togglePassBtn")?.addEventListener("click", togglePassVisibility);
             document.getElementById("loginBtn")?.addEventListener("click", login);
             document.getElementById("logoutBtn")?.addEventListener("click", logout);
-            document.getElementById("saveAllBtn")?.addEventListener("click", saveAllSettings);
+            document.getElementById("saveBtn")?.addEventListener("click", saveSettings);
+            document.getElementById("addCategoryBtn")?.addEventListener("click", addCategory);
             document.getElementById("adminPass")?.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") login();
             });
