@@ -77,7 +77,7 @@ def generate_tg_nft_link(name: str, number: str) -> str:
 
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
-    """تولید وب‌سایت Duck Store با رفع قطعی لینک‌ها، فاکتور کامل و پاپ‌آپ سبد خرید"""
+    """تولید وب‌سایت فروشگاهی Duck Store با عکس کالکشن‌ها و ناوبری ضدبلاک تلگرام"""
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     collections_map = {}
@@ -294,7 +294,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- بخش ۲: بازار گیفت‌ها (کارت‌های تصویر ۱) -->
+<!-- بخش ۲: بازار گیفت‌ها -->
 <section id="view-market" class="hidden space-y-3">
   <div class="glass glass-tight p-3 flex items-center gap-2">
     <div class="relative flex-1">
@@ -319,7 +319,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- بخش ۳: خدمات داینامیک با پشتیبانی از تعداد و اطلاعات کامل کاربر -->
+<!-- بخش ۳: خدمات داینامیک -->
 <section id="view-services" class="hidden space-y-4">
   <div id="servicesTabsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
@@ -353,7 +353,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- بخش ۴: سبد خرید (صفحه اصلی سبد) -->
+<!-- بخش ۴: سبد خرید -->
 <section id="view-cart" class="hidden space-y-4">
   <div class="glass glass-tight p-4 space-y-3">
     <div class="flex items-center justify-between border-b pb-3" style="border-color:var(--border)">
@@ -412,7 +412,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 </main>
 
-<!-- 🛍️ نوار پاپ‌آپ شناور سبد خرید (مستقر بالای نوار پایین) -->
+<!-- 🛍️ نوار پاپ‌آپ شناور سبد خرید (بالای نوار ناوبری) -->
 <div id="floatingCartBar" class="fixed bottom-20 inset-x-4 max-w-lg mx-auto z-40 bg-[#0d1017]/95 backdrop-blur-xl border border-cyan-500/40 p-3.5 rounded-[22px] shadow-2xl transition-all duration-300 transform translate-y-40 opacity-0 flex items-center justify-between">
   <div class="flex items-center gap-3">
     <div class="w-10 h-10 rounded-2xl bg-cyan-400 text-black flex items-center justify-center font-black text-sm shadow-md">
@@ -477,7 +477,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </div>
 
-<!-- مودال کالکشن -->
+<!-- 📦 مودال انتخاب کالکشن با نمایش تصویر هر کالکشن -->
 <div id="collectionModal" class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 sheet-backdrop hidden">
   <div class="glass2 w-full sm:max-w-md rounded-t-[28px] sm:rounded-[28px] overflow-hidden flex flex-col max-h-[78vh]">
     <div class="px-5 py-4 flex items-center justify-between hair">
@@ -485,9 +485,12 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
       <h3 class="text-xs font-black">کالکشن‌های گیفت</h3>
       <div class="w-7"></div>
     </div>
-    <div class="px-4 py-2.5 hair flex items-center justify-between text-xs">
-      <button onclick="selectAllCollections()" class="font-bold">انتخاب همه</button>
-      <button onclick="clearCollectionSelection()" style="color:var(--faint)">پاک کردن</button>
+    <div class="p-3 border-b border-white/10 space-y-2">
+      <input type="text" id="modalSearchInput" placeholder="جستجوی کالکشن..." class="w-full glass glass-tight px-3 py-1.5 text-xs">
+      <div class="flex items-center justify-between text-xs px-1">
+        <button onclick="selectAllCollections()" class="text-cyan-400 font-bold">انتخاب همه</button>
+        <button onclick="clearCollectionSelection()" style="color:var(--faint)">پاک کردن</button>
+      </div>
     </div>
     <div id="modalCollectionsList" class="p-3 space-y-1.5 overflow-y-auto flex-1"></div>
     <div class="p-3 hair">
@@ -534,19 +537,37 @@ function triggerHaptic(type = 'light') {
   } catch(e) {}
 }
 
-// 🔗 متد قطعی و تضمین‌شده برای باز کردن چت تلگرام در تمام محیط‌ها
+// 🔗 هدایت قطعی، تضمینی و ضدبلاک به تلگرام
 function openTgLink(url) {
-  const cleanUrl = url.replace('https://t.me/@', 'https://t.me/');
-  
+  if (!url) return;
+  const cleanUrl = url.replace('https://t.me/@', 'https://t.me/').trim();
+
+  // کپی خودکار متن فاکتور در کلیپ‌بورد برای اطمینان ۱۰۰٪
+  try {
+    const urlObj = new URL(cleanUrl);
+    const textParam = urlObj.searchParams.get('text');
+    if (textParam && navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(textParam);
+    }
+  } catch(e) {}
+
+  // ۱. برای محیط مینی‌اپ تلگرام
   if (window.Telegram?.WebApp) {
-    if (window.Telegram.WebApp.openLink) {
-      try { window.Telegram.WebApp.openLink(cleanUrl); return; } catch(e) {}
+    if (cleanUrl.includes('t.me') || cleanUrl.startsWith('tg:')) {
+      try {
+        window.Telegram.WebApp.openTelegramLink(cleanUrl);
+        return;
+      } catch(e) {}
     }
-    if (window.Telegram.WebApp.openTelegramLink) {
-      try { window.Telegram.WebApp.openTelegramLink(cleanUrl); return; } catch(e) {}
-    }
+    try {
+      if (window.Telegram.WebApp.openLink) {
+        window.Telegram.WebApp.openLink(cleanUrl);
+        return;
+      }
+    } catch(e) {}
   }
-  
+
+  // ۲. برای مرورگر و وب‌ویو: ساخت لینک نامرئی و کلیک مستقیم
   try {
     const a = document.createElement('a');
     a.href = cleanUrl;
@@ -554,7 +575,7 @@ function openTgLink(url) {
     a.rel = 'noopener noreferrer';
     document.body.appendChild(a);
     a.click();
-    setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 100);
+    setTimeout(() => { if (a.parentNode) a.parentNode.removeChild(a); }, 150);
   } catch(e) {
     window.location.href = cleanUrl;
   }
@@ -566,7 +587,7 @@ function toast(msg, icon) {
   el.className = 'toast';
   el.innerHTML = `<i class="fa-solid ${icon || 'fa-circle-check'} text-xs" style="color:var(--good)"></i><span>${msg}</span>`;
   wrap.appendChild(el);
-  setTimeout(() => { el.style.opacity = '0'; el.style.transition = 'all .25s ease'; setTimeout(() => el.remove(), 250); }, 2200);
+  setTimeout(() => { el.style.opacity = '0'; el.style.transform = 'translateY(-10px)'; el.style.transition = 'all .25s ease'; setTimeout(() => el.remove(), 250); }, 2200);
 }
 
 const WORKER_URL = "__WORKER_URL__";
@@ -716,7 +737,7 @@ function toggleFavorite(name) {
   renderCards(getFilteredDeals());
 }
 
-/* ================= پاپ‌آپ جزئیات گیفت ================= */
+/* ================= پاپ‌آپ جزئیات گیفت تصویر ۲ ================= */
 function openQuickView(name) {
   const d = DEALS.find(x => x.name === name);
   if (!d) return;
@@ -773,10 +794,12 @@ function addQVToCart() {
   renderCards(getFilteredDeals());
 }
 
-/* ================= کالکشن‌ها ================= */
+/* ================= کالکشن‌ها (با نمایش عکس کامل هر کالکشن) ================= */
 function openModal() {
   triggerHaptic('light');
   tempSelectedCollections = new Set(selectedCollections);
+  const searchEl = document.getElementById('modalSearchInput');
+  if (searchEl) searchEl.value = '';
   document.getElementById('collectionModal').classList.remove('hidden');
   renderModalCollections();
 }
@@ -784,15 +807,45 @@ function closeModal() {
   triggerHaptic('light');
   document.getElementById('collectionModal').classList.add('hidden');
 }
+
 function renderModalCollections() {
+  const q = (document.getElementById('modalSearchInput')?.value || '').trim().toLowerCase();
   const container = document.getElementById('modalCollectionsList');
-  container.innerHTML = COLLECTIONS.map(col => {
+  if (!container) return;
+
+  const filtered = COLLECTIONS.filter(c => !q || (c.name && c.name.toLowerCase().includes(q)));
+
+  if (filtered.length === 0) {
+    container.innerHTML = '<p class="text-xs text-center py-6 text-slate-500">کالکشنی یافت نشد</p>';
+    return;
+  }
+
+  container.innerHTML = filtered.map(col => {
     const isSelected = tempSelectedCollections.has(col.name);
-    return `<div onclick="toggleModalCollection('${escAttr(col.name)}')" class="p-2.5 rounded-xl border flex items-center justify-between cursor-pointer" style="border-color:${isSelected ? 'var(--border2)' : 'var(--border)'}; background:${isSelected ? 'var(--glass2)' : 'transparent'}">
-      <span class="text-xs font-bold">${col.name}</span><span class="text-[10px]" style="color:var(--faint)">${col.count}</span>
+    const imgSrc = col.image || 'https://marketapp.org/favicon.ico';
+    return `
+    <div onclick="toggleModalCollection('${escAttr(col.name)}')" class="p-2.5 rounded-xl border flex items-center justify-between cursor-pointer transition" style="border-color:${isSelected ? 'var(--border2)' : 'var(--border)'}; background:${isSelected ? 'var(--glass2)' : 'transparent'}">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl flex items-center justify-center p-1 bg-white/5 border border-white/10 overflow-hidden flex-shrink-0">
+          <img src="${imgSrc}" class="w-full h-full object-contain" onerror="this.src='https://marketapp.org/favicon.ico'">
+        </div>
+        <span class="text-xs font-bold text-white">${escapeHtml(col.name)}</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md text-slate-400" style="background:var(--glass2)">${col.count}</span>
+        <div class="w-4 h-4 rounded-full border flex items-center justify-center ${isSelected ? 'border-cyan-400 bg-cyan-400 text-black' : 'border-slate-600'}">
+          ${isSelected ? '<i class="fa-solid fa-check text-[9px]"></i>' : ''}
+        </div>
+      </div>
     </div>`;
   }).join('');
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  const msi = document.getElementById('modalSearchInput');
+  if (msi) msi.addEventListener('input', renderModalCollections);
+});
+
 function toggleModalCollection(name) {
   triggerHaptic('selection');
   if (tempSelectedCollections.has(name)) tempSelectedCollections.delete(name);
@@ -808,7 +861,7 @@ function applyCollectionModal() {
   renderCards(getFilteredDeals());
 }
 
-/* ================= خدمات اختصاصی با تعداد و فاکتور کامل ================= */
+/* ================= خدمات اختصاصی با تعداد و فاکتور کامل تلگرام ================= */
 function renderServicesNavigation() {
   const navBar = document.getElementById('servicesTabsBar');
   const customCats = Array.isArray(SETTINGS.customServices) ? SETTINGS.customServices : [];
@@ -868,7 +921,7 @@ function renderCustomCategoryView(catIdx) {
       <div class="glass glass-tight p-4 space-y-3">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="text-xs font-black">${escapeHtml(item.name)}</h4>
+            <h4 class="text-xs font-black text-white">${escapeHtml(item.name)}</h4>
             <p class="text-[10px] mt-0.5" style="color:var(--faint)">${escapeHtml(item.duration || '')}</p>
           </div>
           <div class="text-left">
@@ -880,7 +933,7 @@ function renderCustomCategoryView(catIdx) {
         <div class="hair pt-3 flex items-center justify-between">
           <div class="flex items-center gap-1.5 glass glass-tight px-2 py-1">
             <button onclick="changeCustomQty('${inputId}', -1, ${minQ}, ${price}, '${totalId}')" class="w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs" style="background:var(--glass2)">-</button>
-            <input id="${inputId}" type="number" value="${minQ}" min="${minQ}" oninput="onCustomQtyInput('${inputId}', ${minQ}, ${price}, '${totalId}')" class="w-10 text-center bg-transparent text-xs font-black">
+            <input id="${inputId}" type="number" value="${minQ}" min="${minQ}" oninput="onCustomQtyInput('${inputId}', ${minQ}, ${price}, '${totalId}')" class="w-10 text-center bg-transparent text-xs font-black text-white">
             <button onclick="changeCustomQty('${inputId}', 1, ${minQ}, ${price}, '${totalId}')" class="w-6 h-6 rounded-md flex items-center justify-center font-bold text-xs" style="background:var(--glass2)">+</button>
             <span class="text-[9px] mr-1" style="color:var(--faint)">حداقل: ${minQ}</span>
           </div>
@@ -937,18 +990,18 @@ function orderCustomService(catTitle, itemName, unitPrice, inputId, minQ) {
   const buyerText = getBuyerDetailsText();
 
   const msg = encodeURIComponent(
-    "سلام، متقاضی خرید خدمات تلگرام هستم:" + nl + nl +
+    "سلام، درخواست خرید خدمات تلگرام دارم:" + nl + nl +
     buyerText + nl + nl +
     "دسته: " + catTitle + nl +
     "پلن: " + itemName + nl +
     "تعداد سفارش: " + qty.toLocaleString('en-US') + " عدد" + nl +
-    "تعرفه واحد: " + fmtMoney(unitPrice) + " تومان" + nl +
+    "تعرفه هر واحد: " + fmtMoney(unitPrice) + " تومان" + nl +
     "مبلغ کل قابل پرداخت: " + fmtMoney(total) + " تومان"
   );
   openTgLink("https://t.me/" + adminUser + "?text=" + msg);
 }
 
-// استارز با فاکتور حاوی اطلاعات کاربر
+// استارز با اطلاعات کامل خریدار
 function renderStarsPackages() {
   const rate = Number(SETTINGS.ratePerStar) || 1450;
   const packs = [50, 100, 250, 500, 1000, 2500, 5000];
@@ -993,7 +1046,7 @@ function addCustomStarsToCart() {
   orderDirectStars(qty);
 }
 
-// پرمیوم با فاکتور حاوی اطلاعات کاربر
+// پرمیوم با اطلاعات کامل خریدار
 function renderPremiumOptions() {
   const plans = [
     { key: 'prem3', label: '۳ ماهه', price: SETTINGS.prem3 },
@@ -1175,7 +1228,7 @@ function updateUI() {
   }
 }
 
-/* ================= لودینگ و صفحه خوش‌آمد ================= */
+/* ================= اسپلش لودینگ و صفحه خوش‌آمد ================= */
 let loadingProgress = 5;
 function startLoading() {
   const bar = document.getElementById('loadingProgressBar');
@@ -1341,7 +1394,7 @@ async def main():
     browser = None
 
     print("\n" + "═" * 65)
-    print("  🦆 DUCK STORE TURBO SCRAPER (STABLE ENGINE V4) 🦆")
+    print("  🦆 DUCK STORE TURBO SCRAPER (STABLE ENGINE V5) 🦆")
     print("═" * 65 + "\n")
 
     launch_args = [
@@ -1527,7 +1580,7 @@ async def main():
         except Exception as e:
             print(f"❌ خطا در خروجی CSV: {e}")
 
-        print("\n⚡ فروشگاه پایدار داک استور با موفقیت ایجاد شد!")
+        print("\n⚡ فروشگاه پایدار Duck Store با نمایش عکس کالکشن‌ها و ناوبری ضدبلاک ساخته شد!")
         send_telegram_package(sorted_deals)
 
 
