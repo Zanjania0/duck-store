@@ -21,7 +21,7 @@
     <div id="loginCard" class="glass-box w-full max-w-md p-6 sm:p-8 space-y-6">
         <div class="text-center space-y-2">
             <div class="w-16 h-16 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg font-black">🦆</div>
-            <h1 class="text-lg font-black text-white">پنل فرماندهی Duck Store</h1>
+            <h1 class="text-lg font-black text-white">پنل مدیریت Duck Store</h1>
             <p class="text-xs text-slate-400">مدیریت سفارشات، تخفیف‌ها، گردونه و تنظیمات ربات</p>
         </div>
         <div class="space-y-4">
@@ -30,7 +30,7 @@
         </div>
     </div>
 
-    <!-- بدنه داشبورد اصلی -->
+    <!-- داشبورد اصلی -->
     <div id="dashboardCard" class="hidden glass-box w-full max-w-5xl p-4 sm:p-8 space-y-6">
         <!-- هدر داشبورد -->
         <div class="flex items-center justify-between border-b border-white/5 pb-4">
@@ -56,7 +56,7 @@
         <!-- تب ۱: مدیریت سفارشات زنده -->
         <div id="adminTab-orders" class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="text-xs font-black text-slate-300">سفارشات اخیر ثبت‌شده توسط مشتریان</h3>
+                <h3 class="text-xs font-black text-slate-300">سفارشات ثبت‌شده توسط مشتریان</h3>
                 <button onclick="loadAdminOrders()" class="text-xs text-cyan-400 font-bold"><i class="fa-solid fa-rotate-right ml-1"></i>تازه‌سازی</button>
             </div>
             <div id="ordersTableContainer" class="space-y-3 max-h-[500px] overflow-y-auto">
@@ -71,7 +71,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
                     <div>
                         <label class="block text-slate-400 mb-1">کد (مثال: DUCK20):</label>
-                        <input type="text" id="couponCode" placeholder="DUCK20" class="input-box w-full rounded-xl p-2 font-mono text-center font-bold">
+                        <input type="text" id="couponCode" placeholder="DUCK20" class="input-box w-full rounded-xl p-2 font-mono text-center font-bold uppercase">
                     </div>
                     <div>
                         <label class="block text-slate-400 mb-1">درصد تخفیف (%):</label>
@@ -164,7 +164,7 @@
 
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
                 <h3 class="text-xs font-black text-cyan-400"><i class="fa-solid fa-bullhorn ml-1.5"></i>ارسال پیام همگانی به اعضای ربات</h3>
-                <textarea id="broadcastText" rows="3" placeholder="متن پیام خود را بنویسید (پشتیبانی از HTML)..." class="input-box w-full rounded-xl p-3 text-xs"></textarea>
+                <textarea id="broadcastText" rows="3" placeholder="متن پیام خود را بنویسید (پشتیبانی از تگ‌های HTML تلگرام)..." class="input-box w-full rounded-xl p-3 text-xs"></textarea>
                 <div class="flex justify-end">
                     <button type="button" id="sendBroadcastBtn" onclick="sendBroadcast()" class="px-5 py-2.5 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">ارسال به همه کاربران</button>
                 </div>
@@ -207,7 +207,7 @@
             document.getElementById("loginCard").classList.add("hidden");
             document.getElementById("dashboardCard").classList.remove("hidden");
 
-            // لود آمار
+            // دریافت آمار زنده
             try {
                 const aRes = await fetch(`${WORKER_URL}/api/admin/analytics`, {
                     headers: { "Authorization": `Bearer ${checkToken()}` }
@@ -220,7 +220,7 @@
                 }
             } catch(e) {}
 
-            // لود تنظیمات
+            // دریافت تنظیمات
             const res = await fetch(`${WORKER_URL}/api/settings`);
             if (res.ok) {
                 localSettings = await res.json();
@@ -241,7 +241,7 @@
             }
         }
 
-        // سفارشات آنلاین
+        // سفارشات آنلاین و اقدام روی آن‌ها
         async function loadAdminOrders() {
             const container = document.getElementById("ordersTableContainer");
             container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">در حال دریافت لیست سفارشات...</p>';
@@ -307,7 +307,7 @@
             }
         }
 
-        // کدهای تخفیف
+        // مدیریت کدهای تخفیف
         function renderCoupons() {
             const coupons = localSettings.discountCodes || [];
             const container = document.getElementById("couponsListContainer");
@@ -339,19 +339,18 @@
             document.getElementById("couponPercent").value = "";
         }
 
-        // گردونه شانس
+        // جوایز گردونه شانس
         function renderWheelSlices() {
             const slices = localSettings.spinWheelOptions || [
                 { label: "۱۰٪ تخفیف خرید", code: "DUCK10" },
                 { label: "۱۵٪ تخفیف پرمیوم", code: "PREM15" },
-                { label: "پوچ (شانس دوباره)", code: "" },
                 { label: "۵۰ هزار تومان هدیه", code: "GIFT50" }
             ];
             localSettings.spinWheelOptions = slices;
             document.getElementById("wheelSlicesContainer").innerHTML = slices.map((s, i) => `
                 <div class="p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center gap-3 text-xs">
-                    <input type="text" value="${s.label}" onchange="localSettings.spinWheelOptions[${i}].label=this.value" placeholder="عنوان جایزه" class="input-box flex-1 rounded-lg p-2">
-                    <input type="text" value="${s.code || ''}" onchange="localSettings.spinWheelOptions[${i}].code=this.value" placeholder="کد جایزه (اختیاری)" class="input-box w-36 rounded-lg p-2 font-mono text-center">
+                    <input type="text" value="${s.label}" onchange="localSettings.spinWheelOptions[${i}].label=this.value" placeholder="عنوان جایزه" class="input-box flex-1 rounded-lg p-2 font-bold">
+                    <input type="text" value="${s.code || ''}" onchange="localSettings.spinWheelOptions[${i}].code=this.value" placeholder="کد جایزه (اختیاری)" class="input-box w-36 rounded-lg p-2 font-mono text-center font-bold">
                     <button onclick="localSettings.spinWheelOptions.splice(${i},1); renderWheelSlices();" class="text-rose-400 font-bold px-2">✕</button>
                 </div>
             `).join('');
