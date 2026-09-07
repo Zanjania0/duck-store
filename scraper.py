@@ -26,7 +26,7 @@ CONFIG = {
     "GITHUB_REPOSITORY": os.getenv("GITHUB_REPOSITORY", ""),
 }
 
-# کاتالوگ باکیفیت گیفت‌های واقعی تلگرام (تصاویر واقعی WebP از CDN)
+# کاتالوگ پشتیبان امن با تصاویر اصلی WebP تلگرام
 REAL_TELEGRAM_FALLBACK_GIFTS = [
     {
         "name": "Plush Pepe #2825",
@@ -95,8 +95,8 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "rarity": "",
     },
     {
-        "name": "Durov's Cap #291",
-        "gift_title": "Durov's Cap",
+        "name": "Durovs Cap #291",
+        "gift_title": "Durovs Cap",
         "number": "291",
         "discount": "-45%",
         "price_ton": "0.20",
@@ -192,7 +192,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ۱. صفحه لودینگ اولیه (Splash Screen) -->
+<!-- ۱. صفحه لودینگ اولیه -->
 <div id="splashScreen" class="fixed inset-0 z-[100] bg-[#07080c] flex flex-col items-center justify-center space-y-4 transition-opacity duration-500">
     <div class="w-20 h-20 rounded-3xl bg-cyan-400 text-slate-950 flex items-center justify-center text-4xl shadow-2xl animate-bounce">🦆</div>
     <div class="text-center space-y-1">
@@ -204,7 +204,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
     </div>
 </div>
 
-<!-- ۲. مودال معرفی و خوش‌آمدگویی («بزن بریم!») -->
+<!-- ۲. مودال خوش‌آمدگویی («بزن بریم!») -->
 <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
     <div class="glass w-full max-w-sm p-6 text-center space-y-4 bg-[#0e1017]">
         <div class="w-16 h-16 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">🚀</div>
@@ -285,7 +285,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
 </section>
 
-<!-- ۳. خدمات (استارز و پرمیوم با فیلد اجباری آیدی) -->
+<!-- ۳. خدمات -->
 <section id="view-services" class="hidden space-y-4">
   <div id="servicesTabsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
@@ -293,7 +293,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
     <button onclick="switchServiceSubTab('custom_0')" id="subtab-custom_0" class="service-subtab-btn chip">بوست تلگرام</button>
   </div>
 
-  <!-- بخش استارز -->
+  <!-- استارز -->
   <div id="subview-stars" class="space-y-3">
     <div class="glass p-4 space-y-3">
       <h4 class="text-xs font-bold">⭐ استارز دلخواه تلگرام</h4>
@@ -308,7 +308,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
     <div id="starsPackagesList" class="space-y-2"></div>
   </div>
 
-  <!-- بخش پرمیوم -->
+  <!-- پرمیوم -->
   <div id="subview-premium" class="hidden space-y-3">
     <div class="glass p-3 space-y-1">
       <label class="block text-[10px] text-slate-400 font-bold">آیدی اکانت تلگرام جهت فعال‌سازی پرمیوم (الزامی):</label>
@@ -322,7 +322,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </section>
 
-<!-- ۴. سبد خرید با کد تخفیف -->
+<!-- ۴. سبد خرید -->
 <section id="view-cart" class="hidden space-y-4">
   <div class="glass p-4 space-y-3">
     <div class="flex items-center justify-between border-b pb-3 border-white/10">
@@ -352,7 +352,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </section>
 
-<!-- ۵. پروفایل و پیگیری آنلاین سفارش (سیستم رفرال به طور کامل حذف شد) -->
+<!-- ۵. پروفایل و پیگیری آنلاین سفارش -->
 <section id="view-profile" class="hidden space-y-4">
   <div class="glass p-5 space-y-4">
     <div class="flex items-center gap-3">
@@ -398,7 +398,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </div>
 
-<!-- نوار ناوبری پایین -->
+<!-- ناوبری پایین -->
 <nav class="fixed bottom-3 inset-x-4 max-w-xl mx-auto z-40 glass px-2 py-2 flex items-center justify-around rounded-full bg-[#0d0f15]/95">
   <button onclick="switchView('home')" id="nav-home" class="nav-tab active px-3 py-1 flex flex-col items-center gap-1 text-[10px] font-bold"><i class="fa-solid fa-house"></i><span>خانه</span></button>
   <button onclick="switchView('market')" id="nav-market" class="nav-tab px-3 py-1 flex flex-col items-center gap-1 text-[10px] font-bold"><i class="fa-solid fa-gift"></i><span>گیفت‌ها</span></button>
@@ -407,7 +407,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   <button onclick="switchView('profile')" id="nav-profile" class="nav-tab px-3 py-1 flex flex-col items-center gap-1 text-[10px] font-bold"><i class="fa-solid fa-user"></i><span>حساب</span></button>
 </nav>
 
-<!-- مودال گردونه شانس -->
+<!-- گردونه شانس -->
 <div id="spinModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
   <div class="glass w-full max-w-xs p-5 text-center space-y-3 bg-[#11131a]">
     <div class="text-3xl">🎰</div>
@@ -420,7 +420,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </div>
 
-<!-- مودال جزئیات گیفت -->
+<!-- جزئیات گیفت -->
 <div id="quickViewSheet" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
   <div class="glass w-full max-w-xs p-4 bg-[#11131a] space-y-3 text-right">
     <div class="relative w-full h-44 flex items-center justify-center rounded-xl bg-white/5" id="qvImageWrap">
@@ -442,7 +442,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </div>
 
-<!-- مودال کالکشن -->
+<!-- کالکشن‌ها -->
 <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
   <div class="glass w-full max-w-sm max-h-[70vh] flex flex-col p-4 bg-[#11131a]">
     <div class="flex justify-between items-center pb-2 border-b border-white/10 text-xs font-bold">
@@ -474,11 +474,12 @@ let SETTINGS = {
 };
 
 const WORKER_URL = "__WORKER_URL__";
-let favorites = JSON.parse(localStorage.getItem('duck_favs_v8') || '[]');
-let cart = JSON.parse(localStorage.getItem('duck_cart_v8') || '[]');
+let favorites = JSON.parse(localStorage.getItem('duck_favs_v9') || '[]');
+let cart = JSON.parse(localStorage.getItem('duck_cart_v9') || '[]');
 let selectedType = 'all';
 let activeQVDeal = null;
 let appliedDiscount = 0;
+let currentFilteredDeals = [];
 
 function getTgUser() {
   if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
@@ -494,14 +495,14 @@ window.addEventListener('DOMContentLoaded', () => {
             splash.classList.add("opacity-0");
             setTimeout(() => splash.remove(), 500);
         }
-        if (!localStorage.getItem("duck_welcomed_v4")) {
+        if (!localStorage.getItem("duck_welcomed_v5")) {
             document.getElementById("onboardingModal").classList.remove("hidden");
         }
     }, 1200);
 });
 
 function dismissOnboarding() {
-    localStorage.setItem("duck_welcomed_v4", "true");
+    localStorage.setItem("duck_welcomed_v5", "true");
     document.getElementById("onboardingModal").classList.add("hidden");
 }
 
@@ -530,7 +531,7 @@ function goServices(tab) { switchView('services'); switchServiceSubTab(tab); }
 
 function renderHome() {
   document.getElementById('homeGiftScroll').innerHTML = DEALS.slice(0, 8).map((d, i) => `
-    <div class="glass p-2.5 rounded-2xl flex-shrink-0 w-32 cursor-pointer text-right space-y-1" onclick="openQuickViewByIndex(${i})">
+    <div class="glass p-2.5 rounded-2xl flex-shrink-0 w-32 cursor-pointer text-right space-y-1" onclick="openHomeDeal(${i})">
       <div class="w-full h-24 rounded-xl flex items-center justify-center p-1" style="background:${d.bg_color || '#1b1d28'}">
         <img src="${d.image_url}" class="w-20 h-20 object-contain" onerror="this.src='https://marketapp.org/favicon.ico'">
       </div>
@@ -540,12 +541,23 @@ function renderHome() {
   `).join('');
 }
 
+function openHomeDeal(i) {
+  if (DEALS[i]) openQuickView(DEALS[i]);
+}
+
 function renderCards(list) {
-  document.getElementById('dealsGrid').innerHTML = list.map((d, idx) => {
+  currentFilteredDeals = list || [];
+  const grid = document.getElementById('dealsGrid');
+  if (!grid) return;
+  if (currentFilteredDeals.length === 0) {
+    grid.innerHTML = '<div class="col-span-2 text-center py-10 text-xs text-slate-400 font-bold">گیفتی با این مشخصات یافت نشد.</div>';
+    return;
+  }
+  grid.innerHTML = currentFilteredDeals.map((d, idx) => {
     const isFav = favorites.includes(d.name);
     return `
-    <div class="glass p-3 rounded-2xl cursor-pointer text-right space-y-2 relative" onclick="openQuickViewByName('${d.name}')">
-      <button onclick="event.stopPropagation(); toggleFavorite('${d.name}')" class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/40 text-xs flex items-center justify-center z-10">
+    <div class="glass p-3 rounded-2xl cursor-pointer text-right space-y-2 relative" onclick="openFilteredDeal(${idx})">
+      <button onclick="event.stopPropagation(); toggleFavoriteDeal(${idx})" class="absolute top-2 left-2 w-7 h-7 rounded-full bg-black/40 text-xs flex items-center justify-center z-10">
         <i class="fa-solid fa-heart" style="color:${isFav ? '#f43f5e' : 'rgba(255,255,255,0.4)'}"></i>
       </button>
       <div class="w-full h-28 rounded-xl flex items-center justify-center p-2" style="background:${d.bg_color || '#1b1d28'}">
@@ -563,10 +575,20 @@ function renderCards(list) {
   }).join('');
 }
 
+function openFilteredDeal(idx) {
+  if (currentFilteredDeals[idx]) openQuickView(currentFilteredDeals[idx]);
+}
+
+function toggleFavoriteDeal(idx) {
+  if (currentFilteredDeals[idx]) toggleFavorite(currentFilteredDeals[idx].name);
+}
+
 function getFilteredDeals() {
   const q = (document.getElementById('searchInput')?.value || '').trim().toLowerCase();
   return DEALS.filter(d => {
-    if (!d.name.toLowerCase().includes(q) && !d.number.includes(q)) return false;
+    const nameMatch = String(d.name || '').toLowerCase().includes(q) || String(d.gift_title || '').toLowerCase().includes(q);
+    const numMatch = String(d.number || '').includes(q);
+    if (q && !nameMatch && !numMatch) return false;
     if (selectedType === 'rare' && !d.rarity) return false;
     if (selectedType === 'favs' && !favorites.includes(d.name)) return false;
     return true;
@@ -585,13 +607,12 @@ document.getElementById('searchInput')?.addEventListener('input', () => renderCa
 function toggleFavorite(name) {
   const idx = favorites.indexOf(name);
   if (idx >= 0) favorites.splice(idx, 1); else favorites.push(name);
-  localStorage.setItem('duck_favs_v8', JSON.stringify(favorites));
+  localStorage.setItem('duck_favs_v9', JSON.stringify(favorites));
   renderCards(getFilteredDeals());
-  document.getElementById('favCount').innerText = favorites.length;
+  const favEl = document.getElementById('favCount');
+  if (favEl) favEl.innerText = favorites.length;
 }
 
-function openQuickViewByIndex(i) { openQuickView(DEALS[i]); }
-function openQuickViewByName(n) { openQuickView(DEALS.find(x => x.name === n)); }
 function openQuickView(d) {
   if (!d) return;
   activeQVDeal = d;
@@ -609,7 +630,7 @@ function closeQuickView() { document.getElementById('quickViewSheet').classList.
 function addQVToCart() {
   if (!activeQVDeal) return;
   cart.push({ name: activeQVDeal.name, price: Number(SETTINGS.giftMonthlyPrice) });
-  localStorage.setItem('duck_cart_v8', JSON.stringify(cart));
+  localStorage.setItem('duck_cart_v9', JSON.stringify(cart));
   toast('به سبد خرید اضافه شد');
   closeQuickView();
   updateFloatingCart();
@@ -644,7 +665,7 @@ function renderCart() {
   list.innerHTML = cart.map((c, i) => `
     <div class="glass p-2.5 flex items-center justify-between text-xs">
       <span>${c.name}</span>
-      <button onclick="cart.splice(${i},1);localStorage.setItem('duck_cart_v8',JSON.stringify(cart));renderCart();updateFloatingCart();" class="text-rose-400 font-bold">✕</button>
+      <button onclick="cart.splice(${i},1);localStorage.setItem('duck_cart_v9',JSON.stringify(cart));renderCart();updateFloatingCart();" class="text-rose-400 font-bold">✕</button>
     </div>
   `).join('');
   const subtotal = cart.reduce((s, c) => s + (Number(c.price)||0), 0);
@@ -652,7 +673,7 @@ function renderCart() {
   document.getElementById('cartTotal').innerText = fmtMoney(finalTotal) + ' تومان' + (appliedDiscount > 0 ? ` (${fmtMoney(appliedDiscount)} تخفیف)` : '');
 }
 
-function clearCart() { cart = []; appliedDiscount = 0; localStorage.setItem('duck_cart_v8', JSON.stringify(cart)); renderCart(); updateFloatingCart(); }
+function clearCart() { cart = []; appliedDiscount = 0; localStorage.setItem('duck_cart_v9', JSON.stringify(cart)); renderCart(); updateFloatingCart(); }
 
 function applyCartCoupon() {
     const code = document.getElementById("cartCouponInput").value.trim().toUpperCase();
