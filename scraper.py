@@ -36,6 +36,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "1.29",
         "image_url": "https://i2.anton.market/3SHMDVNMcpuaDG5ZnWdghhw4eByUrQrzl4Lz-ysNwwA/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUE0MDFRcXBYdEJud0lhRGJGandkNXlYZlAybVlpQ3VzYkozWmN3OWVYUjlDcUwvOTBkNDNiMDBiNTVmOTA0MWQ4Y2JlOWMwNDI2N2Y4ZDgud2VicA",
         "tg_link": "https://t.me/nft/PlushPepe-2825",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#182a1b",
         "rarity": "🎯 خاص (#2825)",
     },
@@ -47,6 +48,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.02",
         "image_url": "https://i2.anton.market/b32fmE813CAOkRPrFkxDLWvxupaeOwXbnF0yCjelE1I/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUR1bXkzYm5aWXpWNGJTV01TU1prbVhxeDUwWHVINWQ5UmxYX3lFaTJGTmxpdmsvZWQ0YzBmY2ZmM2IwODM4ZGNhMzEyMDAyYjVlN2ZmM2Eud2VicA",
         "tg_link": "https://t.me/nft/EternalRose-7077",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#28161b",
         "rarity": "💎 زیر 10000",
     },
@@ -58,6 +60,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.05",
         "image_url": "https://i2.anton.market/tJrCyprPqBxIHyzPIq86lwZljkiDsLGzcaICRlzwmUE/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUNCS19KQkFTQUE1WFZ6MUQxN1BuLS1rUWFNV20wYjl3UmVWdHNFZFJPNFRneTkvZWQ1ZGQ2NmJkN2IxNzkxNjJkOTRiNmM4MDMyZGIwYmUud2VicA",
         "tg_link": "https://t.me/nft/RecordPlayer-4071",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#241f17",
         "rarity": "",
     },
@@ -69,6 +72,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.08",
         "image_url": "https://i2.anton.market/S8hA0eCcNKeKLNHNRblAUC-N6U1g9n2fzK4rpu1SGy4/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURJcnVTVHl4dnE2MGdVSDhqMmtrajNxem9CckJhSnk5V2tLYmVOTlJhc1dlNGovZjU0MDE1ZjYxY2ZkYmMzNjU4NDRlYzQ5MmU3NjQ0YmUud2VicA",
         "tg_link": "https://t.me/nft/AstronautDuck-412",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#16202c",
         "rarity": "💎 زیر 1000",
     },
@@ -80,6 +84,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.09",
         "image_url": "https://i2.anton.market/f8GBAj549v1rZmzzpYSz7eIBy7M_G5lV6SH4LOSVTQs/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUN5QU1rYjZiTnlObEtQSDB0SmJ1YmsxVlZqQVNxeXE5c1p3a0o4QWJ4TWt4eFUvNWRhMjliZjcyMjFjZTkxYTA5ZDg2NzY0ZTc0Y2VkZTQud2VicA",
         "tg_link": "https://t.me/nft/SantaHat-88",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#281717",
         "rarity": "👑 زیر 100",
     },
@@ -91,6 +96,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.04",
         "image_url": "https://i2.anton.market/tPaFlmsoXLLxuGRMZeyViQOpr80PBsyZbjavilZTkks/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vYjFjY2FiMTI0NWEyYTYwYjUwZTNmZDExZWZiNzFmZGYud2VicA",
         "tg_link": "https://t.me/nft/DiamondRing-1024",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#1e182a",
         "rarity": "",
     },
@@ -102,6 +108,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.20",
         "image_url": "https://i2.anton.market/3SHMDVNMcpuaDG5ZnWdghhw4eByUrQrzl4Lz-ysNwwA/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUE0MDFRcXBYdEJud0lhRGJGandkNXlYZlAybVlpQ3VzYkozWmN3OWVYUjlDcUwvOTBkNDNiMDBiNTVmOTA0MWQ4Y2JlOWMwNDI2N2Y4ZDgud2VicA",
         "tg_link": "https://t.me/nft/DurovsCap-291",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#15171e",
         "rarity": "💎 زیر 1000",
     },
@@ -113,6 +120,7 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "price_ton": "0.15",
         "image_url": "https://i2.anton.market/S8hA0eCcNKeKLNHNRblAUC-N6U1g9n2fzK4rpu1SGy4/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURJcnVTVHl4dnE2MGdVSDhqMmtrajNxem9CckJhSnk5V2tLYmVOTlJhc1dlNGovZjU0MDE1ZjYxY2ZkYmMzNjU4NDRlYzQ5MmU3NjQ0YmUud2VicA",
         "tg_link": "https://t.me/nft/CyberDuck-777",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#15251c",
         "rarity": "🎯 خاص (#777)",
     }
@@ -192,7 +200,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ۱. صفحه لودینگ اولیه -->
+<!-- ۱. لودینگ اولیه -->
 <div id="splashScreen" class="fixed inset-0 z-[100] bg-[#07080c] flex flex-col items-center justify-center space-y-4 transition-opacity duration-500">
     <div class="w-20 h-20 rounded-3xl bg-cyan-400 text-slate-950 flex items-center justify-center text-4xl shadow-2xl animate-bounce">🦆</div>
     <div class="text-center space-y-1">
@@ -204,18 +212,15 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
     </div>
 </div>
 
-<!-- ۲. مودال خوش‌آمدگویی («بزن بریم!») -->
+<!-- ۲. پاپ‌آپ خوش‌آمدگویی («بزن بریم!») -->
 <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
     <div class="glass w-full max-w-sm p-6 text-center space-y-4 bg-[#0e1017]">
         <div class="w-16 h-16 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">🚀</div>
         <div class="space-y-1.5">
             <h3 class="text-base font-black text-white">خوش آمدید به Duck Store!</h3>
             <p class="text-xs text-slate-300 leading-relaxed">
-                ویترین خرید و اجاره گیفت‌های اصیل تلگرام، خرید استارز و پرمیوم با تسویه کارت‌به‌کارت و تحویل آنی.
+                ویترین خرید و اجاره گیفت‌های تلگرام، استارز و پرمیوم با تسویه کارت‌به‌کارت و تحویل آنی.
             </p>
-        </div>
-        <div class="p-3 bg-white/[0.03] rounded-xl border border-white/5 text-[11px] text-cyan-300 font-bold">
-            🎁 تخفیف‌های ویژه در گردونه شانس ۲۴ ساعته فعال است!
         </div>
         <button onclick="dismissOnboarding()" class="w-full py-3.5 bg-cyan-400 text-slate-950 font-black text-xs rounded-2xl shadow-xl">
             بزن بریم! 🚀
@@ -285,7 +290,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
 </section>
 
-<!-- ۳. خدمات -->
+<!-- ۳. خدمات (استارز و پرمیوم) -->
 <section id="view-services" class="hidden space-y-4">
   <div id="servicesTabsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
@@ -293,7 +298,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
     <button onclick="switchServiceSubTab('custom_0')" id="subtab-custom_0" class="service-subtab-btn chip">بوست تلگرام</button>
   </div>
 
-  <!-- استارز -->
+  <!-- بخش استارز -->
   <div id="subview-stars" class="space-y-3">
     <div class="glass p-4 space-y-3">
       <h4 class="text-xs font-bold">⭐ استارز دلخواه تلگرام</h4>
@@ -308,7 +313,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
     <div id="starsPackagesList" class="space-y-2"></div>
   </div>
 
-  <!-- پرمیوم -->
+  <!-- بخش پرمیوم -->
   <div id="subview-premium" class="hidden space-y-3">
     <div class="glass p-3 space-y-1">
       <label class="block text-[10px] text-slate-400 font-bold">آیدی اکانت تلگرام جهت فعال‌سازی پرمیوم (الزامی):</label>
@@ -352,7 +357,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </section>
 
-<!-- ۵. پروفایل و پیگیری آنلاین سفارش -->
+<!-- ۵. پروفایل و پیگیری آنلاین سفارش (بدون رفرال) -->
 <section id="view-profile" class="hidden space-y-4">
   <div class="glass p-5 space-y-4">
     <div class="flex items-center gap-3">
@@ -431,7 +436,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
       <p id="qvNumber" class="text-xs text-slate-400"></p>
     </div>
     <div class="flex items-center justify-between p-2.5 rounded-xl bg-black/40 text-xs">
-      <span class="text-slate-400">اجاره ماهانه:</span>
+      <span class="text-slate-400">مبلغ پایه:</span>
       <span id="qvPrice" class="font-black text-amber-400"></span>
     </div>
     <div class="flex gap-2">
@@ -474,8 +479,8 @@ let SETTINGS = {
 };
 
 const WORKER_URL = "__WORKER_URL__";
-let favorites = JSON.parse(localStorage.getItem('duck_favs_v9') || '[]');
-let cart = JSON.parse(localStorage.getItem('duck_cart_v9') || '[]');
+let favorites = JSON.parse(localStorage.getItem('duck_favs_v10') || '[]');
+let cart = JSON.parse(localStorage.getItem('duck_cart_v10') || '[]');
 let selectedType = 'all';
 let activeQVDeal = null;
 let appliedDiscount = 0;
@@ -495,14 +500,14 @@ window.addEventListener('DOMContentLoaded', () => {
             splash.classList.add("opacity-0");
             setTimeout(() => splash.remove(), 500);
         }
-        if (!localStorage.getItem("duck_welcomed_v5")) {
+        if (!localStorage.getItem("duck_welcomed_v6")) {
             document.getElementById("onboardingModal").classList.remove("hidden");
         }
     }, 1200);
 });
 
 function dismissOnboarding() {
-    localStorage.setItem("duck_welcomed_v5", "true");
+    localStorage.setItem("duck_welcomed_v6", "true");
     document.getElementById("onboardingModal").classList.add("hidden");
 }
 
@@ -607,7 +612,7 @@ document.getElementById('searchInput')?.addEventListener('input', () => renderCa
 function toggleFavorite(name) {
   const idx = favorites.indexOf(name);
   if (idx >= 0) favorites.splice(idx, 1); else favorites.push(name);
-  localStorage.setItem('duck_favs_v9', JSON.stringify(favorites));
+  localStorage.setItem('duck_favs_v10', JSON.stringify(favorites));
   renderCards(getFilteredDeals());
   const favEl = document.getElementById('favCount');
   if (favEl) favEl.innerText = favorites.length;
@@ -630,7 +635,7 @@ function closeQuickView() { document.getElementById('quickViewSheet').classList.
 function addQVToCart() {
   if (!activeQVDeal) return;
   cart.push({ name: activeQVDeal.name, price: Number(SETTINGS.giftMonthlyPrice) });
-  localStorage.setItem('duck_cart_v9', JSON.stringify(cart));
+  localStorage.setItem('duck_cart_v10', JSON.stringify(cart));
   toast('به سبد خرید اضافه شد');
   closeQuickView();
   updateFloatingCart();
@@ -665,7 +670,7 @@ function renderCart() {
   list.innerHTML = cart.map((c, i) => `
     <div class="glass p-2.5 flex items-center justify-between text-xs">
       <span>${c.name}</span>
-      <button onclick="cart.splice(${i},1);localStorage.setItem('duck_cart_v9',JSON.stringify(cart));renderCart();updateFloatingCart();" class="text-rose-400 font-bold">✕</button>
+      <button onclick="cart.splice(${i},1);localStorage.setItem('duck_cart_v10',JSON.stringify(cart));renderCart();updateFloatingCart();" class="text-rose-400 font-bold">✕</button>
     </div>
   `).join('');
   const subtotal = cart.reduce((s, c) => s + (Number(c.price)||0), 0);
@@ -673,7 +678,7 @@ function renderCart() {
   document.getElementById('cartTotal').innerText = fmtMoney(finalTotal) + ' تومان' + (appliedDiscount > 0 ? ` (${fmtMoney(appliedDiscount)} تخفیف)` : '');
 }
 
-function clearCart() { cart = []; appliedDiscount = 0; localStorage.setItem('duck_cart_v9', JSON.stringify(cart)); renderCart(); updateFloatingCart(); }
+function clearCart() { cart = []; appliedDiscount = 0; localStorage.setItem('duck_cart_v10', JSON.stringify(cart)); renderCart(); updateFloatingCart(); }
 
 function applyCartCoupon() {
     const code = document.getElementById("cartCouponInput").value.trim().toUpperCase();
@@ -925,8 +930,12 @@ loadUserData();
     with open(CONFIG["EXPORT_JSON"], "w", encoding="utf-8") as f:
         json.dump(deals, f, ensure_ascii=False, indent=2)
 
-    with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=["name", "gift_title", "number", "discount", "price_ton", "tg_link", "rarity"])
+    # ذخیره فایل CSV با انکودینگ UTF-8 BOM جهت نمایش خوانا در اکسل
+    with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8-sig", newline="") as f:
+        writer = csv.DictWriter(
+            f, 
+            fieldnames=["name", "gift_title", "number", "discount", "rarity", "tg_link", "market_link"]
+        )
         writer.writeheader()
         for d in deals:
             writer.writerow({
@@ -934,10 +943,51 @@ loadUserData();
                 "gift_title": d.get("gift_title", ""),
                 "number": d.get("number", ""),
                 "discount": d.get("discount", ""),
-                "price_ton": d.get("price_ton", "0.05"),
+                "rarity": d.get("rarity", ""),
                 "tg_link": d.get("tg_link", ""),
-                "rarity": d.get("rarity", "")
+                "market_link": d.get("market_link", CONFIG["TARGET_URL"]),
             })
+
+
+def send_telegram_document(token: str, chat_id: str, file_path: str, caption: str = ""):
+    """ارسال فایل اکسل به عنوان سند تلگرامی بدون وابستگی به پکیج‌های اضافی"""
+    if not os.path.exists(file_path):
+        return
+
+    boundary = "----WebKitFormBoundary" + datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = os.path.basename(file_path)
+
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+
+    body = bytearray()
+    body.extend(f"--{boundary}\r\n".encode("utf-8"))
+    body.extend(f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'.encode("utf-8"))
+    body.extend(f"{chat_id}\r\n".encode("utf-8"))
+
+    if caption:
+        body.extend(f"--{boundary}\r\n".encode("utf-8"))
+        body.extend(f'Content-Disposition: form-data; name="caption"\r\n\r\n'.encode("utf-8"))
+        body.extend(f"{caption}\r\n".encode("utf-8"))
+        body.extend(f"--{boundary}\r\n".encode("utf-8"))
+        body.extend(f'Content-Disposition: form-data; name="parse_mode"\r\n\r\n'.encode("utf-8"))
+        body.extend(b"HTML\r\n")
+
+    body.extend(f"--{boundary}\r\n".encode("utf-8"))
+    body.extend(f'Content-Disposition: form-data; name="document"; filename="{filename}"\r\n'.encode("utf-8"))
+    body.extend(b"Content-Type: text/csv; charset=utf-8\r\n\r\n")
+    body.extend(file_data)
+    body.extend(b"\r\n")
+    body.extend(f"--{boundary}--\r\n".encode("utf-8"))
+
+    url = f"https://api.telegram.org/bot{token}/sendDocument"
+    req = urllib.request.Request(url, data=bytes(body))
+    req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
+    try:
+        with urllib.request.urlopen(req, timeout=30):
+            pass
+    except Exception as e:
+        print(f"⚠️ خطای ارسال سند به تلگرام: {e}")
 
 
 def send_telegram_package(deals: List[Dict[str, Any]]):
@@ -949,13 +999,15 @@ def send_telegram_package(deals: List[Dict[str, Any]]):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     pages_url = "https://zanjania0.github.io/duck-store/"
     rare_count = sum(1 for d in deals if d.get("rarity"))
+    
     full_text = (
-        f"🦆 <b>فروشگاه هوشمند Duck Store به‌روزرسانی شد</b>\\n"
-        f"📅 <i>{timestamp}</i>\\n\\n"
-        f"🌐 <b>ورود به فروشگاه:</b>\\n👉 <a href='{pages_url}'>{pages_url}</a>\\n\\n"
-        f"🎯 موجودی گیفت‌های فعال: {len(deals)} عدد (کمیاب: {rare_count})\\n"
+        f"🦆 <b>فروشگاه هوشمند Duck Store به‌روزرسانی شد</b>\n"
+        f"📅 <i>{timestamp}</i>\n\n"
+        f"🌐 <b>ورود به فروشگاه:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n\n"
+        f"🎯 موجودی گیفت‌های فعال: {len(deals)} عدد (کمیاب: {rare_count})\n"
     )
 
+    # ۱. ارسال پیام خلاصه متنی
     url = f"https://api.telegram.org/bot{token}/sendMessage"
     payload = urllib.parse.urlencode({"chat_id": chat_id, "text": full_text, "parse_mode": "HTML"}).encode("utf-8")
     try:
@@ -963,15 +1015,22 @@ def send_telegram_package(deals: List[Dict[str, Any]]):
         with urllib.request.urlopen(req, timeout=15): pass
     except Exception: pass
 
+    # ۲. ارسال فایل اکسل حاوی لینک مستقیم تلگرام و لینک مارکت‌اپ
+    csv_caption = (
+        f"📊 <b>فایل اکسل موجودی گیفت‌ها</b>\n"
+        f"شامل لینک مستقیم تلگرام، لینک خرید مارکت‌اپ و وضعیت کمیابی."
+    )
+    send_telegram_document(token, chat_id, CONFIG["EXPORT_CSV"], csv_caption)
+
 
 async def main():
     deals_found: List[Dict[str, Any]] = []
     seen_links: Set[str] = set()
     browser = None
 
-    print("\\n" + "═" * 60)
-    print("  🦆 DUCK STORE TURBO SCRAPER (REAL TELEGRAM GIFTS) 🦆")
-    print("═" * 60 + "\\n")
+    print("\n" + "═" * 60)
+    print("  🦆 DUCK STORE TURBO SCRAPER (CLEAN REAL GIFTS) 🦆")
+    print("═" * 60 + "\n")
 
     launch_args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
 
@@ -1013,26 +1072,37 @@ async def main():
                     if not num_match: continue
                     item_num = num_match.group(1)
 
-                    lines = [l.strip() for l in text.split("\\n") if l.strip()]
+                    # استخراج نام گیفت و حذف قطعی تمام متن‌های اضافی (Per day / Min. price / 0.01 >=)
+                    lines = [l.strip() for l in text.split("\n") if l.strip()]
                     gift_name = "Telegram Gift"
                     for line in lines:
+                        l_clean = line.lower()
+                        # رد کردن خطوط دارای عبارت‌های نامربوط
+                        if any(b in l_clean for b in ["per day", "min. price", "days:", "rent floor", "≥", ">"]):
+                            continue
+                        if re.search(r"^\d+(\.\d+)?", line.strip()):
+                            continue
                         if f"#{item_num}" in line:
                             gift_name = line.replace(f"#{item_num}", "").strip()
                             break
+                        elif line and not line.startswith("#"):
+                            gift_name = line.strip()
 
                     full_id = f"{gift_name} #{item_num}"
                     if full_id in seen_links: continue
 
-                    price_match = re.search(r"(\d+(\.\d+)?)", text)
-                    price_ton = price_match.group(1) if price_match else "0.05"
+                    href = c.get("href", "")
+                    full_market_link = href if href.startswith("http") else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
+                    if not href:
+                        full_market_link = CONFIG["TARGET_URL"]
 
                     deal = {
                         "name": full_id,
                         "gift_title": gift_name or "NFT Gift",
                         "number": str(item_num),
                         "discount": "-50%",
-                        "price_ton": str(price_ton),
                         "tg_link": generate_tg_nft_link(gift_name, item_num),
+                        "market_link": full_market_link,
                         "image_url": c.get("img") or "https://marketapp.org/favicon.ico",
                         "bg_color": "#161d2a",
                         "rarity": detect_rarity_badge(item_num),
@@ -1049,7 +1119,7 @@ async def main():
 
     final_deals = deals_found if len(deals_found) >= 4 else REAL_TELEGRAM_FALLBACK_GIFTS
     generate_duck_store_html(final_deals)
-    print(f"✅ ساخت و انتشار خودکار index.html، discounts.json و discounts.csv کامل شد! تعداد گیفت‌ها: {len(final_deals)}")
+    print(f"✅ خروجی‌های index.html، discounts.json و discounts.csv کامل شدند! موجودی: {len(final_deals)}")
     send_telegram_package(final_deals)
 
 
