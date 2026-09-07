@@ -22,7 +22,7 @@
         <div class="text-center space-y-2">
             <div class="w-16 h-16 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg font-black">🦆</div>
             <h1 class="text-lg font-black text-white">پنل مدیریت Duck Store</h1>
-            <p class="text-xs text-slate-400">مدیریت سفارشات، تخفیف‌ها، گردونه و تنظیمات ربات</p>
+            <p class="text-xs text-slate-400">مدیریت سفارشات، تخفیف‌ها، خدمات سفارشی و تنظیمات</p>
         </div>
         <div class="space-y-4">
             <input type="password" id="adminPass" placeholder="رمز عبور ادمین..." class="input-box w-full rounded-2xl px-4 py-3.5 text-center text-sm font-bold">
@@ -47,6 +47,7 @@
         <!-- منوی تب‌ها -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/5 text-xs font-bold">
             <button onclick="switchAdminTab('orders')" id="tabBtn-orders" class="tab-btn active px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-list-check ml-1.5"></i>سفارشات زنده</button>
+            <button onclick="switchAdminTab('services')" id="tabBtn-services" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-boxes-stacked ml-1.5"></i>خدمات و دسته‌بندی‌ها</button>
             <button onclick="switchAdminTab('discounts')" id="tabBtn-discounts" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-tags ml-1.5"></i>کدهای تخفیف</button>
             <button onclick="switchAdminTab('wheel')" id="tabBtn-wheel" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-dice ml-1.5"></i>گردونه شانس</button>
             <button onclick="switchAdminTab('settings')" id="tabBtn-settings" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-sliders ml-1.5"></i>نرخ‌ها و تنظیمات</button>
@@ -64,7 +65,26 @@
             </div>
         </div>
 
-        <!-- تب ۲: کدهای تخفیف -->
+        <!-- تب ۲: مدیریت دسته‌بندی‌ها و خدمات سفارشی -->
+        <div id="adminTab-services" class="hidden space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-xs font-black text-white">مدیریت تب‌ها و خدمات اختصاصی فروشگاه</h3>
+                    <p class="text-[11px] text-slate-400">می‌توانید تب‌های اختصاصی (مثل بوست، فالوور، لایک) همراه با پیش‌نیاز تعریف کنید.</p>
+                </div>
+                <button type="button" onclick="addCustomCategory()" class="px-3.5 py-2 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">
+                    <i class="fa-solid fa-plus ml-1"></i>افزودن تب / دسته جدید
+                </button>
+            </div>
+
+            <div id="customCategoriesContainer" class="space-y-4"></div>
+
+            <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-lg">
+                ذخیره دسته‌ها و خدمات در دیتابیس
+            </button>
+        </div>
+
+        <!-- تب ۳: کدهای تخفیف -->
         <div id="adminTab-discounts" class="hidden space-y-4">
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
                 <h4 class="text-xs font-black text-cyan-400">افزودن کد تخفیف جدید</h4>
@@ -92,7 +112,7 @@
             </div>
         </div>
 
-        <!-- تب ۳: جوایز گردونه شانس -->
+        <!-- تب ۴: جوایز گردونه شانس -->
         <div id="adminTab-wheel" class="hidden space-y-4">
             <div class="flex items-center justify-between">
                 <h4 class="text-xs font-black text-amber-400">آیتم‌ها و جوایز گردونه روزانه</h4>
@@ -102,7 +122,7 @@
             <button type="button" onclick="saveAllSettings()" class="w-full py-3 bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-lg">ذخیره تغییرات گردونه</button>
         </div>
 
-        <!-- تب ۴: تنظیمات پایه و کارت بانکی -->
+        <!-- تب ۵: تنظیمات پایه و نرخ‌ها -->
         <div id="adminTab-settings" class="hidden space-y-4 text-xs">
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
                 <h4 class="font-black text-slate-300">اطلاعات حساب جهت کارت‌به‌کارت و ربات</h4>
@@ -145,7 +165,7 @@
             </button>
         </div>
 
-        <!-- تب ۵: پیام همگانی و آمار -->
+        <!-- تب ۶: پیام همگانی و آمار -->
         <div id="adminTab-broadcast" class="hidden space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
@@ -196,18 +216,18 @@
         }
 
         function switchAdminTab(tab) {
-            ['orders', 'discounts', 'wheel', 'settings', 'broadcast'].forEach(t => {
+            ['orders', 'services', 'discounts', 'wheel', 'settings', 'broadcast'].forEach(t => {
                 document.getElementById('adminTab-' + t).classList.toggle('hidden', t !== tab);
                 document.getElementById('tabBtn-' + t).classList.toggle('active', t === tab);
             });
             if (tab === 'orders') loadAdminOrders();
+            if (tab === 'services') renderCustomServicesAdmin();
         }
 
         async function showDashboard() {
             document.getElementById("loginCard").classList.add("hidden");
             document.getElementById("dashboardCard").classList.remove("hidden");
 
-            // دریافت آمار زنده
             try {
                 const aRes = await fetch(`${WORKER_URL}/api/admin/analytics`, {
                     headers: { "Authorization": `Bearer ${checkToken()}` }
@@ -220,7 +240,6 @@
                 }
             } catch(e) {}
 
-            // دریافت تنظیمات
             const res = await fetch(`${WORKER_URL}/api/settings`);
             if (res.ok) {
                 localSettings = await res.json();
@@ -235,10 +254,110 @@
                 document.getElementById("ratePerStar").value = localSettings.ratePerStar || 1450;
                 document.getElementById("giftMonthlyPrice").value = localSettings.giftMonthlyPrice || 160000;
 
+                renderCustomServicesAdmin();
                 renderCoupons();
                 renderWheelSlices();
                 loadAdminOrders();
             }
+        }
+
+        // بخش مدیریت دسته‌بندی‌ها و خدمات سفارشی ادمین
+        function renderCustomServicesAdmin() {
+            const container = document.getElementById("customCategoriesContainer");
+            if (!localSettings.customServices) {
+                localSettings.customServices = [
+                    {
+                        id: "cat_boost",
+                        title: "بوست تلگرام",
+                        items: [
+                            { id: "b1", name: "بوست کانال (سطح ۱)", duration: "۳۰ روزه", price: 65000, minQty: 1, inputPrompt: "لینک کانال یا لینک بوست" }
+                        ]
+                    }
+                ];
+            }
+
+            container.innerHTML = localSettings.customServices.map((cat, catIdx) => `
+                <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
+                    <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                        <div class="flex items-center gap-2 flex-1 max-w-xs">
+                            <label class="text-xs font-bold text-cyan-400 whitespace-nowrap">عنوان تب:</label>
+                            <input type="text" value="${cat.title}" oninput="localSettings.customServices[${catIdx}].title=this.value" class="input-box w-full rounded-xl p-2 text-xs font-black">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button type="button" onclick="addCustomServiceItem(${catIdx})" class="px-3 py-1.5 bg-cyan-400/20 text-cyan-300 rounded-lg text-xs font-bold">+ افزودن سرویس</button>
+                            <button type="button" onclick="removeCustomCategory(${catIdx})" class="px-2.5 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">حذف تب</button>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        ${(cat.items || []).map((item, itemIdx) => `
+                            <div class="p-3 bg-black/40 border border-white/5 rounded-xl grid grid-cols-1 sm:grid-cols-6 gap-2 text-xs items-center">
+                                <div>
+                                    <label class="block text-slate-400 text-[10px] mb-0.5">نام سرویس:</label>
+                                    <input type="text" value="${item.name}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].name=this.value" placeholder="مثال: بوست سطح ۱" class="input-box w-full rounded-lg p-1.5 text-xs font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 text-[10px] mb-0.5">توضیحات/مدت:</label>
+                                    <input type="text" value="${item.duration || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].duration=this.value" placeholder="مثال: ۳۰ روزه" class="input-box w-full rounded-lg p-1.5 text-xs">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 text-[10px] mb-0.5">قیمت واحد (تومان):</label>
+                                    <input type="number" value="${item.price}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].price=parseInt(this.value)||0" placeholder="65000" class="input-box w-full rounded-lg p-1.5 text-xs text-amber-400 font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 text-[10px] mb-0.5">حداقل خرید:</label>
+                                    <input type="number" min="1" value="${item.minQty || 1}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].minQty=parseInt(this.value)||1" placeholder="1" class="input-box w-full rounded-lg p-1.5 text-xs text-center font-bold">
+                                </div>
+                                <div>
+                                    <label class="block text-slate-400 text-[10px] mb-0.5">عنوان پیش‌نیاز/ورودی مشتری:</label>
+                                    <input type="text" value="${item.inputPrompt || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].inputPrompt=this.value" placeholder="لینک بوست یا کانال" class="input-box w-full rounded-lg p-1.5 text-xs">
+                                </div>
+                                <div class="flex justify-end items-end h-full">
+                                    <button type="button" onclick="removeCustomServiceItem(${catIdx}, ${itemIdx})" class="px-2 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">✕ حذف</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function addCustomCategory() {
+            const name = prompt("نام تب یا دسته‌بندی جدید را وارد کنید (مثال: ممبر تلگرام):");
+            if (!name) return;
+            if (!localSettings.customServices) localSettings.customServices = [];
+            localSettings.customServices.push({
+                id: "cat_" + Date.now(),
+                title: name,
+                items: [
+                    { id: "item_" + Date.now(), name: "سرویس پیش‌فرض", duration: "یک‌ماهه", price: 50000, minQty: 1, inputPrompt: "آیدی یا لینک کانال" }
+                ]
+            });
+            renderCustomServicesAdmin();
+        }
+
+        function removeCustomCategory(catIdx) {
+            if (!confirm("آیا از حذف این دسته و تمام خدمات آن اطمینان دارید؟")) return;
+            localSettings.customServices.splice(catIdx, 1);
+            renderCustomServicesAdmin();
+        }
+
+        function addCustomServiceItem(catIdx) {
+            if (!localSettings.customServices[catIdx].items) localSettings.customServices[catIdx].items = [];
+            localSettings.customServices[catIdx].items.push({
+                id: "item_" + Date.now(),
+                name: "سرویس جدید",
+                duration: "۳۰ روزه",
+                price: 50000,
+                minQty: 1,
+                inputPrompt: "لینک یا آیدی مقصد"
+            });
+            renderCustomServicesAdmin();
+        }
+
+        function removeCustomServiceItem(catIdx, itemIdx) {
+            localSettings.customServices[catIdx].items.splice(itemIdx, 1);
+            renderCustomServicesAdmin();
         }
 
         // سفارشات آنلاین و اقدام روی آن‌ها
@@ -267,7 +386,7 @@
                                 <div>
                                     <span class="font-mono font-bold text-cyan-400">${o.id}</span>
                                     <span class="text-slate-400 mr-2">مشتری: ${o.userName} (${o.userId})</span>
-                                    ${o.targetUsername ? `<span class="text-amber-300 font-bold mr-2">📌 آیدی مقصد: ${o.targetUsername}</span>` : ''}
+                                    ${o.targetUsername ? `<span class="text-amber-300 font-bold mr-2">📌 ورودی/مقصد: ${o.targetUsername}</span>` : ''}
                                 </div>
                                 <div>${badge}</div>
                             </div>
@@ -300,14 +419,14 @@
                 body: JSON.stringify({ orderId, action })
             });
             if (res.ok) {
-                alert("وضعیت سفارش با موفقیت تغییر کرد و پیام به مشتری ارسال شد!");
+                alert("وضعیت سفارش تغییر کرد!");
                 loadAdminOrders();
             } else {
                 alert("خطا در تغییر وضعیت سفارش");
             }
         }
 
-        // مدیریت کدهای تخفیف
+        // کدهای تخفیف
         function renderCoupons() {
             const coupons = localSettings.discountCodes || [];
             const container = document.getElementById("couponsListContainer");
@@ -339,7 +458,7 @@
             document.getElementById("couponPercent").value = "";
         }
 
-        // جوایز گردونه شانس
+        // گردونه شانس
         function renderWheelSlices() {
             const slices = localSettings.spinWheelOptions || [
                 { label: "۱۰٪ تخفیف خرید", code: "DUCK10" },
@@ -382,8 +501,9 @@
                 body: JSON.stringify(localSettings)
             });
             if (res.ok) {
-                alert("✅ تمام تنظیمات با موفقیت ذخیره شدند!");
+                alert("✅ تمامی تنظیمات، خدمات و دسته‌ها با موفقیت ذخیره شدند!");
                 renderCoupons();
+                renderCustomServicesAdmin();
             } else {
                 alert("خطا در ذخیره‌سازی");
             }
@@ -404,7 +524,7 @@
             const d = await res.json();
             btn.disabled = false; btn.innerText = "ارسال به همه کاربران";
             if (res.ok) {
-                alert(`✅ پیام با موفقیت برای ${d.sent} نفر از ${d.total} کاربر ارسال شد!`);
+                alert(`✅ پیام برای ${d.sent} نفر از ${d.total} کاربر ارسال شد!`);
                 document.getElementById("broadcastText").value = "";
             } else {
                 alert("خطا در ارسال پیام");
