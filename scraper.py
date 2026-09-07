@@ -1,4 +1,5 @@
 import asyncio
+import csv
 from datetime import datetime
 import json
 import os
@@ -18,13 +19,14 @@ CONFIG = {
     "BASE_DOMAIN": "https://marketapp.org",
     "EXPORT_HTML": "index.html",
     "EXPORT_JSON": "discounts.json",
+    "EXPORT_CSV": "discounts.csv",
     "WORKER_URL": "https://duck-api.ali-zanjani2007.workers.dev",
     "TELEGRAM_BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN", ""),
     "TELEGRAM_CHAT_ID": os.getenv("TELEGRAM_CHAT_ID", ""),
     "GITHUB_REPOSITORY": os.getenv("GITHUB_REPOSITORY", ""),
 }
 
-# دیتای واقعی با تصاویر باکیفیت و رزولوشن بالا از سرورهای CDN گیفت‌های تلگرام
+# کاتالوگ باکیفیت گیفت‌های واقعی تلگرام (تصاویر واقعی WebP از CDN)
 REAL_TELEGRAM_FALLBACK_GIFTS = [
     {
         "name": "Plush Pepe #2825",
@@ -350,7 +352,7 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
   </div>
 </section>
 
-<!-- ۵. پروفایل و پیگیری آنلاین سفارش -->
+<!-- ۵. پروفایل و پیگیری آنلاین سفارش (سیستم رفرال به طور کامل حذف شد) -->
 <section id="view-profile" class="hidden space-y-4">
   <div class="glass p-5 space-y-4">
     <div class="flex items-center gap-3">
@@ -362,22 +364,17 @@ body{ font-family:'Vazirmatn',sans-serif; color:var(--text); background:var(--bg
       </div>
     </div>
 
-    <div class="p-3.5 rounded-xl bg-white/[0.02] border border-cyan-500/20 space-y-2 text-xs">
-      <div class="flex items-center justify-between">
-        <span class="font-bold text-cyan-400"><i class="fa-solid fa-users ml-1"></i>لینک رفرال شما</span>
-        <span class="text-[11px] text-slate-300">دعوت‌ها: <b id="userRefCount" class="text-amber-400">0</b></span>
-      </div>
-      <div class="flex gap-2">
-        <input type="text" id="userRefLinkInput" readonly class="glass px-2.5 py-1.5 text-xs w-full text-left dir-ltr font-mono text-slate-300">
-        <button onclick="copyRefLink()" class="px-3 py-1.5 bg-cyan-400 text-slate-950 rounded-xl font-bold text-xs">کپی</button>
-      </div>
-    </div>
-
     <div class="p-3.5 rounded-xl bg-white/[0.02] border border-white/5 space-y-2 text-xs">
-      <h3 class="font-black text-slate-300"><i class="fa-solid fa-receipt ml-1 text-purple-400"></i>پیگیری وضعیت سفارشات اخیر</h3>
+      <h3 class="font-black text-slate-300"><i class="fa-solid fa-receipt ml-1 text-purple-400"></i>پیگیری وضعیت سفارشات من</h3>
       <div id="userOrdersHistoryList" class="space-y-2 max-h-48 overflow-y-auto">
         <p class="text-slate-500 text-[11px] text-center py-2">در حال بارگذاری وضعیت...</p>
       </div>
+    </div>
+
+    <div class="pt-2">
+      <a href="https://t.me/duck_storee" class="w-full py-3 rounded-2xl btn-ghost text-xs font-bold flex items-center justify-center gap-2">
+        <i class="fa-brands fa-telegram text-sky-400"></i><span>عضویت در کانال تلگرام</span>
+      </a>
     </div>
   </div>
 </section>
@@ -477,8 +474,8 @@ let SETTINGS = {
 };
 
 const WORKER_URL = "__WORKER_URL__";
-let favorites = JSON.parse(localStorage.getItem('duck_favs_v7') || '[]');
-let cart = JSON.parse(localStorage.getItem('duck_cart_v7') || '[]');
+let favorites = JSON.parse(localStorage.getItem('duck_favs_v8') || '[]');
+let cart = JSON.parse(localStorage.getItem('duck_cart_v8') || '[]');
 let selectedType = 'all';
 let activeQVDeal = null;
 let appliedDiscount = 0;
@@ -497,14 +494,14 @@ window.addEventListener('DOMContentLoaded', () => {
             splash.classList.add("opacity-0");
             setTimeout(() => splash.remove(), 500);
         }
-        if (!localStorage.getItem("duck_welcomed_v3")) {
+        if (!localStorage.getItem("duck_welcomed_v4")) {
             document.getElementById("onboardingModal").classList.remove("hidden");
         }
     }, 1200);
 });
 
 function dismissOnboarding() {
-    localStorage.setItem("duck_welcomed_v3", "true");
+    localStorage.setItem("duck_welcomed_v4", "true");
     document.getElementById("onboardingModal").classList.add("hidden");
 }
 
@@ -588,7 +585,7 @@ document.getElementById('searchInput')?.addEventListener('input', () => renderCa
 function toggleFavorite(name) {
   const idx = favorites.indexOf(name);
   if (idx >= 0) favorites.splice(idx, 1); else favorites.push(name);
-  localStorage.setItem('duck_favs_v7', JSON.stringify(favorites));
+  localStorage.setItem('duck_favs_v8', JSON.stringify(favorites));
   renderCards(getFilteredDeals());
   document.getElementById('favCount').innerText = favorites.length;
 }
@@ -612,7 +609,7 @@ function closeQuickView() { document.getElementById('quickViewSheet').classList.
 function addQVToCart() {
   if (!activeQVDeal) return;
   cart.push({ name: activeQVDeal.name, price: Number(SETTINGS.giftMonthlyPrice) });
-  localStorage.setItem('duck_cart_v7', JSON.stringify(cart));
+  localStorage.setItem('duck_cart_v8', JSON.stringify(cart));
   toast('به سبد خرید اضافه شد');
   closeQuickView();
   updateFloatingCart();
@@ -647,7 +644,7 @@ function renderCart() {
   list.innerHTML = cart.map((c, i) => `
     <div class="glass p-2.5 flex items-center justify-between text-xs">
       <span>${c.name}</span>
-      <button onclick="cart.splice(${i},1);localStorage.setItem('duck_cart_v7',JSON.stringify(cart));renderCart();updateFloatingCart();" class="text-rose-400 font-bold">✕</button>
+      <button onclick="cart.splice(${i},1);localStorage.setItem('duck_cart_v8',JSON.stringify(cart));renderCart();updateFloatingCart();" class="text-rose-400 font-bold">✕</button>
     </div>
   `).join('');
   const subtotal = cart.reduce((s, c) => s + (Number(c.price)||0), 0);
@@ -655,7 +652,7 @@ function renderCart() {
   document.getElementById('cartTotal').innerText = fmtMoney(finalTotal) + ' تومان' + (appliedDiscount > 0 ? ` (${fmtMoney(appliedDiscount)} تخفیف)` : '');
 }
 
-function clearCart() { cart = []; appliedDiscount = 0; localStorage.setItem('duck_cart_v7', JSON.stringify(cart)); renderCart(); updateFloatingCart(); }
+function clearCart() { cart = []; appliedDiscount = 0; localStorage.setItem('duck_cart_v8', JSON.stringify(cart)); renderCart(); updateFloatingCart(); }
 
 function applyCartCoupon() {
     const code = document.getElementById("cartCouponInput").value.trim().toUpperCase();
@@ -695,7 +692,7 @@ async function submitOrderToBot(items, totalPrice, itemsText, targetUsername = "
       body: JSON.stringify(payload)
     });
     if (res.ok) {
-      alert("✅ فاکتور در چت ربات برای شما صادر شد!\nپس از واریز، عکس فیش یا کد رهگیری متنی را بفرستید.");
+      alert("✅ فاکتور در چت ربات برای شما صادر شد!\\nپس از واریز، عکس فیش یا کد رهگیری متنی را بفرستید.");
       clearCart();
     } else {
       alert("خطا در صدور فاکتور.");
@@ -709,7 +706,7 @@ function checkoutCart() {
   if (cart.length === 0) return alert("سبد خالی است");
   const subtotal = cart.reduce((s, c) => s + (Number(c.price)||0), 0);
   const finalTotal = Math.max(0, subtotal - appliedDiscount);
-  const itemsText = cart.map((c, i) => `${i + 1}. 🎁 ${c.name}`).join("\n");
+  const itemsText = cart.map((c, i) => `${i + 1}. 🎁 ${c.name}`).join("\\n");
   submitOrderToBot(cart, finalTotal, itemsText);
 }
 
@@ -808,7 +805,6 @@ function renderModalCollections() {
 
 async function loadUserData() {
   const u = getTgUser();
-  document.getElementById("userRefLinkInput").value = `https://t.me/DuckStoreBot?start=ref_${u.id}`;
   const pName = document.getElementById('profileName');
   const pUser = document.getElementById('profileUsername');
   const pId = document.getElementById('profileUserId');
@@ -820,7 +816,6 @@ async function loadUserData() {
     const res = await fetch(`${WORKER_URL}/api/user-data?userId=${u.id}`);
     if (res.ok) {
       const data = await res.json();
-      document.getElementById("userRefCount").innerText = data.refCount || 0;
       const oList = document.getElementById("userOrdersHistoryList");
       if (!data.orders || data.orders.length === 0) {
         oList.innerHTML = '<p class="text-slate-500 text-[11px] text-center py-2">هنوز سفارشی ثبت نکرده‌اید.</p>';
@@ -843,11 +838,6 @@ async function loadUserData() {
       }
     }
   } catch(e) {}
-}
-
-function copyRefLink() {
-  navigator.clipboard.writeText(document.getElementById("userRefLinkInput").value);
-  toast("لینک دعوت اختصاصی شما کپی شد!");
 }
 
 function openSpinModal() { document.getElementById("spinModal").classList.remove("hidden"); }
@@ -914,6 +904,20 @@ loadUserData();
     with open(CONFIG["EXPORT_JSON"], "w", encoding="utf-8") as f:
         json.dump(deals, f, ensure_ascii=False, indent=2)
 
+    with open(CONFIG["EXPORT_CSV"], "w", encoding="utf-8", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["name", "gift_title", "number", "discount", "price_ton", "tg_link", "rarity"])
+        writer.writeheader()
+        for d in deals:
+            writer.writerow({
+                "name": d.get("name", ""),
+                "gift_title": d.get("gift_title", ""),
+                "number": d.get("number", ""),
+                "discount": d.get("discount", ""),
+                "price_ton": d.get("price_ton", "0.05"),
+                "tg_link": d.get("tg_link", ""),
+                "rarity": d.get("rarity", "")
+            })
+
 
 def send_telegram_package(deals: List[Dict[str, Any]]):
     token = CONFIG.get("TELEGRAM_BOT_TOKEN", "").strip()
@@ -962,7 +966,6 @@ async def main():
             while len(deals_found) < CONFIG["TARGET_DEALS_COUNT"] and scroll_attempts < CONFIG["MAX_SCROLL_ATTEMPTS"]:
                 scroll_attempts += 1
                 
-                # استخراج هوشمند و همه‌جانبه کارت‌های واقعی با تصاویر i2.anton.market
                 raw_cards = await page.evaluate(
                     """() => {
                     const cards = [];
@@ -989,7 +992,6 @@ async def main():
                     if not num_match: continue
                     item_num = num_match.group(1)
 
-                    # استخراج نام گیفت از خط قبل از شماره
                     lines = [l.strip() for l in text.split("\\n") if l.strip()]
                     gift_name = "Telegram Gift"
                     for line in lines:
@@ -1024,10 +1026,9 @@ async def main():
     finally:
         if browser: await browser.close()
 
-    # در صورت عدم دسترسی به مارکت‌اپ، استفاده خودکار از کاتالوگ گیفت‌های اصلی با کیفیت
     final_deals = deals_found if len(deals_found) >= 4 else REAL_TELEGRAM_FALLBACK_GIFTS
     generate_duck_store_html(final_deals)
-    print(f"✅ ساخت و انتشار خودکار index.html کامل شد! تعداد گیفت‌ها: {len(final_deals)}")
+    print(f"✅ ساخت و انتشار خودکار index.html، discounts.json و discounts.csv کامل شد! تعداد گیفت‌ها: {len(final_deals)}")
     send_telegram_package(final_deals)
 
 
