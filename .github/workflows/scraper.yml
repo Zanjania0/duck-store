@@ -1,0 +1,61 @@
+name: Run Duck Scraper
+
+on:
+  schedule:
+    # اجرای خودکار هر ۲ ساعت یک‌بار
+    - cron: '0 */2 * * *'
+  workflow_dispatch: # امکان اجرای دستی در هر لحظه با یک کلیک
+
+# جلوگیری از اجرای همزمان چند اکشن و تداخل منابع
+concurrency:
+  group: duck-scraper-group
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies & Chromium
+        run: |
+          pip install playwright
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          playwright install --with-deps chromium
+
+      - name: Run Scraper & Price Engine
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python scraper.py
+
+      - name: Commit and Push Changes Safely
+        run: |
+          git config --global user.name "DuckScraperBot"
+          git config --global user.email "bot@users.noreply.github.com"
+          
+          # استیج کردن هر ۳ فایل خروجی اسکرپر به صورت امن
+          git add index.html discounts.json discounts.csv || true
+          
+          # بررسی اینکه آیا تغییری ایجاد شده یا خیر
+          if ! git diff --quiet || ! git diff --staged --quiet; then
+            git commit -m "Auto-update deals & gifts catalog [skip ci]"
+            # دریافت آخرین تغییرات قبل از push جهت جلوگیری از خطای تداخل
+            git pull --rebase origin main
+            git push origin main
+          else
+            echo "تغییری برای کامیت و ثبت وجود ندارد."
+          fi
