@@ -10,16 +10,14 @@ import urllib.request
 from playwright.async_api import async_playwright
 
 # ==========================================================
-# ⚙️ تنظیمات پایه اسکرپر Duck Store
+# ⚙️ تنظیمات اسکرپر Duck Store
 # ==========================================================
 CONFIG = {
-    "BASE_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_desc&subtab=gifts&view=grid",
     "TARGET_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_desc&subtab=gifts&view=grid&max_price=0.01",
-    "TARGET_DEALS_COUNT": 200,
+    "TARGET_DEALS_COUNT": 200,      # تا ۲۰۰ گیفت
     "MAX_SCROLL_ATTEMPTS": 80,
-    "MIN_DISCOUNT": 5,
-    "MAX_DISCOUNT": 50,
-    "TARGET_COLLECTION": "",
+    "MIN_DISCOUNT": 5,               # فیلتر از ۵ درصد
+    "MAX_DISCOUNT": 50,              # تا ۵۰ درصد
     "BASE_DOMAIN": "https://marketapp.org",
     "EXPORT_HTML": "index.html",
     "EXPORT_JSON": "discounts.json",
@@ -27,49 +25,10 @@ CONFIG = {
     "WORKER_URL": "https://duck-api.ali-zanjani2007.workers.dev",
     "TELEGRAM_BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN", ""),
     "TELEGRAM_CHAT_ID": os.getenv("TELEGRAM_CHAT_ID", ""),
+    "GITHUB_REPOSITORY": os.getenv("GITHUB_REPOSITORY", ""),
 }
 
-# دریافت تنظیمات فیلتر شکارچی از ورکر
-def load_hunter_config_from_worker():
-    global CONFIG
-    try:
-        req = urllib.request.Request(f"{CONFIG['WORKER_URL']}/api/settings", headers={"User-Agent": "DuckHunter"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
-            data = json.loads(resp.read().decode("utf-8"))
-            hunter = data.get("hunterConfig", {})
-            if hunter:
-                print("🎯 تنظیمات شکارچی هوشمند از پنل بارگذاری شد:")
-                col = hunter.get("collection", "").strip()
-                min_p = hunter.get("minPrice", "").strip()
-                max_p = hunter.get("maxPrice", "").strip()
-                min_d = int(hunter.get("minDiscount", 5))
-                max_d = int(hunter.get("maxDiscount", 50))
-
-                CONFIG["TARGET_COLLECTION"] = col
-                CONFIG["MIN_DISCOUNT"] = min_d
-                CONFIG["MAX_DISCOUNT"] = max_d
-
-                query_parts = []
-                if max_p: query_parts.append(f"max_price={max_p}")
-                if min_p: query_parts.append(f"min_price={min_p}")
-
-                if query_parts:
-                    CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&" + "&".join(query_parts)
-                else:
-                    CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&max_price=0.01"
-
-                print(f"   • فیلتر کالکشن: {col if col else 'تمام کالکشن‌ها'}")
-                print(f"   • فیلتر قیمت: {min_p or 0} تا {max_p or 'نامحدود'} TON")
-                print(f"   • فیلتر تخفیف: {min_d}٪ تا {max_d}٪")
-                return
-    except Exception as e:
-        print(f"⚠️ دریافت تنظیمات شکارچی از سرور ناموفق بود (استفاده از مقادیر پیش‌فرض): {e}")
-
-    CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&max_price=0.01"
-
-load_hunter_config_from_worker()
-
-# کاتالوگ پشتیبان کامل
+# کاتالوگ پشتیبان کامل و باکیفیت با نام‌های صحیح
 REAL_TELEGRAM_FALLBACK_GIFTS = [
     {
         "name": "Plush Pepe #2825",
@@ -128,9 +87,12 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
     }
 ]
 
+
 def detect_rarity_badge(number_str: str) -> str:
-    try: num = int(re.sub(r"\D", "", str(number_str)))
-    except ValueError: return ""
+    try:
+        num = int(re.sub(r"\D", "", str(number_str)))
+    except ValueError:
+        return ""
     s = str(num)
     if num < 100: return "👑 زیر 100"
     if num < 1000: return "💎 زیر 1000"
@@ -138,21 +100,30 @@ def detect_rarity_badge(number_str: str) -> str:
     if s in ["123", "1234", "777", "888", "999"]: return f"🎯 خاص (#{s})"
     return ""
 
+
 def clean_collection_title(raw_title: str) -> str:
-    if not raw_title: return ""
+    """اصلاح دقیق نام کالکشن و فیلتر کردن درصدهای تخفیف و کاراکترهای اضافه"""
+    if not raw_title:
+        return "Telegram Gift"
     t = raw_title.replace("#", "").strip()
-    if "%" in t or re.match(r"^[-+~≥>]?[\d\.]+$", t): return ""
+    # اگر کلمه شامل علامت درصد یا عدد منفی بود، کلاً رد شود
+    if "%" in t or re.match(r"^[-+~≥>]?[\d\.]+$", t):
+        return ""
     t = re.sub(r"\b(rent|gifts?|market|floor|nft|per day|days|min\. price|price)\b", "", t, flags=re.IGNORECASE)
     t = re.sub(r"\s+", " ", t).strip()
     words = [w.capitalize() for w in t.split() if not w.isdigit() and "%" not in w]
     res = " ".join(words)
     return res if (res and len(res) > 1) else ""
 
+
 def extract_discount_percentage(text: str) -> int:
+    """استخراج مقدار درصد تخفیف برای اعمال فیلتر ۵ تا ۵۰ درصد"""
     disc_match = re.search(r"[-−]?(\d{1,2}(?:\.\d+)?)%", text)
     if disc_match:
-        try: return int(float(disc_match.group(1)))
-        except Exception: pass
+        try:
+            return int(float(disc_match.group(1)))
+        except Exception:
+            pass
 
     per_day_match = re.search(r"(?:per day|min\. price|price)[:\s]*([\d\.]+)", text, re.IGNORECASE)
     floor_match = re.search(r"(?:rent floor|floor)[:\s]*([\d\.]+)", text, re.IGNORECASE)
@@ -162,14 +133,18 @@ def extract_discount_percentage(text: str) -> int:
             floor_p = float(floor_match.group(1))
             if floor_p > day_p > 0:
                 return round(((floor_p - day_p) / floor_p) * 100)
-        except Exception: pass
+        except Exception:
+            pass
+
     return 0
+
 
 def generate_tg_nft_link(name: str, number: str) -> str:
     clean_name = re.sub(r"[^a-zA-Z0-9\s]", "", name)
     slug = "".join(w.capitalize() for w in clean_name.split())
     clean_num = re.sub(r"\D", "", str(number))
     return f"https://t.me/nft/{slug}-{clean_num}" if slug and clean_num else "https://t.me"
+
 
 def generate_duck_store_html(deals: List[Dict[str, Any]]):
     if not deals or len(deals) == 0:
@@ -236,7 +211,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <div class="w-20 h-20 rounded-3xl bg-cyan-400 text-slate-950 flex items-center justify-center text-4xl shadow-2xl animate-bounce">🦆</div>
     <div class="text-center space-y-1">
         <h2 class="text-base font-black text-white">DUCK STORE</h2>
-        <p class="text-xs text-slate-400 font-bold">در حال بارگذاری ویترین گیفت‌های تلگرام...</p>
+        <p class="text-xs text-slate-400 font-bold">در حال بارگذاری گیفت‌های تلگرام...</p>
     </div>
 </div>
 
@@ -247,7 +222,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
         <div class="space-y-1.5">
             <h3 class="text-base font-black text-white">خوش آمدید به Duck Store!</h3>
             <p class="text-xs text-slate-300 leading-relaxed">
-                ویترین خرید و اجاره گیفت‌های تلگرام، استارز آنی و خدمات اختصاصی با تسویه سریع.
+                ویترین خرید و اجاره گیفت‌های تلگرام، استارز و خدمات پرمیوم با تحویل آنی.
             </p>
         </div>
         <button onclick="dismissOnboarding()" class="w-full py-3.5 bg-cyan-400 text-slate-950 font-black text-xs rounded-2xl shadow-xl">
@@ -284,7 +259,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   <div class="grid grid-cols-3 gap-2 text-center">
     <div class="glass glass-tight p-3"><p class="text-base font-black">__TOTAL_COUNT__</p><p class="text-[10px] text-slate-400">گیفت فعال</p></div>
     <div class="glass glass-tight p-3"><p class="text-base font-black text-emerald-400">تحویل آنی</p><p class="text-[10px] text-slate-400">اتصال فرگمنت</p></div>
-    <div class="glass glass-tight p-3"><p class="text-base font-black text-cyan-400">کارت‌به‌کارت</p><p class="text-[10px] text-slate-400">فاکتور ربات</p></div>
+    <div class="glass glass-tight p-3"><p class="text-base font-black text-cyan-400">کارت‌به‌کارت</p><p class="text-[10px] text-slate-400">فاکتور تلگرام</p></div>
   </div>
 
   <div>
@@ -607,6 +582,7 @@ function switchView(view) {
 }
 function goServices(tab) { switchView('services'); switchServiceSubTab(tab); }
 
+// رندر صفحه اصلی بدون تگ تخفیف
 function renderHome() {
   document.getElementById('homeGiftScroll').innerHTML = DEALS.slice(0, 8).map((d, i) => `
     <div class="glass p-2.5 rounded-2xl flex-shrink-0 w-32 cursor-pointer text-right space-y-1.5" onclick="openHomeDeal(${i})">
@@ -621,6 +597,7 @@ function renderHome() {
 
 function openHomeDeal(i) { if (DEALS[i]) openQuickView(DEALS[i]); }
 
+// رندر کارت‌های فروشگاه بدون تگ تخفیف و با نام دقیق
 function renderCards(list) {
   currentFilteredDeals = list || [];
   const grid = document.getElementById('dealsGrid');
@@ -1125,38 +1102,57 @@ calcLiveStarsPrice();
                 "market_link": d.get("market_link", CONFIG["TARGET_URL"]),
             })
 
-def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
+
+def send_telegram_document(token: str, chat_id: str, file_path: str, caption: str = ""):
+    if not os.path.exists(file_path): return
+    boundary = "----WebKitFormBoundary" + datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = os.path.basename(file_path)
+
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+
+    body = bytearray()
+    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat_id}\r\n".encode("utf-8"))
+    if caption:
+        body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\n{caption}\r\n".encode("utf-8"))
+        body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"parse_mode\"\r\n\r\nHTML\r\n".encode("utf-8"))
+    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"document\"; filename=\"{filename}\"\r\nContent-Type: text/csv; charset=utf-8\r\n\r\n".encode("utf-8"))
+    body.extend(file_data)
+    body.extend(f"\r\n--{boundary}--\r\n".encode("utf-8"))
+
+    req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendDocument", data=bytes(body))
+    req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
+    try:
+        with urllib.request.urlopen(req, timeout=30): pass
+    except Exception as e:
+        print(f"⚠️ خطای ارسال فایل اکسل: {e}")
+
+
+def send_telegram_package(deals: List[Dict[str, Any]]):
     token = CONFIG.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = CONFIG.get("TELEGRAM_CHAT_ID", "").strip()
-    if not token or not chat_id or not deals: return
+    if not token or not chat_id: return
 
-    timestamp = datetime.now().strftime("%H:%M:%S - %Y/%m/%d")
-    target_col = CONFIG.get("TARGET_COLLECTION") or "تمام کالکشن‌ها"
-
-    top_deals_text = ""
-    for d in deals[:10]:
-        top_deals_text += f"\n• <b>{d['name']}</b> ({d.get('price_ton', 'N/A')} TON)\n  👉 <a href='{d['market_link']}'>خرید در مارکت‌اپ</a> | <a href='{d['tg_link']}'>لینک تلگرام</a>"
-
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    pages_url = "https://zanjania0.github.io/duck-store/"
+    rare_count = sum(1 for d in deals if d.get("rarity"))
+    
     full_text = (
-        f"🎯 <b>گزارش شکارچی هوشمند گیفت (Smart Hunter)</b>\n"
-        f"📅 <i>{timestamp}</i>\n"
-        f"━━━━━━━━━━━━━━━━━━\n"
-        f"🔍 <b>فیلتر کالکشن:</b> {target_col}\n"
-        f"💰 <b>بازه تخفیف:</b> {CONFIG['MIN_DISCOUNT']}٪ تا {CONFIG['MAX_DISCOUNT']}٪\n"
-        f"✅ <b>تعداد گیفت شکارشده:</b> {len(deals)} عدد\n"
-        f"━━━━━━━━━━━━━━━━━━\n"
-        f"<b>تازه‌ترین گزینه‌های شکارشده:</b>\n"
-        f"{top_deals_text}\n\n"
-        f"🌐 <i>ویترین فروشگاه به‌روزرسانی شد.</i>"
+        f"🦆 <b>فروشگاه هوشمند Duck Store به‌روزرسانی شد</b>\n"
+        f"📅 <i>{timestamp}</i>\n\n"
+        f"🌐 <b>ورود به فروشگاه:</b>\n👉 <a href='{pages_url}'>{pages_url}</a>\n\n"
+        f"🎯 موجودی گیفت‌های فعال: {len(deals)} عدد (کمیاب: {rare_count})\n"
     )
 
     url = f"https://api.telegram.org/bot{token}/sendMessage"
-    payload = urllib.parse.urlencode({"chat_id": chat_id, "text": full_text, "parse_mode": "HTML", "disable_web_page_preview": "true"}).encode("utf-8")
+    payload = urllib.parse.urlencode({"chat_id": chat_id, "text": full_text, "parse_mode": "HTML"}).encode("utf-8")
     try:
         req = urllib.request.Request(url, data=payload)
         with urllib.request.urlopen(req, timeout=15): pass
-    except Exception as e:
-        print(f"⚠️ خطا در ارسال گزارش شکار به تلگرام: {e}")
+    except Exception: pass
+
+    send_telegram_document(token, chat_id, CONFIG["EXPORT_CSV"], "📊 <b>فایل کامل اکسل گیفت‌ها</b>")
+
 
 async def main():
     deals_found: List[Dict[str, Any]] = []
@@ -1164,8 +1160,7 @@ async def main():
     browser = None
 
     print("\n" + "═" * 60)
-    print("  🎯 DUCK STORE SMART HUNTER ENGINE ACTIVATED 🎯")
-    print(f"  URL: {CONFIG['TARGET_URL']}")
+    print("  🦆 DUCK STORE TURBO SCRAPER (CLEAN TITLES & NO BADGES) 🦆")
     print("═" * 60 + "\n")
 
     launch_args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
@@ -1182,7 +1177,8 @@ async def main():
             while len(deals_found) < CONFIG["TARGET_DEALS_COUNT"] and scroll_attempts < CONFIG["MAX_SCROLL_ATTEMPTS"]:
                 scroll_attempts += 1
                 
-                raw_cards = await page.evaluate("""() => {
+                raw_cards = await page.evaluate(
+                    """() => {
                     const cards = [];
                     const elements = Array.from(document.querySelectorAll("a, div"));
                     for (const el of elements) {
@@ -1199,7 +1195,8 @@ async def main():
                         }
                     }
                     return cards;
-                }""")
+                }"""
+                )
 
                 for c in raw_cards:
                     text = c.get("text", "")
@@ -1210,58 +1207,70 @@ async def main():
                     if not num_match: continue
                     item_num = num_match.group(1)
 
-                    # بررسی درصد تخفیف بر اساس فیلتر شکارچی
+                    # فیلتر کردن درصد تخفیف بین ۵ تا ۵۰ درصد
                     discount_val = extract_discount_percentage(text)
                     if not (CONFIG["MIN_DISCOUNT"] <= discount_val <= CONFIG["MAX_DISCOUNT"]):
                         continue
 
-                    # استخراج نام بدون درصد
+                    # ==========================================
+                    # 🎯 الگوریتم هوشمند استخراج نام تمیز گیفت
+                    # ==========================================
                     gift_name = ""
+
+                    # روش اول: استخراج مستقیم از متن alt تصویر
                     if alt_text and len(alt_text) > 1 and "%" not in alt_text:
-                        c_alt = clean_collection_title(re.sub(r"#\d+", "", alt_text))
+                        c_alt = re.sub(r"#\d+", "", alt_text).strip()
+                        c_alt = clean_collection_title(c_alt)
                         if c_alt and c_alt.lower() not in ["image", "nft", "gift", "telegram gift"]:
                             gift_name = c_alt
 
+                    # روش دوم: استخراج از اسلاگ لینک URL
                     if not gift_name and href:
                         slug_match = re.search(r"/([a-zA-Z0-9-]+?)(?:-" + item_num + r"|\b)", href.lower())
                         if slug_match:
                             raw_slug = slug_match.group(1)
-                            parts = [w for w in raw_slug.split("-") if w not in ["rent", "nft", "gifts", "gift", "market"]]
-                            if parts:
-                                candidate = " ".join(w.capitalize() for w in parts)
+                            slug_parts = [w for w in raw_slug.split("-") if w not in ["rent", "nft", "gifts", "gift", "market"]]
+                            if slug_parts:
+                                candidate = " ".join(w.capitalize() for w in slug_parts)
                                 if not re.match(r"^[-+~≥>]?[\d\.]+", candidate):
                                     gift_name = clean_collection_title(candidate)
 
+                    # روش سوم: استخراج از خطوط متن با فیلتر کامل عبارات تخفیف و قیمت
                     if not gift_name:
-                        for line in [l.strip() for l in text.split("\n") if l.strip()]:
-                            if "%" in line or re.match(r"^[-+~≥>]?[\d\.]+", line): continue
-                            if any(b in line.lower() for b in ["per day", "price", "days:", "floor", "ton", "usd", "rent"]): continue
-                            candidate = clean_collection_title(line.replace(f"#{item_num}", ""))
-                            if candidate:
-                                gift_name = candidate
-                                break
+                        lines = [l.strip() for l in text.split("\n") if l.strip()]
+                        for line in lines:
+                            l_clean = line.lower()
+                            # رد کردن هر خطی که شامل درصد، علامت منفی یا عدد باشد
+                            if "%" in line: continue
+                            if re.match(r"^[-+~≥>]?[\d\.]+", line): continue
+                            if any(b in l_clean for b in ["per day", "min. price", "days:", "rent floor", "floor", "ton", "usd", "rent"]):
+                                continue
+                            if f"#{item_num}" in line:
+                                cleaned = line.replace(f"#{item_num}", "").strip()
+                                candidate = clean_collection_title(cleaned)
+                                if candidate:
+                                    gift_name = candidate
+                                    break
+                            elif line and not line.startswith("#"):
+                                candidate = clean_collection_title(line)
+                                if candidate:
+                                    gift_name = candidate
+                                    break
 
-                    if not gift_name: gift_name = "Telegram Gift"
-
-                    # فیلتر کالکشن شکارچی در صورت تعیین توسط ادمین
-                    target_filter = CONFIG.get("TARGET_COLLECTION", "").strip().lower()
-                    if target_filter and target_filter not in gift_name.lower():
-                        continue
+                    if not gift_name:
+                        gift_name = "Telegram Gift"
 
                     full_id = f"{gift_name} #{item_num}"
                     if full_id in seen_links: continue
 
-                    p_match = re.search(r"([\d\.]+)\s*TON", text, re.I)
-                    price_ton = p_match.group(1) if p_match else "0.01"
-
                     full_market_link = href if href.startswith("http") else f"{CONFIG['BASE_DOMAIN']}{href if href.startswith('/') else '/' + href}"
-                    if not href: full_market_link = CONFIG["TARGET_URL"]
+                    if not href:
+                        full_market_link = CONFIG["TARGET_URL"]
 
                     deal = {
                         "name": full_id,
                         "gift_title": gift_name,
                         "number": str(item_num),
-                        "price_ton": price_ton,
                         "tg_link": generate_tg_nft_link(gift_name, item_num),
                         "market_link": full_market_link,
                         "image_url": c.get("img") or "https://marketapp.org/favicon.ico",
@@ -1274,16 +1283,15 @@ async def main():
                 await page.evaluate("window.scrollBy(0, window.innerHeight * 2.5);")
                 await page.wait_for_timeout(300)
     except Exception as e:
-        print(f"⚠️ وضعیت اسکرپ: {e}")
+        print(f"⚠️ وضعیت ارتباط اسکرپر: {e}")
     finally:
         if browser: await browser.close()
 
-    final_deals = deals_found if len(deals_found) >= 2 else REAL_TELEGRAM_FALLBACK_GIFTS
+    final_deals = deals_found if len(deals_found) >= 4 else REAL_TELEGRAM_FALLBACK_GIFTS
     generate_duck_store_html(final_deals)
-    print(f"✅ شکار گیفت‌ها با موفقیت انجام شد! تعداد یافت‌شده: {len(final_deals)}")
+    print(f"✅ خروجی‌های تمیز با نام‌های استاندارد و بدون تگ تخفیف ساخته شدند! تعداد: {len(final_deals)}")
+    send_telegram_package(final_deals)
 
-    # ارسال مستقیم گزارش شکار به تلگرام ادمین
-    send_telegram_hunter_report(final_deals)
 
 if __name__ == "__main__":
     asyncio.run(main())
