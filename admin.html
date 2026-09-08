@@ -51,7 +51,6 @@
             <button onclick="switchAdminTab('discounts')" id="tabBtn-discounts" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-tags ml-1.5"></i>کدهای تخفیف</button>
             <button onclick="switchAdminTab('wheel')" id="tabBtn-wheel" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-dice ml-1.5"></i>گردونه شانس</button>
             <button onclick="switchAdminTab('settings')" id="tabBtn-settings" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-sliders ml-1.5"></i>نرخ‌ها و تنظیمات</button>
-            <button onclick="switchAdminTab('rent')" id="tabBtn-rent" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-gift ml-1.5"></i>رنت گیفت</button>
             <button onclick="switchAdminTab('broadcast')" id="tabBtn-broadcast" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-bullhorn ml-1.5"></i>پیام همگانی و آمار</button>
         </div>
 
@@ -147,6 +146,40 @@
                 </div>
             </div>
 
+
+            <div class="p-4 rounded-2xl bg-cyan-400/[0.03] border border-cyan-400/15 space-y-3">
+                <h4 class="font-black text-cyan-300">🎁 موتور رنت گیفت — Marketapp → SwapWallet → تومان</h4>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div><label class="block text-slate-400 mb-1 font-bold">Base URL مارکت‌اپ:</label><input id="marketBaseUrl" class="input-box w-full rounded-xl p-2 dir-ltr text-left" value="https://api.marketapp.org"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">مسیر API رنت گیفت:</label><input id="marketRentPath" class="input-box w-full rounded-xl p-2 dir-ltr text-left" value="/v1/rent/gifts/"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">نوع قیمت:</label><select id="rentPriceMode" class="input-box w-full rounded-xl p-2"><option value="monthly">ماهانه</option><option value="daily">روزانه</option></select></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-3">
+                    <div><label class="block text-slate-400 mb-1 font-bold">SwapWallet Base URL:</label><input id="swapBaseUrl" class="input-box w-full rounded-xl p-2 dir-ltr text-left" placeholder="https://..."></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">SwapWallet Price Path:</label><input id="swapPricePath" class="input-box w-full rounded-xl p-2 dir-ltr text-left" placeholder="/api/..."></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">Method:</label><select id="swapMethod" class="input-box w-full rounded-xl p-2"><option>GET</option><option>POST</option></select></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">JSON Path نرخ TON/تومان:</label><input id="swapJsonPath" class="input-box w-full rounded-xl p-2 dir-ltr text-left" placeholder="data.ton_toman"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div><label class="block text-slate-400 mb-1 font-bold">درصد سود:</label><input type="number" id="rentMarkupPercent" class="input-box w-full rounded-xl p-2 text-center" value="0"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">حداقل قیمت تومان:</label><input type="number" id="rentMinToman" class="input-box w-full rounded-xl p-2 text-center" value="0"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">حداکثر قیمت تومان:</label><input type="number" id="rentMaxToman" class="input-box w-full rounded-xl p-2 text-center" value="0"></div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label class="block text-slate-400 mb-1 font-bold">نرخ ثابت جایگزین (اگر API قطع بود):</label><input type="number" id="tonToTomanMultiplier" class="input-box w-full rounded-xl p-2 text-center" value="0"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">Query پارامتر SwapWallet (اختیاری):</label><input id="swapQuery" class="input-box w-full rounded-xl p-2 dir-ltr text-left" placeholder="base=TON&quote=IRT"></div>
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">لینک آموزش تصویری:</label>
+                    <input id="tutorialUrl" class="input-box w-full rounded-xl p-2 dir-ltr text-left" placeholder="https://...">
+                </div>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">متن راهنمای بعد از تأیید پرداخت:</label>
+                    <textarea id="guideText" rows="8" class="input-box w-full rounded-xl p-2 text-xs"></textarea>
+                </div>
+                <p class="text-[10px] text-amber-300">توکن‌های Marketapp و SwapWallet را داخل Cloudflare Worker به‌صورت Secret نگه دارید؛ در پنل ذخیره نمی‌شوند.</p>
+            </div>
+
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
                 <h4 class="font-black text-slate-300">تعرفه استارز، پرمیوم و اجاره گیفت</h4>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -164,79 +197,6 @@
             <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-xl transition">
                 ذخیره تنظیمات در دیتابیس
             </button>
-        </div>
-
-        <!-- تب رنت گیفت: MarketApp + SwapWallet -->
-        <div id="adminTab-rent" class="hidden space-y-4 text-xs">
-            <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h3 class="font-black text-cyan-400">⚡ موتور قیمت‌گذاری رنت گیفت</h3>
-                        <p class="text-[10px] text-slate-400">قیمت خام از MarketApp، تبدیل ارز از SwapWallet و قیمت فروش از همین پنل.</p>
-                    </div>
-                    <span id="rentStatus" class="px-2.5 py-1 rounded-lg bg-slate-500/10 text-slate-400">خاموش/نامشخص</span>
-                </div>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div><label class="block text-slate-400 mb-1">آدرس API رنت</label><input id="rentApiUrl" class="input-box w-full rounded-xl p-2 font-mono text-[10px]" value="https://duck-store-rent-api.YOUR-SUBDOMAIN.workers.dev"></div>
-                    <div><label class="block text-slate-400 mb-1">تعداد گیفت</label><input id="rentDisplayLimit" type="number" min="1" max="500" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">وضعیت</label><select id="rentEnabled" class="input-box w-full rounded-xl p-2"><option value="true">فعال</option><option value="false">غیرفعال</option></select></div>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white/[0.02] border border-amber-500/20 space-y-3">
-                <h4 class="font-black text-amber-300">💱 اتصال MarketApp و SwapWallet</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label class="block text-slate-400 mb-1">MarketApp Endpoint</label><input id="marketEndpoint" class="input-box w-full rounded-xl p-2 font-mono text-[10px]"></div>
-                    <div><label class="block text-slate-400 mb-1">واحد قیمت MarketApp</label><input id="marketCurrency" class="input-box w-full rounded-xl p-2 font-bold"></div>
-                    <div><label class="block text-slate-400 mb-1">فیلد قیمت خام (JSON Path)</label><input id="marketPricePath" class="input-box w-full rounded-xl p-2 font-mono"></div>
-                    <div><label class="block text-slate-400 mb-1">Swap Rate URL</label><input id="swapRateUrl" class="input-box w-full rounded-xl p-2 font-mono text-[10px]" placeholder="آدرس endpoint نرخ SwapWallet"></div>
-                    <div><label class="block text-slate-400 mb-1">فیلد نرخ (JSON Path)</label><input id="swapRatePath" class="input-box w-full rounded-xl p-2 font-mono" placeholder="rate یا data.rate"></div>
-                    <div><label class="block text-slate-400 mb-1">ضریب IRR → تومان</label><input id="irrToToman" type="number" step="0.001" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">ارز مبدا</label><input id="swapFrom" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">ارز مقصد</label><input id="swapTo" class="input-box w-full rounded-xl p-2"></div>
-                </div>
-                <div class="flex flex-wrap gap-2">
-                    <button onclick="testRentMarket()" class="px-4 py-2 rounded-xl bg-cyan-400 text-slate-950 font-black">تست MarketApp</button>
-                    <button onclick="testRentRate()" class="px-4 py-2 rounded-xl bg-amber-400 text-slate-950 font-black">تست نرخ صرافی</button>
-                </div>
-                <p id="rentTestResult" class="text-[10px] text-slate-400"></p>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white/[0.02] border border-emerald-500/20 space-y-3">
-                <h4 class="font-black text-emerald-300">💰 فرمول قیمت فروش</h4>
-                <p class="text-[10px] text-slate-500">قیمت خام TON × نرخ تومان + درصد سود + مبلغ ثابت، سپس رُند می‌شود.</p>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div><label class="block text-slate-400 mb-1">درصد سود (%)</label><input id="rentProfitPercent" type="number" step="0.1" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">سود ثابت (تومان)</label><input id="rentFixedProfit" type="number" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">رُند قیمت</label><input id="rentRounding" type="number" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">روز پیش‌فرض</label><input id="rentDays" type="number" min="1" class="input-box w-full rounded-xl p-2"></div>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div><label class="block text-slate-400 mb-1">حداقل TON</label><input id="rentMinTon" type="number" step="0.0001" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">حداکثر TON</label><input id="rentMaxTon" type="number" step="0.0001" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">حداقل قیمت فروش</label><input id="rentMinToman" type="number" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">حداکثر قیمت فروش</label><input id="rentMaxToman" type="number" class="input-box w-full rounded-xl p-2"></div>
-                </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-white/[0.02] border border-purple-500/20 space-y-3">
-                <h4 class="font-black text-purple-300">🎨 شخصی‌سازی ویترین رنت</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div><label class="block text-slate-400 mb-1">کالکشن‌های مجاز (هر خط یک مورد)</label><textarea id="rentEnabledCollections" rows="4" class="input-box w-full rounded-xl p-2"></textarea></div>
-                    <div><label class="block text-slate-400 mb-1">کالکشن‌های مسدود (هر خط یک مورد)</label><textarea id="rentExcludedCollections" rows="4" class="input-box w-full rounded-xl p-2"></textarea></div>
-                    <div><label class="block text-slate-400 mb-1">شماره گیفت‌های مخفی (هر خط یک مورد)</label><textarea id="rentHiddenNumbers" rows="3" class="input-box w-full rounded-xl p-2"></textarea></div>
-                    <div><label class="block text-slate-400 mb-1">عنوان ویترین</label><input id="rentTitle" class="input-box w-full rounded-xl p-2"></div>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div><label class="block text-slate-400 mb-1">مرتب‌سازی</label><select id="rentSort" class="input-box w-full rounded-xl p-2"><option value="final_price_asc">ارزان‌ترین</option><option value="source_price_asc">خام: ارزان‌ترین</option><option value="source_price_desc">خام: گران‌ترین</option><option value="name_asc">نام</option></select></div>
-                    <div><label class="block text-slate-400 mb-1">کش‌شدن (ثانیه)</label><input id="rentCacheSeconds" type="number" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">Fallback TON→تومان</label><input id="rentFallbackRate" type="number" class="input-box w-full rounded-xl p-2"></div>
-                    <div><label class="block text-slate-400 mb-1">قیمت بر اساس روز</label><select id="rentPricePerDay" class="input-box w-full rounded-xl p-2"><option value="true">بله</option><option value="false">خیر</option></select></div>
-                </div>
-            </div>
-
-            <button onclick="saveRentSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black rounded-xl">ذخیره تنظیمات رنت</button>
-            <button onclick="syncRentNow()" class="w-full py-3 bg-emerald-400 text-slate-950 font-black rounded-xl">🔄 دریافت قیمت‌های جدید از MarketApp</button>
         </div>
 
         <!-- تب ۶: پیام همگانی و آمار -->
@@ -290,7 +250,7 @@
         }
 
         function switchAdminTab(tab) {
-            ['orders', 'services', 'discounts', 'wheel', 'settings', 'rent', 'broadcast'].forEach(t => {
+            ['orders', 'services', 'discounts', 'wheel', 'settings', 'broadcast'].forEach(t => {
                 document.getElementById('adminTab-' + t).classList.toggle('hidden', t !== tab);
                 document.getElementById('tabBtn-' + t).classList.toggle('active', t === tab);
             });
@@ -321,6 +281,8 @@
                 document.getElementById("cardHolder").value = localSettings.cardHolder || "";
                 document.getElementById("bankName").value = localSettings.bankName || "";
                 document.getElementById("adminChatId").value = localSettings.adminChatId || "";
+                const rentFields = ["marketBaseUrl","marketRentPath","rentPriceMode","swapBaseUrl","swapPricePath","swapMethod","swapJsonPath","rentMarkupPercent","rentMinToman","rentMaxToman","tonToTomanMultiplier","swapQuery","tutorialUrl","guideText"];
+                rentFields.forEach(k => { const el=document.getElementById(k); if(el) el.value = localSettings[k] ?? ""; });
 
                 document.getElementById("prem3").value = localSettings.prem3 || 620000;
                 document.getElementById("prem6").value = localSettings.prem6 || 950000;
@@ -331,7 +293,6 @@
                 renderCustomServicesAdmin();
                 renderCoupons();
                 renderWheelSlices();
-                loadRentSettings();
                 loadAdminOrders();
             }
         }
@@ -466,6 +427,7 @@
                                 <div>${badge}</div>
                             </div>
                             <div class="text-slate-300 text-[11px] whitespace-pre-line py-1">${o.itemsText}</div>
+                            ${o.fragment_link ? `<div class="p-2 rounded-lg bg-cyan-400/5 border border-cyan-400/10"><span class="text-slate-400">لینک Fragment:</span> <a class="text-cyan-300 underline break-all" href="${o.fragment_link}" target="_blank">${o.fragment_link}</a></div>` : ""}
                             <div class="flex items-center justify-between pt-2 border-t border-white/5">
                                 <span class="font-black text-amber-400">${Number(o.totalPrice).toLocaleString('en-US')} تومان</span>
                                 <div class="flex gap-2">
@@ -475,6 +437,9 @@
                                     ` : ''}
                                     ${o.status === 'processing' ? `
                                         <button onclick="changeOrderStatus('${o.id}', 'done')" class="px-3 py-1 bg-cyan-400 text-slate-950 rounded-lg font-bold">🚀 تحویل شد</button>
+                                    ` : ''}
+                                    ${o.status === 'awaiting_connection' ? `
+                                        <button onclick="changeOrderStatus('${o.id}', 'connected')" class="px-3 py-1 bg-purple-400 text-slate-950 rounded-lg font-bold">🔗 تأیید اتصال موفق</button>
                                     ` : ''}
                                 </div>
                             </div>
@@ -569,6 +534,8 @@
             localSettings.prem12 = parseInt(document.getElementById("prem12").value) || 1690000;
             localSettings.ratePerStar = parseInt(document.getElementById("ratePerStar").value) || 1450;
             localSettings.giftMonthlyPrice = parseInt(document.getElementById("giftMonthlyPrice").value) || 160000;
+            ["marketBaseUrl","marketRentPath","rentPriceMode","swapBaseUrl","swapPricePath","swapMethod","swapJsonPath","swapQuery","tutorialUrl","guideText"].forEach(k => { const el=document.getElementById(k); if(el) localSettings[k]=el.value.trim(); });
+            ["rentMarkupPercent","rentMinToman","rentMaxToman","tonToTomanMultiplier"].forEach(k => { const el=document.getElementById(k); if(el) localSettings[k]=Number(el.value)||0; });
 
             const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
                 method: "POST",
@@ -582,112 +549,6 @@
             } else {
                 alert("خطا در ذخیره‌سازی");
             }
-        }
-
-        const RENT_API_URL_KEY = "duck_rent_api_url";
-        let rentSettings = {};
-        function getRentApiUrl() {
-            return localStorage.getItem(RENT_API_URL_KEY) || document.getElementById("rentApiUrl")?.value || "";
-        }
-        function rentToken(){ return sessionStorage.getItem("duck_rent_admin_token") || ""; }
-        async function rentLoginIfNeeded() {
-            let t=rentToken(); if(t) return t;
-            const pass=prompt("رمز پنل رنت را وارد کنید (همان ADMIN_PASSWORD Worker):");
-            if(!pass) return "";
-            const base=getRentApiUrl().replace(/\/$/,"");
-            const r=await fetch(base+"/api/admin/login",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({password:pass})});
-            const d=await r.json(); if(!r.ok || !d.token) throw new Error(d.error||"ورود رنت ناموفق بود");
-            sessionStorage.setItem("duck_rent_admin_token",d.token); return d.token;
-        }
-        function fillRentSettings(s){
-            rentSettings=s||{};
-            const set=(id,v)=>{const e=document.getElementById(id); if(e) e.value=v??""};
-            set("rentApiUrl",localStorage.getItem(RENT_API_URL_KEY)||"https://duck-store-rent-api.YOUR-SUBDOMAIN.workers.dev");
-            set("rentDisplayLimit",s.displayLimit||200); set("rentEnabled",String(s.enabled!==false));
-            set("marketEndpoint",s.marketEndpoint||"/v1/rent/gifts/"); set("marketCurrency",s.marketCurrency||"TON");
-            set("marketPricePath",s.marketPricePath||"price_per_day"); set("swapRateUrl",s.swapRateUrl||"");
-            set("swapRatePath",s.swapRatePath||"rate"); set("irrToToman",s.irrToToman??0.1);
-            set("swapFrom",s.swapFrom||"TON"); set("swapTo",s.swapTo||"IRR");
-            set("rentProfitPercent",s.profitPercent??20); set("rentFixedProfit",s.fixedProfitToman??0);
-            set("rentRounding",s.roundingStep??1000); set("rentDays",s.defaultRentDays??30);
-            set("rentMinTon",s.minSourceTon??0); set("rentMaxTon",s.maxSourceTon??0);
-            set("rentMinToman",s.minFinalToman??0); set("rentMaxToman",s.maxFinalToman??0);
-            set("rentEnabledCollections",(s.enabledCollections||[]).join("\n"));
-            set("rentExcludedCollections",(s.excludedCollections||[]).join("\n"));
-            set("rentHiddenNumbers",(s.hiddenNumbers||[]).join("\n"));
-            set("rentTitle",s.title||"اجاره گیفت تلگرام"); set("rentSort",s.sort||"final_price_asc");
-            set("rentCacheSeconds",s.cacheSeconds??120); set("rentFallbackRate",s.fallbackTonToToman??0);
-            set("rentPricePerDay",String(s.pricePerDay!==false));
-            localStorage.setItem(RENT_API_URL_KEY,getRentApiUrl());
-            document.getElementById("rentStatus").innerText=s.enabled!==false?"فعال":"غیرفعال";
-        }
-        async function loadRentSettings(){
-            try{
-                const base=getRentApiUrl().replace(/\/$/,"");
-                const t=await rentLoginIfNeeded();
-                if(!t) return;
-                const r=await fetch(base+"/api/admin/rent-settings",{headers:{Authorization:"Bearer "+t}});
-                if(!r.ok) throw new Error("خطا در دریافت تنظیمات رنت");
-                fillRentSettings(await r.json());
-            }catch(e){ document.getElementById("rentTestResult").innerText=e.message; }
-        }
-        async function saveRentSettings(){
-            try{
-                const base=document.getElementById("rentApiUrl").value.trim().replace(/\/$/,"");
-                localStorage.setItem(RENT_API_URL_KEY,base);
-                const t=await rentLoginIfNeeded(); if(!t) return;
-                const lines=id=>(document.getElementById(id).value||"").split(/\n|,/).map(x=>x.trim()).filter(Boolean);
-                const payload={...rentSettings,
-                    enabled:document.getElementById("rentEnabled").value==="true",
-                    displayLimit:+document.getElementById("rentDisplayLimit").value||200,
-                    marketEndpoint:document.getElementById("marketEndpoint").value.trim(),
-                    marketCurrency:document.getElementById("marketCurrency").value.trim(),
-                    marketPricePath:document.getElementById("marketPricePath").value.trim(),
-                    swapRateUrl:document.getElementById("swapRateUrl").value.trim(),
-                    swapRatePath:document.getElementById("swapRatePath").value.trim(),
-                    irrToToman:+document.getElementById("irrToToman").value||0.1,
-                    swapFrom:document.getElementById("swapFrom").value.trim(),
-                    swapTo:document.getElementById("swapTo").value.trim(),
-                    profitPercent:+document.getElementById("rentProfitPercent").value||0,
-                    fixedProfitToman:+document.getElementById("rentFixedProfit").value||0,
-                    roundingStep:+document.getElementById("rentRounding").value||1,
-                    defaultRentDays:+document.getElementById("rentDays").value||30,
-                    minSourceTon:+document.getElementById("rentMinTon").value||0,
-                    maxSourceTon:+document.getElementById("rentMaxTon").value||0,
-                    minFinalToman:+document.getElementById("rentMinToman").value||0,
-                    maxFinalToman:+document.getElementById("rentMaxToman").value||0,
-                    enabledCollections:lines("rentEnabledCollections"),
-                    excludedCollections:lines("rentExcludedCollections"),
-                    hiddenNumbers:lines("rentHiddenNumbers"),
-                    title:document.getElementById("rentTitle").value.trim(),
-                    sort:document.getElementById("rentSort").value,
-                    cacheSeconds:+document.getElementById("rentCacheSeconds").value||120,
-                    fallbackTonToToman:+document.getElementById("rentFallbackRate").value||0,
-                    pricePerDay:document.getElementById("rentPricePerDay").value==="true"
-                };
-                const r=await fetch(base+"/api/admin/rent-settings",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+t},body:JSON.stringify(payload)});
-                if(!r.ok) throw new Error((await r.json()).error||"ذخیره ناموفق بود");
-                fillRentSettings(await r.json()); alert("✅ تنظیمات رنت ذخیره شد");
-            }catch(e){ alert("❌ "+e.message); }
-        }
-        async function testRentMarket(){
-            try{ const base=getRentApiUrl().replace(/\/$/,""); const t=await rentLoginIfNeeded(); if(!t)return;
-                const r=await fetch(base+"/api/admin/rent-test-market",{method:"POST",headers:{Authorization:"Bearer "+t}});
-                const d=await r.json(); document.getElementById("rentTestResult").innerText=d.ok?`✅ MarketApp متصل است؛ ${d.count} آیتم دریافت شد.`:`❌ ${d.error}`;
-            }catch(e){document.getElementById("rentTestResult").innerText="❌ "+e.message}
-        }
-        async function testRentRate(){
-            try{ const base=getRentApiUrl().replace(/\/$/,""); const t=await rentLoginIfNeeded(); if(!t)return;
-                const r=await fetch(base+"/api/admin/rent-test-rate",{method:"POST",headers:{Authorization:"Bearer "+t}});
-                const d=await r.json(); document.getElementById("rentTestResult").innerText=d.ok?`✅ نرخ تبدیل: ${Number(d.rateToman).toLocaleString("en-US")} تومان برای 1 ${rentSettings.marketCurrency||"TON"}`:`❌ ${d.error}`;
-            }catch(e){document.getElementById("rentTestResult").innerText="❌ "+e.message}
-        }
-        async function syncRentNow(){
-            try{ const base=getRentApiUrl().replace(/\/$/,""); const t=await rentLoginIfNeeded(); if(!t)return;
-                const r=await fetch(base+"/api/rent/sync",{method:"POST",headers:{Authorization:"Bearer "+t}});
-                const d=await r.json(); if(!r.ok) throw new Error(d.error||"Sync failed");
-                alert(`✅ ${d.gifts?.length||0} گیفت با موفقیت به‌روزرسانی شد`);
-            }catch(e){alert("❌ "+e.message)}
         }
 
         async function sendBroadcast() {

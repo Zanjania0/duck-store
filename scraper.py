@@ -453,7 +453,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 </div>
 
 <script>
-const DEALS = __DEALS_JSON__;
+let DEALS = __DEALS_JSON__;
 const COLLECTIONS = __COLLECTIONS_JSON__;
 
 let SETTINGS = {
@@ -546,6 +546,22 @@ function openTelegramGift(url) {
     window.Telegram.WebApp.openTelegramLink(url);
   } else {
     window.open(url, '_blank');
+  }
+}
+
+
+async function loadLiveRentGifts() {
+  try {
+    const res = await fetch(`${WORKER_URL}/api/rent/gifts`, {cache:"no-store"});
+    if (!res.ok) return;
+    const d = await res.json();
+    if (Array.isArray(d.items) && d.items.length) {
+      DEALS = d.items;
+      renderHome();
+      renderCards(getFilteredDeals());
+    }
+  } catch (e) {
+    console.warn("Live rent gifts unavailable", e);
   }
 }
 
@@ -646,7 +662,7 @@ function openQuickView(d) {
   document.getElementById('qvImage').src = d.image_url;
   document.getElementById('qvTitle').innerText = d.gift_title;
   document.getElementById('qvNumber').innerText = `شماره گیفت: #${d.number}`;
-  document.getElementById('qvPrice').innerText = fmtMoney(SETTINGS.giftMonthlyPrice) + ' تومان';
+  document.getElementById('qvPrice').innerText = fmtMoney(d.price_toman ?? SETTINGS.giftMonthlyPrice) + ' تومان';
   document.getElementById('quickViewSheet').classList.remove('hidden');
 }
 
@@ -657,7 +673,7 @@ function addQVToCart() {
   // حفظ لینک مستقیم مارکت‌اپ برای ادمین
   cart.push({ 
     name: activeQVDeal.name, 
-    price: Number(SETTINGS.giftMonthlyPrice),
+    price: Number(activeQVDeal.price_toman ?? SETTINGS.giftMonthlyPrice),
     market_link: activeQVDeal.market_link || activeQVDeal.tg_link || ""
   });
   localStorage.setItem('duck_cart_v11', JSON.stringify(cart));
@@ -1250,3 +1266,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+

@@ -1,17 +1,11 @@
-name = "duck-store-rent-api"
-main = "worker.js"
+name = "duck-store-api"
+main = "index.js"
 compatibility_date = "2026-09-08"
-
-[vars]
-# Non-secret defaults only. Put API tokens/passwords in Cloudflare Secrets.
-# MARKETAPP_API_TOKEN = "DO_NOT_PUT_REAL_TOKEN_HERE"
-# SWAP_API_KEY = "DO_NOT_PUT_REAL_KEY_HERE"
-# ADMIN_PASSWORD = "DO_NOT_PUT_REAL_PASSWORD_HERE"
 
 [[d1_databases]]
 binding = "DB"
-database_name = "duck-store-rent"
-database_id = "30435ced-11cb-40c1-b36f-67d9a8618ff4"
+database_name = "duck-store"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
 
-[triggers]
-crons = ["*/10 * * * *"]
+[vars]
+# Non-secret public defaults only. Set secrets with `wrangler secret put`.

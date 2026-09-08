@@ -1,258 +1,226 @@
-# Duck Store — MarketApp + SwapWallet Rent Engine
+# Duck Store — رنت گیفت با Marketapp + SwapWallet + Cloudflare
 
-این نسخه موتور «رنت گیفت» را به پروژه اضافه می‌کند:
+این نسخه Backend را به Cloudflare Workers + D1 منتقل می‌کند و قیمت رنت را به شکل زیر محاسبه می‌کند:
 
-`MarketApp → قیمت خام TON → SwapWallet exchange-rate API → تومان → درصد سود/سود ثابت → رُند → فیلتر بازه → ویترین`
+`Marketapp (TON rent price) → SwapWallet (TON/تومان) → درصد سود → حداقل/حداکثر قیمت → فروشگاه`
 
-## معماری
+## امکانات اضافه‌شده
 
-- Frontend: GitHub Pages / Telegram Mini App
-- Rent API: Cloudflare Worker
-- Database: Cloudflare D1
-- Scheduler: Cloudflare Cron Trigger هر ۱۰ دقیقه
-- Market source: `GET /v1/rent/gifts/` از MarketApp
-- Exchange source: endpoint قابل تنظیم SwapWallet
-- Secretها فقط در Cloudflare Worker Secrets هستند و داخل GitHub/frontend قرار نمی‌گیرند.
+- دریافت موجودی رنت گیفت از `GET /v1/rent/gifts/` مارکت‌اپ.
+- نگهداری API tokenها در Cloudflare Worker Secrets، نه در HTML.
+- تبدیل TON به تومان از طریق API قابل تنظیم SwapWallet.
+- نرخ جایگزین ثابت در صورت قطع API نرخ.
+- درصد سود قابل تنظیم.
+- حداقل و حداکثر قیمت فروش.
+- انتخاب قیمت روزانه یا ماهانه.
+- لینک آموزش تصویری قابل تنظیم از پنل.
+- متن راهنما قابل ویرایش از پنل.
+- بعد از تأیید پرداخت رنت، راهنما برای کاربر ارسال می‌شود.
+- کاربر از داخل پروفایل لینک `fragment.com` را برای سفارش می‌فرستد.
+- لینک برای ادمین ارسال می‌شود.
+- ادمین دکمه «تأیید اتصال موفق» دارد.
+- بعد از تأیید، پیام موفقیت برای کاربر ارسال می‌شود.
+- GitHub Actions برای Deploy Worker.
 
-## نکته مهم درباره SwapWallet
-
-مستندات عمومی SwapPay در زمان ساخت این نسخه endpoint نرخ ارز را به‌صورت قابل استخراج از صفحه وب در اختیار این پروژه نگذاشت؛ بنابراین آدرس endpoint و JSON path نرخ در پنل رنت قابل تنظیم است. این باعث می‌شود با تغییر نسخه API مجبور به تغییر frontend نشوید.
-
-## راه‌اندازی رایگان
-
-### 1) ساخت D1
+## 1) ساخت D1
 
 در Cloudflare:
-Workers & Pages → D1 → Create database
 
-نام پیشنهادی:
-`duck-store-rent`
-
-شناسه database را در `worker/wrangler.toml` جایگزین کنید.
+1. Workers & Pages → D1 → Create database
+2. نام را `duck-store` بگذارید.
+3. ID دیتابیس را بردارید.
+4. در `worker/wrangler.toml` مقدار `database_id` را جایگزین کنید.
 
 سپس:
 
 ```bash
-cd worker
-npx wrangler d1 execute duck-store-rent --remote --file=schema.sql
+npx wrangler@latest d1 execute duck-store --remote --file=worker/schema.sql
 ```
 
-یا SQL داخل `schema.sql` را در D1 Console اجرا کنید.
-
-### 2) نصب و Deploy Worker
+## 2) نصب Wrangler
 
 ```bash
-cd worker
-npx wrangler deploy
+npm install -g wrangler
+wrangler login
 ```
 
-URL شبیه این دریافت می‌کنید:
+یا بدون نصب دائمی:
 
-`https://duck-store-rent-api.<SUBDOMAIN>.workers.dev`
+```bash
+npx wrangler@latest login
+```
 
-همین URL را در ابتدای `index.html` جایگزین کنید:
+## 3) Secretهای Cloudflare
+
+این‌ها را هرگز داخل GitHub یا HTML قرار ندهید:
+
+```bash
+npx wrangler secret put ADMIN_PASSWORD
+npx wrangler secret put MARKETAPP_TOKEN
+npx wrangler secret put SWAP_API_TOKEN
+npx wrangler secret put TELEGRAM_BOT_TOKEN
+npx wrangler secret put ADMIN_CHAT_ID
+```
+
+`ADMIN_PASSWORD` همان رمز ورود پنل است.
+
+## 4) Deploy
+
+```bash
+npx wrangler@latest deploy worker/index.js --config worker/wrangler.toml
+```
+
+بعد از Deploy، URL Worker را بردارید.
+
+در `index.html` و `admin.html` مقدار:
 
 ```js
-const RENT_API_URL = "https://duck-store-rent-api.<SUBDOMAIN>.workers.dev";
+const WORKER_URL = "https://YOUR-WORKER.workers.dev";
 ```
-
-و در `admin.html` هم مقدار پیش‌فرض را اصلاح کنید.
-
-### 3) Secretهای Cloudflare
-
-در Cloudflare Worker → Settings → Variables and Secrets:
-
-```text
-MARKETAPP_API_TOKEN=توکن MarketApp
-SWAP_API_KEY=کلید SwapWallet (اگر لازم است)
-ADMIN_PASSWORD=یک رمز قوی برای بخش رنت
-```
-
-یا با Wrangler:
-
-```bash
-npx wrangler secret put MARKETAPP_API_TOKEN
-npx wrangler secret put SWAP_API_KEY
-npx wrangler secret put ADMIN_PASSWORD
-```
-
-### 4) اتصال MarketApp
-
-API طبق مستندات MarketApp با header زیر احراز هویت می‌شود:
-
-```http
-Authorization: YOUR_MARKETAPP_TOKEN
-```
-
-endpoint پیش‌فرض:
-
-```text
-/v1/rent/gifts/
-```
-
-در پنل رنت، اگر نسخه API تغییر کرد، Endpoint و JSON Path را قابل تنظیم نگه دارید.
-
-### 5) اتصال SwapWallet
-
-در پنل:
-
-- Swap Rate URL
-- Swap Rate JSON Path
-- ارز مبدا
-- ارز مقصد
-- ضریب IRR به تومان
 
 را تنظیم کنید.
 
-مثلاً اگر پاسخ API این باشد:
+## 5) تنظیم Marketapp
+
+در پنل مدیریت:
+
+- Base URL: `https://api.marketapp.org`
+- Rent Path: `/v1/rent/gifts/`
+- نوع قیمت: ماهانه یا روزانه
+
+Marketapp اعلام کرده endpointهای API نیاز به API token دارند و token با Header `Authorization` بدون پیشوند Bearer ارسال می‌شود.
+
+## 6) تنظیم SwapWallet
+
+به علت اینکه ساختار دقیق endpoint نرخ در حساب شما ممکن است بر اساس نسخه/API plan متفاوت باشد، پنل این موارد را قابل تنظیم کرده است:
+
+- Base URL
+- Price Path
+- Method
+- Query
+- JSON Path
+
+مثلاً اگر پاسخ API شما این باشد:
 
 ```json
 {
   "data": {
-    "rate": 1234567
+    "ton_toman": 123456
   }
 }
 ```
 
-بنویسید:
+در JSON Path بنویسید:
 
 ```text
-Swap Rate JSON Path = data.rate
+data.ton_toman
 ```
 
-اگر نرخ برگشتی ریال باشد، مقدار:
+توکن SwapWallet فقط از Secret خوانده می‌شود.
+
+اگر API نرخ موقتاً در دسترس نباشد، مقدار `نرخ ثابت جایگزین` استفاده می‌شود.
+
+## 7) فرمول قیمت
+
+قیمت پایه:
 
 ```text
-IRR → Toman = 0.1
+TON rent × نرخ TON/تومان
 ```
 
-است.
-
-اگر endpoint نرخ شما مستقیماً تومان برمی‌گرداند، ضریب را `1` قرار دهید.
-
-### 6) فرمول قیمت
-
-فرمول فعلی:
+بعد:
 
 ```text
-قیمت خام TON × نرخ تومان
-+
-درصد سود
-+
-سود ثابت
-→ رُند
+قیمت فروش = قیمت پایه × (1 + درصد سود / 100)
 ```
 
-مثلاً:
+و سپس:
 
 ```text
-1 TON = 200,000 تومان
-گیفت = 0.5 TON
+اگر قیمت < حداقل → نمایش داده نمی‌شود
+اگر قیمت > حداکثر → نمایش داده نمی‌شود
+```
+
+مثال:
+
+```text
+Rent = 0.5 TON
+TON/IRT = 100,000
 سود = 20%
 
-500,000 × 1.20 = 600,000 تومان
+قیمت پایه = 50,000
+قیمت فروش = 60,000 تومان
 ```
 
-اگر رُند روی 1000 باشد:
+## 8) گردش خرید رنت گیفت
+
+1. کاربر گیفت را انتخاب می‌کند.
+2. قیمت زنده از Backend دریافت می‌شود.
+3. کاربر سفارش را ثبت می‌کند.
+4. Worker سفارش را در D1 ثبت می‌کند.
+5. ربات تلگرام شماره سفارش و مبلغ را می‌فرستد.
+6. ادمین پرداخت را تأیید می‌کند.
+7. Worker متن راهنما + لینک آموزش تصویری را برای کاربر می‌فرستد.
+8. کاربر از Fragment لینک را کپی می‌کند.
+9. در پروفایل فروشگاه، سفارش را انتخاب و لینک را ارسال می‌کند.
+10. لینک در D1 ذخیره و برای ادمین ارسال می‌شود.
+11. ادمین اتصال را بررسی می‌کند.
+12. با «تأیید اتصال موفق»، سفارش completed می‌شود.
+13. پیام موفقیت برای کاربر ارسال می‌شود.
+
+## 9) متن پیش‌فرض راهنما
 
 ```text
-600,000 تومان
+راهنما:
+
+1. وارد Fragment.com شوید
+2. با اکانت تلگرام Login کنید
+3. روی Connect کلیک کنید
+4. دکمه بالا سمت چپ را بزنید و لینک را کپی کنید
+5. لینک را در فیلد زیر وارد کنید
+6. پس از اتصال موفق به Fragment برگردید
+7. از بخش Assets وارد Gifts شوید
+8. روی سه نقطه کنار NFT زده و Display on Telegram را بزنید
+9. NFT روی اکانت تلگرام شما ظاهر می‌شود
+
+نکته: هر روز ۳ ولت و ۳ NFT می‌توانید وصل کنید.
+
+آموزش تصویری
 ```
 
-### 7) فیلتر بازه
+متن و URL آموزش از پنل قابل تغییر است.
 
-از پنل می‌توانید:
+## 10) GitHub Actions
 
-- حداقل TON
-- حداکثر TON
-- حداقل قیمت فروش
-- حداکثر قیمت فروش
-- کالکشن‌های مجاز
-- کالکشن‌های ممنوع
-- شماره گیفت‌های مخفی
-- تعداد آیتم ویترین
-- ترتیب نمایش
+دو workflow دارید:
 
-را تعیین کنید.
+- Scraper قبلی
+- `deploy-worker.yml`
 
-### 8) شخصی‌سازی کامل رنت
-
-از پنل رنت می‌توانید:
-
-- فعال/غیرفعال کردن رنت
-- درصد سود
-- سود ثابت
-- مبلغ رُند
-- تعداد روز اجاره
-- نمایش قیمت روزانه یا کل
-- عنوان ویترین
-- کش قیمت
-- fallback نرخ
-- sort
-- collection whitelist/blacklist
-- hidden gift numbers
-
-را تنظیم کنید.
-
-### 9) GitHub Actions
-
-Workflow جدید:
-
-`.github/workflows/deploy-rent-worker.yml`
-
-برای deploy خودکار است.
-
-در GitHub:
-
-Settings → Secrets and variables → Actions
-
-این دو Secret را اضافه کنید:
+در GitHub → Settings → Secrets and variables → Actions این دو Secret را اضافه کنید:
 
 ```text
 CLOUDFLARE_API_TOKEN
 CLOUDFLARE_ACCOUNT_ID
 ```
 
-توکن Cloudflare باید اجازه deploy Worker داشته باشد.
+برای API Token، دسترسی Worker/D1 موردنیاز حساب خود را بدهید.
 
-### 10) Cron
+## نکته مهم امنیتی
 
-Worker هر ۱۰ دقیقه sync می‌کند:
+API tokenهای Marketapp و SwapWallet را داخل `index.html`، `admin.html` یا Git commit نگذارید.
 
-```text
-*/10 * * * *
-```
-
-Cronهای Cloudflare بر اساس UTC اجرا می‌شوند.
-
-### 11) تست
-
-بعد از deploy این endpointها را تست کنید:
+Frontend فقط endpoint Worker را صدا می‌زند:
 
 ```text
-GET /api/rent/catalog
-GET /api/rent/settings
+/api/rent/gifts
 ```
 
-پنل:
+بنابراین کلیدها در مرورگر کاربر دیده نمی‌شوند.
 
-```text
-POST /api/admin/login
-POST /api/admin/rent-test-market
-POST /api/admin/rent-test-rate
-POST /api/rent/sync
-```
+## محدودیت فعلی
 
-## امنیت
+این نسخه «محاسبه قیمت + ثبت سفارش + workflow لینک Fragment + تأیید ادمین» را کامل می‌کند.
 
-- API tokenهای MarketApp و SwapWallet داخل frontend قرار نمی‌گیرند.
-- فقط Worker به APIهای خارجی دسترسی دارد.
-- D1 برای تنظیمات و cache استفاده می‌شود.
-- پنل رنت با `ADMIN_PASSWORD` محافظت شده است.
-- قیمت نهایی سمت Worker محاسبه می‌شود؛ بنابراین کاربر نمی‌تواند درصد سود را از frontend تغییر دهد.
+اگر هدف شما این است که بعد از تأیید پرداخت، خود Worker به‌صورت خودکار `POST /v1/rent/{nft_address}/pay/` مارکت‌اپ را نیز اجرا کند، باید body دقیق `RentNFTBody` و شرایط پرداخت/Transaction API حساب Marketapp مشخص باشد؛ آن مرحله را نباید با حدس درباره payload پیاده کرد.
 
-## محدودیت رایگان Cloudflare
-
-این معماری برای استفاده سبک/فروشگاه کوچک مناسب است. Workers Free فعلاً 100,000 request/day دارد و D1 Free شامل 5 میلیون row read و 100,000 row write در روز است. از آنجا که cache رنت در یک رکورد JSON نگهداری می‌شود، مصرف D1 این بخش پایین می‌ماند.
-
-اگر فروشگاه رشد زیادی کند، باید قبل از رسیدن به سقف‌های رایگان usage را بررسی کنید.
