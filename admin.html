@@ -70,7 +70,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xs font-black text-white">مدیریت تب‌ها و خدمات اختصاصی فروشگاه</h3>
-                    <p class="text-[11px] text-slate-400">می‌توانید تب‌های اختصاصی (مثل بوست، فالوور، لایک) همراه با پیش‌نیاز تعریف کنید.</p>
+                    <p class="text-[11px] text-slate-400">می‌توانید تب‌های اختصاصی همراه با پیش‌نیاز تعریف کنید.</p>
                 </div>
                 <button type="button" onclick="addCustomCategory()" class="px-3.5 py-2 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">
                     <i class="fa-solid fa-plus ml-1"></i>افزودن تب / دسته جدید
@@ -122,7 +122,7 @@
             <button type="button" onclick="saveAllSettings()" class="w-full py-3 bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-lg">ذخیره تغییرات گردونه</button>
         </div>
 
-        <!-- تب ۵: تنظیمات پایه و نرخ‌ها -->
+        <!-- تب ۵: تنظیمات پایه، کارت بانکی و آموزش رنت -->
         <div id="adminTab-settings" class="hidden space-y-4 text-xs">
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
                 <h4 class="font-black text-slate-300">اطلاعات حساب جهت کارت‌به‌کارت و ربات</h4>
@@ -141,8 +141,18 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">شناسه عددی تلگرام ادمین (Admin Chat ID جهت دریافت فیش‌ها):</label>
+                    <label class="block text-slate-400 mb-1 font-bold">شناسه عددی تلگرام ادمین (Admin Chat ID جهت دریافت فیش‌ها و لینک‌های فرگمنت):</label>
                     <input type="text" id="adminChatId" class="input-box w-full rounded-xl p-2 font-mono font-bold text-cyan-400 dir-ltr text-left">
+                </div>
+            </div>
+
+            <!-- بخش جدید: تنظیم لینک آموزش تصویری رنت فرگمنت -->
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
+                <h4 class="font-black text-cyan-300"><i class="fa-solid fa-video ml-1.5"></i>آموزش تصویری اتصال فرگمنت به اکانت</h4>
+                <p class="text-[11px] text-slate-400">این لینک در انتهای پیام راهنمای خرید رنت گیفت برای مشتری ارسال می‌شود.</p>
+                <div>
+                    <label class="block text-slate-400 mb-1 font-bold">لینک ویدیوی آموزش (تلگرام، یوتیوب، آپارات و...):</label>
+                    <input type="text" id="tutorialVideoLink" placeholder="https://t.me/your_channel/123" class="input-box w-full rounded-xl p-2 font-mono text-xs text-sky-400 dir-ltr text-left">
                 </div>
             </div>
 
@@ -184,7 +194,7 @@
 
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
                 <h3 class="text-xs font-black text-cyan-400"><i class="fa-solid fa-bullhorn ml-1.5"></i>ارسال پیام همگانی به اعضای ربات</h3>
-                <textarea id="broadcastText" rows="3" placeholder="متن پیام خود را بنویسید (پشتیبانی از تگ‌های HTML تلگرام)..." class="input-box w-full rounded-xl p-3 text-xs"></textarea>
+                <textarea id="broadcastText" rows="3" placeholder="متن پیام خود را بنویسید..." class="input-box w-full rounded-xl p-3 text-xs"></textarea>
                 <div class="flex justify-end">
                     <button type="button" id="sendBroadcastBtn" onclick="sendBroadcast()" class="px-5 py-2.5 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">ارسال به همه کاربران</button>
                 </div>
@@ -247,6 +257,7 @@
                 document.getElementById("cardHolder").value = localSettings.cardHolder || "";
                 document.getElementById("bankName").value = localSettings.bankName || "";
                 document.getElementById("adminChatId").value = localSettings.adminChatId || "";
+                document.getElementById("tutorialVideoLink").value = localSettings.tutorialVideoLink || "";
 
                 document.getElementById("prem3").value = localSettings.prem3 || 620000;
                 document.getElementById("prem6").value = localSettings.prem6 || 950000;
@@ -261,17 +272,13 @@
             }
         }
 
-        // بخش مدیریت دسته‌بندی‌ها و خدمات سفارشی ادمین
         function renderCustomServicesAdmin() {
             const container = document.getElementById("customCategoriesContainer");
             if (!localSettings.customServices) {
                 localSettings.customServices = [
                     {
-                        id: "cat_boost",
-                        title: "بوست تلگرام",
-                        items: [
-                            { id: "b1", name: "بوست کانال (سطح ۱)", duration: "۳۰ روزه", price: 65000, minQty: 1, inputPrompt: "لینک کانال یا لینک بوست" }
-                        ]
+                        id: "cat_boost", title: "بوست تلگرام",
+                        items: [{ id: "b1", name: "بوست کانال (سطح ۱)", duration: "۳۰ روزه", price: 65000, minQty: 1, inputPrompt: "لینک کانال یا لینک بوست" }]
                     }
                 ];
             }
@@ -288,33 +295,15 @@
                             <button type="button" onclick="removeCustomCategory(${catIdx})" class="px-2.5 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">حذف تب</button>
                         </div>
                     </div>
-
                     <div class="space-y-2">
                         ${(cat.items || []).map((item, itemIdx) => `
                             <div class="p-3 bg-black/40 border border-white/5 rounded-xl grid grid-cols-1 sm:grid-cols-6 gap-2 text-xs items-center">
-                                <div>
-                                    <label class="block text-slate-400 text-[10px] mb-0.5">نام سرویس:</label>
-                                    <input type="text" value="${item.name}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].name=this.value" placeholder="مثال: بوست سطح ۱" class="input-box w-full rounded-lg p-1.5 text-xs font-bold">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-400 text-[10px] mb-0.5">توضیحات/مدت:</label>
-                                    <input type="text" value="${item.duration || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].duration=this.value" placeholder="مثال: ۳۰ روزه" class="input-box w-full rounded-lg p-1.5 text-xs">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-400 text-[10px] mb-0.5">قیمت واحد (تومان):</label>
-                                    <input type="number" value="${item.price}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].price=parseInt(this.value)||0" placeholder="65000" class="input-box w-full rounded-lg p-1.5 text-xs text-amber-400 font-bold">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-400 text-[10px] mb-0.5">حداقل خرید:</label>
-                                    <input type="number" min="1" value="${item.minQty || 1}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].minQty=parseInt(this.value)||1" placeholder="1" class="input-box w-full rounded-lg p-1.5 text-xs text-center font-bold">
-                                </div>
-                                <div>
-                                    <label class="block text-slate-400 text-[10px] mb-0.5">عنوان پیش‌نیاز/ورودی مشتری:</label>
-                                    <input type="text" value="${item.inputPrompt || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].inputPrompt=this.value" placeholder="لینک بوست یا کانال" class="input-box w-full rounded-lg p-1.5 text-xs">
-                                </div>
-                                <div class="flex justify-end items-end h-full">
-                                    <button type="button" onclick="removeCustomServiceItem(${catIdx}, ${itemIdx})" class="px-2 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">✕ حذف</button>
-                                </div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">نام سرویس:</label><input type="text" value="${item.name}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].name=this.value" class="input-box w-full rounded-lg p-1.5 text-xs font-bold"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">توضیحات/مدت:</label><input type="text" value="${item.duration || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].duration=this.value" class="input-box w-full rounded-lg p-1.5 text-xs"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">قیمت واحد (تومان):</label><input type="number" value="${item.price}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].price=parseInt(this.value)||0" class="input-box w-full rounded-lg p-1.5 text-xs text-amber-400 font-bold"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">حداقل خرید:</label><input type="number" min="1" value="${item.minQty || 1}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].minQty=parseInt(this.value)||1" class="input-box w-full rounded-lg p-1.5 text-xs text-center font-bold"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">عنوان ورودی مشتری:</label><input type="text" value="${item.inputPrompt || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].inputPrompt=this.value" class="input-box w-full rounded-lg p-1.5 text-xs"></div>
+                                <div class="flex justify-end items-end h-full"><button type="button" onclick="removeCustomServiceItem(${catIdx}, ${itemIdx})" class="px-2 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">✕ حذف</button></div>
                             </div>
                         `).join('')}
                     </div>
@@ -323,60 +312,33 @@
         }
 
         function addCustomCategory() {
-            const name = prompt("نام تب یا دسته‌بندی جدید را وارد کنید (مثال: ممبر تلگرام):");
+            const name = prompt("نام دسته را وارد کنید:");
             if (!name) return;
             if (!localSettings.customServices) localSettings.customServices = [];
             localSettings.customServices.push({
-                id: "cat_" + Date.now(),
-                title: name,
-                items: [
-                    { id: "item_" + Date.now(), name: "سرویس پیش‌فرض", duration: "یک‌ماهه", price: 50000, minQty: 1, inputPrompt: "آیدی یا لینک کانال" }
-                ]
+                id: "cat_" + Date.now(), title: name,
+                items: [{ id: "item_" + Date.now(), name: "سرویس جدید", duration: "۳۰ روزه", price: 50000, minQty: 1, inputPrompt: "لینک یا آیدی" }]
             });
             renderCustomServicesAdmin();
         }
+        function removeCustomCategory(idx) { if (confirm("حذف شود؟")) { localSettings.customServices.splice(idx, 1); renderCustomServicesAdmin(); } }
+        function addCustomServiceItem(cIdx) { localSettings.customServices[cIdx].items.push({ id: "item_" + Date.now(), name: "سرویس جدید", duration: "۳۰ روزه", price: 50000, minQty: 1, inputPrompt: "لینک مقصد" }); renderCustomServicesAdmin(); }
+        function removeCustomServiceItem(cIdx, iIdx) { localSettings.customServices[cIdx].items.splice(iIdx, 1); renderCustomServicesAdmin(); }
 
-        function removeCustomCategory(catIdx) {
-            if (!confirm("آیا از حذف این دسته و تمام خدمات آن اطمینان دارید؟")) return;
-            localSettings.customServices.splice(catIdx, 1);
-            renderCustomServicesAdmin();
-        }
-
-        function addCustomServiceItem(catIdx) {
-            if (!localSettings.customServices[catIdx].items) localSettings.customServices[catIdx].items = [];
-            localSettings.customServices[catIdx].items.push({
-                id: "item_" + Date.now(),
-                name: "سرویس جدید",
-                duration: "۳۰ روزه",
-                price: 50000,
-                minQty: 1,
-                inputPrompt: "لینک یا آیدی مقصد"
-            });
-            renderCustomServicesAdmin();
-        }
-
-        function removeCustomServiceItem(catIdx, itemIdx) {
-            localSettings.customServices[catIdx].items.splice(itemIdx, 1);
-            renderCustomServicesAdmin();
-        }
-
-        // سفارشات آنلاین و اقدام روی آن‌ها
         async function loadAdminOrders() {
             const container = document.getElementById("ordersTableContainer");
             container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">در حال دریافت لیست سفارشات...</p>';
             try {
-                const res = await fetch(`${WORKER_URL}/api/admin/orders`, {
-                    headers: { "Authorization": `Bearer ${checkToken()}` }
-                });
+                const res = await fetch(`${WORKER_URL}/api/admin/orders`, { headers: { "Authorization": `Bearer ${checkToken()}` } });
                 const orders = await res.json();
                 if (!orders || orders.length === 0) {
                     container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">هنوز سفارشی ثبت نشده است.</p>';
                     return;
                 }
-
                 container.innerHTML = orders.map(o => {
                     let badge = '<span class="text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded-lg">⏳ در انتظار فیش</span>';
                     if (o.status === 'processing') badge = '<span class="text-cyan-400 font-bold bg-cyan-400/10 px-2.5 py-1 rounded-lg">⚙️ در حال آماده‌سازی</span>';
+                    if (o.status === 'waiting_fragment') badge = '<span class="text-purple-400 font-bold bg-purple-400/10 px-2.5 py-1 rounded-lg">🔗 در انتظار لینک فرگمنت</span>';
                     if (o.status === 'completed') badge = '<span class="text-emerald-400 font-bold bg-emerald-400/10 px-2.5 py-1 rounded-lg">✅ تحویل شده</span>';
                     if (o.status === 'rejected') badge = '<span class="text-rose-400 font-bold bg-rose-400/10 px-2.5 py-1 rounded-lg">❌ رد شده</span>';
 
@@ -386,11 +348,12 @@
                                 <div>
                                     <span class="font-mono font-bold text-cyan-400">${o.id}</span>
                                     <span class="text-slate-400 mr-2">مشتری: ${o.userName} (${o.userId})</span>
-                                    ${o.targetUsername ? `<span class="text-amber-300 font-bold mr-2">📌 ورودی/مقصد: ${o.targetUsername}</span>` : ''}
+                                    ${o.targetUsername ? `<span class="text-amber-300 font-bold mr-2">📌 مقصد: ${o.targetUsername}</span>` : ''}
                                 </div>
                                 <div>${badge}</div>
                             </div>
                             <div class="text-slate-300 text-[11px] whitespace-pre-line py-1">${o.itemsText}</div>
+                            ${o.fragmentLink ? `<div class="p-2 rounded-xl bg-purple-950/40 border border-purple-500/20 text-purple-300 font-mono text-[10px] break-all">🔗 لینک ارسالی فرگمنت: ${o.fragmentLink}</div>` : ''}
                             <div class="flex items-center justify-between pt-2 border-t border-white/5">
                                 <span class="font-black text-amber-400">${Number(o.totalPrice).toLocaleString('en-US')} تومان</span>
                                 <div class="flex gap-2">
@@ -398,7 +361,7 @@
                                         <button onclick="changeOrderStatus('${o.id}', 'appr')" class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg font-bold">تایید فیش</button>
                                         <button onclick="changeOrderStatus('${o.id}', 'rejc')" class="px-3 py-1 bg-rose-500/20 text-rose-300 rounded-lg font-bold">رد فیش</button>
                                     ` : ''}
-                                    ${o.status === 'processing' ? `
+                                    ${(o.status === 'processing' || o.status === 'waiting_fragment') ? `
                                         <button onclick="changeOrderStatus('${o.id}', 'done')" class="px-3 py-1 bg-cyan-400 text-slate-950 rounded-lg font-bold">🚀 تحویل شد</button>
                                     ` : ''}
                                 </div>
@@ -426,7 +389,6 @@
             }
         }
 
-        // کدهای تخفیف
         function renderCoupons() {
             const coupons = localSettings.discountCodes || [];
             const container = document.getElementById("couponsListContainer");
@@ -450,7 +412,6 @@
             const percent = parseInt(document.getElementById("couponPercent").value, 10);
             const maxLimit = parseInt(document.getElementById("couponMaxLimit").value, 10) || 50000;
             if (!code || !percent) return alert("کد و درصد تخفیف الزامی است");
-
             if (!localSettings.discountCodes) localSettings.discountCodes = [];
             localSettings.discountCodes.push({ code, percent, maxLimit });
             saveAllSettings();
@@ -458,7 +419,6 @@
             document.getElementById("couponPercent").value = "";
         }
 
-        // گردونه شانس
         function renderWheelSlices() {
             const slices = localSettings.spinWheelOptions || [
                 { label: "۱۰٪ تخفیف خرید", code: "DUCK10" },
@@ -469,7 +429,7 @@
             document.getElementById("wheelSlicesContainer").innerHTML = slices.map((s, i) => `
                 <div class="p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center gap-3 text-xs">
                     <input type="text" value="${s.label}" onchange="localSettings.spinWheelOptions[${i}].label=this.value" placeholder="عنوان جایزه" class="input-box flex-1 rounded-lg p-2 font-bold">
-                    <input type="text" value="${s.code || ''}" onchange="localSettings.spinWheelOptions[${i}].code=this.value" placeholder="کد جایزه (اختیاری)" class="input-box w-36 rounded-lg p-2 font-mono text-center font-bold">
+                    <input type="text" value="${s.code || ''}" onchange="localSettings.spinWheelOptions[${i}].code=this.value" placeholder="کد جایزه" class="input-box w-36 rounded-lg p-2 font-mono text-center font-bold">
                     <button onclick="localSettings.spinWheelOptions.splice(${i},1); renderWheelSlices();" class="text-rose-400 font-bold px-2">✕</button>
                 </div>
             `).join('');
@@ -489,6 +449,8 @@
             localSettings.cardHolder = document.getElementById("cardHolder").value.trim();
             localSettings.bankName = document.getElementById("bankName").value.trim();
             localSettings.adminChatId = document.getElementById("adminChatId").value.trim();
+            localSettings.tutorialVideoLink = document.getElementById("tutorialVideoLink").value.trim();
+
             localSettings.prem3 = parseInt(document.getElementById("prem3").value) || 620000;
             localSettings.prem6 = parseInt(document.getElementById("prem6").value) || 950000;
             localSettings.prem12 = parseInt(document.getElementById("prem12").value) || 1690000;
@@ -501,7 +463,7 @@
                 body: JSON.stringify(localSettings)
             });
             if (res.ok) {
-                alert("✅ تمامی تنظیمات، خدمات و دسته‌ها با موفقیت ذخیره شدند!");
+                alert("✅ تمامی تنظیمات و لینک آموزش با موفقیت ذخیره شدند!");
                 renderCoupons();
                 renderCustomServicesAdmin();
             } else {
@@ -512,7 +474,7 @@
         async function sendBroadcast() {
             const text = document.getElementById("broadcastText").value.trim();
             if (!text) return alert("متن پیام را وارد کنید");
-            if (!confirm("آیا از ارسال این پیام به تمام اعضای ربات اطمینان دارید؟")) return;
+            if (!confirm("ارسال شود؟")) return;
 
             const btn = document.getElementById("sendBroadcastBtn");
             btn.disabled = true; btn.innerText = "در حال ارسال...";
@@ -524,7 +486,7 @@
             const d = await res.json();
             btn.disabled = false; btn.innerText = "ارسال به همه کاربران";
             if (res.ok) {
-                alert(`✅ پیام برای ${d.sent} نفر از ${d.total} کاربر ارسال شد!`);
+                alert(`✅ پیام برای ${d.sent} نفر ارسال شد!`);
                 document.getElementById("broadcastText").value = "";
             } else {
                 alert("خطا در ارسال پیام");
