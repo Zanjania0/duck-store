@@ -22,7 +22,7 @@
         <div class="text-center space-y-2">
             <div class="w-16 h-16 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg font-black">🦆</div>
             <h1 class="text-lg font-black text-white">پنل مدیریت Duck Store</h1>
-            <p class="text-xs text-slate-400">مدیریت سفارشات، تخفیف‌ها، خدمات سفارشی و تنظیمات</p>
+            <p class="text-xs text-slate-400">مدیریت سفارشات، تخفیف‌ها، صرافی و خدمات سفارشی</p>
         </div>
         <div class="space-y-4">
             <input type="password" id="adminPass" placeholder="رمز عبور ادمین..." class="input-box w-full rounded-2xl px-4 py-3.5 text-center text-sm font-bold">
@@ -32,13 +32,13 @@
 
     <!-- داشبورد اصلی -->
     <div id="dashboardCard" class="hidden glass-box w-full max-w-5xl p-4 sm:p-8 space-y-6">
-        <!-- هدر داشبورد -->
+        <!-- هدر -->
         <div class="flex items-center justify-between border-b border-white/5 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-cyan-400 text-slate-950 flex items-center justify-center text-xl font-black">🦆</div>
                 <div>
                     <h2 class="text-sm font-black text-white">سامانه جامع مدیریت Duck Store</h2>
-                    <p class="text-[11px] text-slate-400">مدیریت آنلاین و بی‌درنگ فروشگاه تلگرام</p>
+                    <p class="text-[11px] text-slate-400">مدیریت لحظه‌ای فروشگاه متصل به مارکت‌اپ و SwapWallet</p>
                 </div>
             </div>
             <button type="button" id="logoutBtn" class="px-3.5 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 text-xs font-bold">خروج</button>
@@ -50,7 +50,7 @@
             <button onclick="switchAdminTab('services')" id="tabBtn-services" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-boxes-stacked ml-1.5"></i>خدمات و دسته‌بندی‌ها</button>
             <button onclick="switchAdminTab('discounts')" id="tabBtn-discounts" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-tags ml-1.5"></i>کدهای تخفیف</button>
             <button onclick="switchAdminTab('wheel')" id="tabBtn-wheel" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-dice ml-1.5"></i>گردونه شانس</button>
-            <button onclick="switchAdminTab('settings')" id="tabBtn-settings" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-sliders ml-1.5"></i>نرخ‌ها و تنظیمات</button>
+            <button onclick="switchAdminTab('settings')" id="tabBtn-settings" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-sliders ml-1.5"></i>نرخ‌ها، صرافی و تنظیمات</button>
             <button onclick="switchAdminTab('broadcast')" id="tabBtn-broadcast" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-bullhorn ml-1.5"></i>پیام همگانی و آمار</button>
         </div>
 
@@ -65,12 +65,12 @@
             </div>
         </div>
 
-        <!-- تب ۲: مدیریت دسته‌بندی‌ها و خدمات سفارشی -->
+        <!-- تب ۲: خدمات سفارشی و تب‌های اختصاصی -->
         <div id="adminTab-services" class="hidden space-y-4">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xs font-black text-white">مدیریت تب‌ها و خدمات اختصاصی فروشگاه</h3>
-                    <p class="text-[11px] text-slate-400">می‌توانید تب‌های اختصاصی (مثل بوست، فالوور، لایک) همراه با پیش‌نیاز تعریف کنید.</p>
+                    <p class="text-[11px] text-slate-400">امکان تعریف نامحدود دسته، سرویس، قیمت، حداقل خرید و عنوان ورودی پیش‌نیاز مشتری.</p>
                 </div>
                 <button type="button" onclick="addCustomCategory()" class="px-3.5 py-2 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">
                     <i class="fa-solid fa-plus ml-1"></i>افزودن تب / دسته جدید
@@ -112,7 +112,7 @@
             </div>
         </div>
 
-        <!-- تب ۴: جوایز گردونه شانس -->
+        <!-- تب ۴: گردونه شانس -->
         <div id="adminTab-wheel" class="hidden space-y-4">
             <div class="flex items-center justify-between">
                 <h4 class="text-xs font-black text-amber-400">آیتم‌ها و جوایز گردونه روزانه</h4>
@@ -122,8 +122,62 @@
             <button type="button" onclick="saveAllSettings()" class="w-full py-3 bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-lg">ذخیره تغییرات گردونه</button>
         </div>
 
-        <!-- تب ۵: تنظیمات پایه و نرخ‌ها -->
+        <!-- تب ۵: تنظیمات صرافی، بازه قیمتی، کارت بانکی و تعرفه‌ها -->
         <div id="adminTab-settings" class="hidden space-y-4 text-xs">
+            
+            <!-- بخش اتصال به صرافی SwapWallet و محاسبه سود -->
+            <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-4">
+                <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                    <h4 class="font-black text-cyan-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-coins text-amber-400"></i>
+                        تنظیمات هوشمند صرافی SwapWallet و مارکت‌اپ
+                    </h4>
+                    <span class="text-[10px] bg-emerald-500/10 text-emerald-400 px-2 py-0.5 rounded-md font-bold">اتصال زنده</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">درصد سود ادمین روی رنت گیفت‌ها (%):</label>
+                        <input type="number" id="profitMargin" min="0" max="200" placeholder="مثال: 25" class="input-box w-full rounded-xl p-2 text-center font-bold text-emerald-400">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">دوره اجاره پیش‌فرض گیفت‌ها (روز):</label>
+                        <input type="number" id="rentDays" min="1" max="365" placeholder="30" class="input-box w-full rounded-xl p-2 text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">حالت دریافت نرخ TON:</label>
+                        <select id="tonRateMode" class="input-box w-full rounded-xl p-2 font-bold text-xs">
+                            <option value="auto">خودکار (لحظه‌ای از SwapWallet)</option>
+                            <option value="manual">دستی (نرخ ثابت زیر)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- بازه قیمتی گیفت‌ها -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-white/5">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">حداقل قیمت گیفت (تومان - ۰ یعنی بدون محدودیت):</label>
+                        <input type="number" id="minPriceToman" placeholder="مثال: 100000" class="input-box w-full rounded-xl p-2 text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">حداکثر سقف قیمت گیفت (تومان - ۰ یعنی بدون محدودیت):</label>
+                        <input type="number" id="maxPriceToman" placeholder="مثال: 5000000" class="input-box w-full rounded-xl p-2 text-center font-bold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">نرخ دستی هر TON (تومان - در صورت قطعی صرافی):</label>
+                        <input type="number" id="manualTonPrice" placeholder="مثال: 485000" class="input-box w-full rounded-xl p-2 text-center font-bold text-amber-300">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 mb-1 font-bold">کلید اختصاصی API صرافی SwapWallet (اختیاری):</label>
+                        <input type="text" id="swapApiKey" placeholder="در صورت وجود API Key وارد کنید..." class="input-box w-full rounded-xl p-2 text-center font-mono text-xs">
+                    </div>
+                </div>
+            </div>
+
+            <!-- اطلاعات کارت بانکی -->
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
                 <h4 class="font-black text-slate-300">اطلاعات حساب جهت کارت‌به‌کارت و ربات</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -141,27 +195,24 @@
                     </div>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">شناسه عددی تلگرام ادمین (Admin Chat ID جهت دریافت فیش‌ها):</label>
+                    <label class="block text-slate-400 mb-1 font-bold">شناسه عددی تلگرام ادمین (Admin Chat ID جهت دریافت فیش‌ها و لینک‌های خرید):</label>
                     <input type="text" id="adminChatId" class="input-box w-full rounded-xl p-2 font-mono font-bold text-cyan-400 dir-ltr text-left">
                 </div>
             </div>
 
+            <!-- تعرفه استارز و پرمیوم -->
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
-                <h4 class="font-black text-slate-300">تعرفه استارز، پرمیوم و اجاره گیفت</h4>
+                <h4 class="font-black text-slate-300">تعرفه استارز و پرمیوم تلگرام</h4>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۳ ماهه (تومان):</label><input type="number" id="prem3" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
                     <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۶ ماهه (تومان):</label><input type="number" id="prem6" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
                     <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۱ ساله (تومان):</label><input type="number" id="prem12" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
                     <div><label class="block text-slate-400 mb-1 font-bold">نرخ هر ۱ استارز (تومان):</label><input type="number" id="ratePerStar" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
                 </div>
-                <div class="pt-1">
-                    <label class="block text-slate-400 mb-1 font-bold">مبلغ پایه اجاره ماهانه گیفت (تومان):</label>
-                    <input type="number" id="giftMonthlyPrice" class="input-box w-full rounded-xl p-2 font-bold">
-                </div>
             </div>
 
             <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-xl transition">
-                ذخیره تنظیمات در دیتابیس
+                ذخیره تمامی تنظیمات در دیتابیس
             </button>
         </div>
 
@@ -243,16 +294,27 @@
             const res = await fetch(`${WORKER_URL}/api/settings`);
             if (res.ok) {
                 localSettings = await res.json();
+                
+                // اطلاعات کارت و ربات
                 document.getElementById("cardNumber").value = localSettings.cardNumber || "";
                 document.getElementById("cardHolder").value = localSettings.cardHolder || "";
                 document.getElementById("bankName").value = localSettings.bankName || "";
                 document.getElementById("adminChatId").value = localSettings.adminChatId || "";
 
+                // تعرفه‌ها
                 document.getElementById("prem3").value = localSettings.prem3 || 620000;
                 document.getElementById("prem6").value = localSettings.prem6 || 950000;
                 document.getElementById("prem12").value = localSettings.prem12 || 1690000;
                 document.getElementById("ratePerStar").value = localSettings.ratePerStar || 1450;
-                document.getElementById("giftMonthlyPrice").value = localSettings.giftMonthlyPrice || 160000;
+
+                // تنظیمات صرافی SwapWallet و مارکت‌اپ
+                document.getElementById("profitMargin").value = localSettings.profitMargin ?? 25;
+                document.getElementById("rentDays").value = localSettings.rentDays || 30;
+                document.getElementById("tonRateMode").value = localSettings.tonRateMode || "auto";
+                document.getElementById("minPriceToman").value = localSettings.minPriceToman || 0;
+                document.getElementById("maxPriceToman").value = localSettings.maxPriceToman || 0;
+                document.getElementById("manualTonPrice").value = localSettings.manualTonPrice || 485000;
+                document.getElementById("swapApiKey").value = localSettings.swapApiKey || "";
 
                 renderCustomServicesAdmin();
                 renderCoupons();
@@ -261,7 +323,7 @@
             }
         }
 
-        // بخش مدیریت دسته‌بندی‌ها و خدمات سفارشی ادمین
+        // بخش مدیریت دسته‌بندی‌ها و خدمات سفارشی
         function renderCustomServicesAdmin() {
             const container = document.getElementById("customCategoriesContainer");
             if (!localSettings.customServices) {
@@ -426,7 +488,6 @@
             }
         }
 
-        // کدهای تخفیف
         function renderCoupons() {
             const coupons = localSettings.discountCodes || [];
             const container = document.getElementById("couponsListContainer");
@@ -458,7 +519,6 @@
             document.getElementById("couponPercent").value = "";
         }
 
-        // گردونه شانس
         function renderWheelSlices() {
             const slices = localSettings.spinWheelOptions || [
                 { label: "۱۰٪ تخفیف خرید", code: "DUCK10" },
@@ -485,6 +545,7 @@
             const token = checkToken();
             if (!token) return alert("ابتدا وارد شوید");
 
+            // ذخیره کارت بانکی و ربات
             localSettings.cardNumber = document.getElementById("cardNumber").value.trim();
             localSettings.cardHolder = document.getElementById("cardHolder").value.trim();
             localSettings.bankName = document.getElementById("bankName").value.trim();
@@ -493,7 +554,15 @@
             localSettings.prem6 = parseInt(document.getElementById("prem6").value) || 950000;
             localSettings.prem12 = parseInt(document.getElementById("prem12").value) || 1690000;
             localSettings.ratePerStar = parseInt(document.getElementById("ratePerStar").value) || 1450;
-            localSettings.giftMonthlyPrice = parseInt(document.getElementById("giftMonthlyPrice").value) || 160000;
+
+            // ذخیره صرافی و مارکت‌اپ
+            localSettings.profitMargin = parseFloat(document.getElementById("profitMargin").value) || 0;
+            localSettings.rentDays = parseInt(document.getElementById("rentDays").value) || 30;
+            localSettings.tonRateMode = document.getElementById("tonRateMode").value;
+            localSettings.minPriceToman = parseInt(document.getElementById("minPriceToman").value) || 0;
+            localSettings.maxPriceToman = parseInt(document.getElementById("maxPriceToman").value) || 0;
+            localSettings.manualTonPrice = parseInt(document.getElementById("manualTonPrice").value) || 485000;
+            localSettings.swapApiKey = document.getElementById("swapApiKey").value.trim();
 
             const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
                 method: "POST",
@@ -501,7 +570,7 @@
                 body: JSON.stringify(localSettings)
             });
             if (res.ok) {
-                alert("✅ تمامی تنظیمات، خدمات و دسته‌ها با موفقیت ذخیره شدند!");
+                alert("✅ تمام تنظیمات با موفقیت ذخیره شدند!");
                 renderCoupons();
                 renderCustomServicesAdmin();
             } else {
