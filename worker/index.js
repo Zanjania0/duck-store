@@ -13,7 +13,7 @@ const DEFAULTS = {
   swapTokenPrefix: "",
   swapQuery: "",
   swapJsonPath: "",
-  tonToTomanMultiplier: 1,
+  tonToTomanMultiplier: 0,
   rentMarkupPercent: 0,
   rentMinToman: 0,
   rentMaxToman: 0,
@@ -47,7 +47,7 @@ async function settings(env) {
   return cfg;
 }
 async function saveSettings(env,cfg) {
-  await env.DB.prepare("INSERT INTO settings(key,value,updated_at) VALUES('config',?,?,datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=datetime('now')")
+  await env.DB.prepare("INSERT INTO settings(key,value,updated_at) VALUES(?,?,datetime('now')) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=datetime('now')")
     .bind("config",JSON.stringify({...DEFAULTS,...cfg})).run();
 }
 function telegramUrlForGift(d){
@@ -56,42 +56,110 @@ function telegramUrlForGift(d){
   const title=d.gift_title||d.name||"gift";
   return n ? `https://t.me/nft/${slug(title)}-${n}` : "";
 }
+function firstDefined(...vals){
+  for(const v of vals){ if(v!==undefined && v!==null && v!=="") return v; }
+  return undefined;
+}
+function deepCandidates(x){
+  const out=[];
+  const seen=new Set();
+  const walk=(v,depth=0)=>{
+    if(v==null || depth>4) return;
+    if(typeof v!=='object') return;
+    if(seen.has(v)) return; seen.add(v);
+    if(Array.isArray(v)){ for(const item of v.slice(0,100)) walk(item,depth+1); return; }
+    out.push(v);
+    for(const [k,val] of Object.entries(v)){
+      if(val && typeof val==='object' && ['nft','gift','item','data','asset','details','pricing','rent','prices','info','metadata'].includes(k)) walk(val,depth+1);
+    }
+  };
+  walk(x);
+  return out.length?out:[x];
+}
+function pick(x, keys){
+  for(const obj of deepCandidates(x)){
+    for(const k of keys){ if(obj?.[k]!==undefined && obj?.[k]!==null && obj?.[k]!=='') return obj[k]; }
+  }
+  return undefined;
+}
+function pickNumber(x, keys){
+  const v=pick(x,keys);
+  if(v!==undefined){ const n=num(v); if(n!==null) return n; }
+  return undefined;
+}
+function normalizeImage(v){
+  if(!v) return '';
+  if(typeof v==='string') return v;
+  if(typeof v==='object') return firstDefined(v.url,v.src,v.image_url,v.preview_url,v.thumbnail_url,v.webp) || '';
+  return '';
+}
 function normalizeGift(x,cfg){
-  const priceTon=num(x.price_per_month ?? x.monthly_price ?? x.price_per_day ?? x.price ?? x.amount ?? x.rent_price);
-  const daily=num(x.price_per_day);
-  const monthly=num(x.price_per_month ?? x.monthly_price);
-  const baseTon = cfg.rentPriceMode==="daily" ? (daily ?? priceTon) : (monthly ?? priceTon);
-  const fx=num(cfg.tonToTomanMultiplier)||1;
-  const rawToman=(baseTon||0)*fx;
+  // MarketApp may expose the rent price under slightly different names or nested objects.
+  const daily=pickNumber(x,[
+    'price_per_day','daily_price','price_daily','rent_price_per_day','rent_daily','daily_rent_price','rent_price_daily','priceDay'
+  ]);
+  const monthly=pickNumber(x,[
+    'price_per_month','monthly_price','price_monthly','rent_price_per_month','rent_monthly','monthly_rent_price','rent_price_monthly','priceMonth'
+  ]);
+  const generic=pickNumber(x,['price','amount','rent_price','cost','value','rent','rental_price']);
+  const pricing=pick(x,['pricing','rent','prices']);
+  const nestedDaily=num(pricing?.price_per_day ?? pricing?.daily ?? pricing?.daily_price ?? pricing?.day);
+  const nestedMonthly=num(pricing?.price_per_month ?? pricing?.monthly ?? pricing?.monthly_price ?? pricing?.month);
+  const baseTon=cfg.rentPriceMode==='daily'
+    ? firstDefined(daily,nestedDaily,monthly,nestedMonthly,generic)
+    : firstDefined(monthly,nestedMonthly,daily,nestedDaily,generic);
+
+  const nftAddress=pick(x,['nft_address','nftAddress','address','id','nft_id']);
+  const title=pick(x,['gift_title','giftTitle','title','name','gift_name','collection_name','collection']);
+  const number=pick(x,['number','nft_number','gift_number','index','nft_index']);
+  const image=normalizeImage(pick(x,['image_url','image','img','preview_url','thumbnail_url','media_url','imageUrl','preview']));
+  const marketLink=pick(x,['market_link','market_url','url','link','marketLink']);
+  const bg=pick(x,['bg_color','background_color','background']);
+  const rarity=pick(x,['rarity','rarity_name','rarityName']);
+  const discount=pick(x,['discount','discount_percent','discount_percentage','discountPercent']);
+
+  if(baseTon===undefined || baseTon===null || !Number.isFinite(Number(baseTon))) return null;
+  const fx=num(cfg.tonToTomanMultiplier)||0;
+  if(fx<=0) return null;
+  const rawToman=Number(baseTon)*fx;
   const marked=rawToman*(1+(num(cfg.rentMarkupPercent)||0)/100);
-  const min=num(cfg.rentMinToman)||0, max=num(cfg.rentMaxToman)||0;
-  if(min && marked<min) return null;
-  if(max && marked>max) return null;
+  const min=Math.max(0,num(cfg.rentMinToman)||0);
+  const max=Math.max(0,num(cfg.rentMaxToman)||0);
+  // Min/max are price clamps, not filters: the admin can cap the displayed price.
+  const finalPrice=Math.max(min, max>0 ? Math.min(marked,max) : marked);
+  const displayName=number!==undefined && number!=='' ? `${title||'Telegram Gift'} #${number}` : (title||'Telegram Gift');
   return {
-    id:x.id||x.nft_address||x.address||x.slug||crypto.randomUUID(),
-    nft_address:x.nft_address||x.address||x.id||"",
-    name:x.name||`${x.gift_title||x.title||"Gift"} #${x.number||""}`.trim(),
-    gift_title:x.gift_title||x.title||x.collection_name||"Telegram Gift",
-    number:String(x.number??x.nft_number??""),
-    image_url:x.image_url||x.image||x.img||"",
-    tg_link:telegramUrlForGift(x),
-    market_link:x.market_link||x.url||"",
-    bg_color:x.bg_color||"#161d2a",
-    rarity:x.rarity||"",
-    price_ton:baseTon||0,
-    price_toman:Math.round(marked),
-    discount:x.discount||""
+    id:String(nftAddress||crypto.randomUUID()),
+    nft_address:String(nftAddress||''), name:displayName,
+    gift_title:title||'Telegram Gift', number:String(number??''), image_url:image,
+    tg_link:telegramUrlForGift({tg_link:pick(x,['tg_link','telegram_link']),number,gift_title:title,name:title}),
+    market_link:marketLink||'', bg_color:bg||'#161d2a', rarity:rarity||'',
+    price_ton:Number(baseTon), price_toman:Math.round(finalPrice),
+    discount:discount!==undefined ? (String(discount).startsWith('-')?String(discount):`-${discount}%`) : ''
   };
 }
+function extractRentItems(data){
+  const direct=[data?.items,data?.results,data?.gifts,data?.data,data?.data?.items,data?.data?.results,data?.data?.gifts];
+  for(const c of direct){ if(Array.isArray(c)) return c; }
+  if(Array.isArray(data)) return data;
+  return [];
+}
+function objectKeySample(arr){
+  const keys=new Set();
+  for(const x of arr.slice(0,3)) if(x && typeof x==='object') Object.keys(x).slice(0,30).forEach(k=>keys.add(k));
+  return [...keys];
+}
 async function marketGifts(env,cfg){
-  const token=env.MARKETAPP_TOKEN||"";
-  if(!token) throw new Error("MARKETAPP_TOKEN is not configured");
-  const u=new URL(cfg.marketRentPath,cfg.marketBaseUrl);
-  const res=await fetch(u,{headers:{Authorization:token,Accept:"application/json"}});
-  if(!res.ok) throw new Error(`Marketapp ${res.status}`);
-  const data=await res.json();
-  const arr=Array.isArray(data)?data:(data.items||data.results||data.gifts||data.data||[]);
-  return arr.map(x=>normalizeGift(x,cfg)).filter(Boolean);
+  const token=env.MARKETAPP_TOKEN||'';
+  if(!token) throw new Error('MARKETAPP_TOKEN در Cloudflare تنظیم نشده است');
+  const u=new URL(cfg.marketRentPath||'/v1/rent/gifts/',cfg.marketBaseUrl||'https://api.marketapp.org');
+  const res=await fetch(u,{headers:{Authorization:token,Accept:'application/json'}});
+  const raw=await res.text();
+  if(!res.ok) throw new Error(`MarketApp ${res.status}: ${raw.slice(0,180)}`);
+  let data; try{ data=JSON.parse(raw); }catch{ throw new Error('MarketApp پاسخ JSON معتبر برنگرداند'); }
+  const arr=extractRentItems(data);
+  const normalized=arr.map(x=>normalizeGift(x,cfg)).filter(Boolean);
+  return {items:normalized,rawCount:arr.length,skippedCount:Math.max(0,arr.length-normalized.length),sampleKeys:objectKeySample(arr)};
 }
 async function swapFx(env,cfg){
   if(!cfg.swapBaseUrl||!cfg.swapPricePath) return null;
@@ -114,7 +182,9 @@ async function swapFx(env,cfg){
 async function getFx(env,cfg){
   const live=await swapFx(env,cfg).catch(()=>null);
   if(live) return live;
-  return num(cfg.tonToTomanMultiplier)||1;
+  const fallback=num(cfg.tonToTomanMultiplier)||0;
+  if(fallback>0) return fallback;
+  throw new Error("نرخ TON به تومان تنظیم نشده است؛ SwapWallet/API نرخ یا Fallback Rate را در پنل تنظیم کنید");
 }
 async function sendTelegram(env,chatId,text){
   if(!env.TELEGRAM_BOT_TOKEN||!chatId) return;
@@ -145,8 +215,8 @@ async function handle(req,env){
   if(p==="/api/rent/gifts" && method==="GET"){
     const c=await settings(env);
     try {
-      const fx=await getFx(env,c); const gifts=await marketGifts(env,{...c,tonToTomanMultiplier:fx});
-      return json({items:gifts,tonToToman:fx,updatedAt:new Date().toISOString()});
+      const fx=await getFx(env,c); const result=await marketGifts(env,{...c,tonToTomanMultiplier:fx});
+      return json({items:result.items,tonToToman:fx,source:'marketapp',count:result.items.length,rawCount:result.rawCount,skippedCount:result.skippedCount,sampleKeys:result.skippedCount?result.sampleKeys:undefined,updatedAt:new Date().toISOString()});
     } catch(e) { return json({error:e.message},502); }
   }
   if(p==="/api/admin/login" && method==="POST"){
