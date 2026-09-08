@@ -22,7 +22,7 @@
         <div class="text-center space-y-2">
             <div class="w-16 h-16 rounded-2xl bg-cyan-400 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg font-black">🦆</div>
             <h1 class="text-lg font-black text-white">پنل مدیریت Duck Store</h1>
-            <p class="text-xs text-slate-400">مدیریت سفارشات، تخفیف‌ها، خدمات سفارشی و تنظیمات</p>
+            <p class="text-xs text-slate-400">مدیریت سفارشات، شکارچی گیفت، تخفیف‌ها و تنظیمات</p>
         </div>
         <div class="space-y-4">
             <input type="password" id="adminPass" placeholder="رمز عبور ادمین..." class="input-box w-full rounded-2xl px-4 py-3.5 text-center text-sm font-bold">
@@ -32,7 +32,6 @@
 
     <!-- داشبورد اصلی -->
     <div id="dashboardCard" class="hidden glass-box w-full max-w-5xl p-4 sm:p-8 space-y-6">
-        <!-- هدر داشبورد -->
         <div class="flex items-center justify-between border-b border-white/5 pb-4">
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-xl bg-cyan-400 text-slate-950 flex items-center justify-center text-xl font-black">🦆</div>
@@ -47,6 +46,7 @@
         <!-- منوی تب‌ها -->
         <div class="flex items-center gap-2 overflow-x-auto pb-2 border-b border-white/5 text-xs font-bold">
             <button onclick="switchAdminTab('orders')" id="tabBtn-orders" class="tab-btn active px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-list-check ml-1.5"></i>سفارشات زنده</button>
+            <button onclick="switchAdminTab('hunter')" id="tabBtn-hunter" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap text-amber-400"><i class="fa-solid fa-crosshairs ml-1.5"></i>شکارچی هوشمند</button>
             <button onclick="switchAdminTab('services')" id="tabBtn-services" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-boxes-stacked ml-1.5"></i>خدمات و دسته‌بندی‌ها</button>
             <button onclick="switchAdminTab('discounts')" id="tabBtn-discounts" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-tags ml-1.5"></i>کدهای تخفیف</button>
             <button onclick="switchAdminTab('wheel')" id="tabBtn-wheel" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-dice ml-1.5"></i>گردونه شانس</button>
@@ -54,150 +54,148 @@
             <button onclick="switchAdminTab('broadcast')" id="tabBtn-broadcast" class="tab-btn px-4 py-2 rounded-xl transition whitespace-nowrap"><i class="fa-solid fa-bullhorn ml-1.5"></i>پیام همگانی و آمار</button>
         </div>
 
-        <!-- تب ۱: مدیریت سفارشات زنده -->
+        <!-- تب ۱: سفارشات زنده -->
         <div id="adminTab-orders" class="space-y-4">
             <div class="flex items-center justify-between">
-                <h3 class="text-xs font-black text-slate-300">سفارشات ثبت‌شده توسط مشتریان</h3>
+                <h3 class="text-xs font-black text-slate-300">سفارشات ثبت‌شده</h3>
                 <button onclick="loadAdminOrders()" class="text-xs text-cyan-400 font-bold"><i class="fa-solid fa-rotate-right ml-1"></i>تازه‌سازی</button>
             </div>
             <div id="ordersTableContainer" class="space-y-3 max-h-[500px] overflow-y-auto">
-                <p class="text-xs text-slate-500 text-center py-6">در حال دریافت اطلاعات سفارشات...</p>
+                <p class="text-xs text-slate-500 text-center py-6">در حال دریافت لیست سفارشات...</p>
             </div>
         </div>
 
-        <!-- تب ۲: مدیریت دسته‌بندی‌ها و خدمات سفارشی -->
+        <!-- تب ۲: شکارچی هوشمند (جدید) -->
+        <div id="adminTab-hunter" class="hidden space-y-4 text-xs">
+            <div class="p-5 rounded-2xl bg-amber-500/5 border border-amber-500/20 space-y-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">🎯</span>
+                    <div>
+                        <h4 class="font-black text-amber-400 text-sm">تنظیمات شکارچی خودکار گیفت (Smart Hunter)</h4>
+                        <p class="text-[11px] text-slate-400">اسکرپر بر اساس این فیلترها در MarketApp جستجو کرده و موارد پیدا شده را مستقیماً به تلگرام شما می‌فرستد.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    <div class="sm:col-span-2">
+                        <label class="block text-slate-300 font-bold mb-1">نام کالکشن مورد نظر (اختیاری):</label>
+                        <input type="text" id="hunterCollection" placeholder="مثال: Plush Pepe یا Eternal Rose (برای همه خالی بگذارید)" class="input-box w-full rounded-xl p-2.5 font-bold text-xs text-cyan-300">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">حداقل قیمت اجاره روزانه (TON):</label>
+                        <input type="text" id="hunterMinPrice" placeholder="مثال: 0.001" class="input-box w-full rounded-xl p-2.5 font-mono text-center font-bold text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">حداکثر قیمت اجاره روزانه (TON):</label>
+                        <input type="text" id="hunterMaxPrice" placeholder="مثال: 0.01" class="input-box w-full rounded-xl p-2.5 font-mono text-center font-bold text-xs">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">حداقل درصد تخفیف (%):</label>
+                        <input type="number" id="hunterMinDiscount" min="1" max="99" placeholder="مثال: 10" class="input-box w-full rounded-xl p-2.5 text-center font-bold text-xs text-emerald-400">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1">حداکثر درصد تخفیف (%):</label>
+                        <input type="number" id="hunterMaxDiscount" min="1" max="99" placeholder="مثال: 50" class="input-box w-full rounded-xl p-2.5 text-center font-bold text-xs text-emerald-400">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button type="button" onclick="saveHunterSettings()" class="w-full py-3 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black rounded-xl text-xs transition shadow-lg">
+                        💾 ذخیره تنظیمات فیلتر شکار
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- تب ۳: خدمات و دسته‌بندی‌ها -->
         <div id="adminTab-services" class="hidden space-y-4">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-xs font-black text-white">مدیریت تب‌ها و خدمات اختصاصی فروشگاه</h3>
-                    <p class="text-[11px] text-slate-400">می‌توانید تب‌های اختصاصی همراه با پیش‌نیاز تعریف کنید.</p>
+                    <p class="text-[11px] text-slate-400">می‌توانید تب‌های سفارشی همراه با پیش‌نیاز تعریف کنید.</p>
                 </div>
                 <button type="button" onclick="addCustomCategory()" class="px-3.5 py-2 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">
-                    <i class="fa-solid fa-plus ml-1"></i>افزودن تب / دسته جدید
+                    <i class="fa-solid fa-plus ml-1"></i>افزودن تب جدید
                 </button>
             </div>
-
             <div id="customCategoriesContainer" class="space-y-4"></div>
-
-            <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-lg">
-                ذخیره دسته‌ها و خدمات در دیتابیس
-            </button>
+            <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-lg">ذخیره دسته‌ها در دیتابیس</button>
         </div>
 
-        <!-- تب ۳: کدهای تخفیف -->
+        <!-- تب ۴: کدهای تخفیف -->
         <div id="adminTab-discounts" class="hidden space-y-4">
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
                 <h4 class="text-xs font-black text-cyan-400">افزودن کد تخفیف جدید</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-                    <div>
-                        <label class="block text-slate-400 mb-1">کد (مثال: DUCK20):</label>
-                        <input type="text" id="couponCode" placeholder="DUCK20" class="input-box w-full rounded-xl p-2 font-mono text-center font-bold uppercase">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">درصد تخفیف (%):</label>
-                        <input type="number" id="couponPercent" min="1" max="100" placeholder="20" class="input-box w-full rounded-xl p-2 text-center font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1">حداکثر سقف تخفیف (تومان):</label>
-                        <input type="number" id="couponMaxLimit" placeholder="100000" class="input-box w-full rounded-xl p-2 text-center font-bold">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="button" onclick="addDiscountCoupon()" class="w-full py-2.5 bg-cyan-400 text-slate-950 font-black rounded-xl text-xs">ثبت کد تخفیف</button>
-                    </div>
+                    <div><input type="text" id="couponCode" placeholder="کد (مثال: DUCK20)" class="input-box w-full rounded-xl p-2 font-mono text-center font-bold uppercase"></div>
+                    <div><input type="number" id="couponPercent" min="1" max="100" placeholder="درصد (20)" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
+                    <div><input type="number" id="couponMaxLimit" placeholder="سقف تخفیف تومان" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
+                    <div><button type="button" onclick="addDiscountCoupon()" class="w-full py-2.5 bg-cyan-400 text-slate-950 font-black rounded-xl text-xs">ثبت کد</button></div>
                 </div>
             </div>
-            <div class="space-y-2">
-                <h4 class="text-xs font-black text-slate-300">لیست کدهای تخفیف فعال</h4>
-                <div id="couponsListContainer" class="space-y-2"></div>
-            </div>
+            <div id="couponsListContainer" class="space-y-2"></div>
         </div>
 
-        <!-- تب ۴: جوایز گردونه شانس -->
+        <!-- تب ۵: گردونه شانس -->
         <div id="adminTab-wheel" class="hidden space-y-4">
             <div class="flex items-center justify-between">
-                <h4 class="text-xs font-black text-amber-400">آیتم‌ها و جوایز گردونه روزانه</h4>
+                <h4 class="text-xs font-black text-amber-400">جوایز گردونه روزانه</h4>
                 <button type="button" onclick="addWheelSlice()" class="px-3 py-1.5 bg-amber-400/20 text-amber-300 text-xs font-bold rounded-xl">+ آیتم جدید</button>
             </div>
             <div id="wheelSlicesContainer" class="space-y-2.5"></div>
             <button type="button" onclick="saveAllSettings()" class="w-full py-3 bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-lg">ذخیره تغییرات گردونه</button>
         </div>
 
-        <!-- تب ۵: تنظیمات پایه، کارت بانکی و آموزش رنت -->
+        <!-- تب ۶: تنظیمات پایه و کارت -->
         <div id="adminTab-settings" class="hidden space-y-4 text-xs">
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
-                <h4 class="font-black text-slate-300">اطلاعات حساب جهت کارت‌به‌کارت و ربات</h4>
+                <h4 class="font-black text-slate-300">اطلاعات کارت و ربات</h4>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">شماره کارت:</label>
-                        <input type="text" id="cardNumber" class="input-box w-full rounded-xl p-2 text-center font-mono font-bold text-amber-400">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">صاحب حساب:</label>
-                        <input type="text" id="cardHolder" class="input-box w-full rounded-xl p-2 font-bold">
-                    </div>
-                    <div>
-                        <label class="block text-slate-400 mb-1 font-bold">نام بانک:</label>
-                        <input type="text" id="bankName" class="input-box w-full rounded-xl p-2 font-bold">
-                    </div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">شماره کارت:</label><input type="text" id="cardNumber" class="input-box w-full rounded-xl p-2 text-center font-mono font-bold text-amber-400"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">صاحب حساب:</label><input type="text" id="cardHolder" class="input-box w-full rounded-xl p-2 font-bold"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">نام بانک:</label><input type="text" id="bankName" class="input-box w-full rounded-xl p-2 font-bold"></div>
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">شناسه عددی تلگرام ادمین (Admin Chat ID جهت دریافت فیش‌ها و لینک‌های فرگمنت):</label>
+                    <label class="block text-slate-400 mb-1 font-bold">شناسه عددی تلگرام ادمین (Admin Chat ID):</label>
                     <input type="text" id="adminChatId" class="input-box w-full rounded-xl p-2 font-mono font-bold text-cyan-400 dir-ltr text-left">
                 </div>
-            </div>
-
-            <!-- بخش جدید: تنظیم لینک آموزش تصویری رنت فرگمنت -->
-            <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
-                <h4 class="font-black text-cyan-300"><i class="fa-solid fa-video ml-1.5"></i>آموزش تصویری اتصال فرگمنت به اکانت</h4>
-                <p class="text-[11px] text-slate-400">این لینک در انتهای پیام راهنمای خرید رنت گیفت برای مشتری ارسال می‌شود.</p>
                 <div>
-                    <label class="block text-slate-400 mb-1 font-bold">لینک ویدیوی آموزش (تلگرام، یوتیوب، آپارات و...):</label>
-                    <input type="text" id="tutorialVideoLink" placeholder="https://t.me/your_channel/123" class="input-box w-full rounded-xl p-2 font-mono text-xs text-sky-400 dir-ltr text-left">
+                    <label class="block text-slate-400 mb-1 font-bold">لینک آموزش تصویری فرگمنت:</label>
+                    <input type="text" id="tutorialVideoLink" class="input-box w-full rounded-xl p-2 font-mono text-sky-400 dir-ltr text-left">
                 </div>
             </div>
 
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 space-y-3">
-                <h4 class="font-black text-slate-300">تعرفه استارز، پرمیوم و اجاره گیفت</h4>
+                <h4 class="font-black text-slate-300">تعرفه‌ها (تومان)</h4>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۳ ماهه (تومان):</label><input type="number" id="prem3" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
-                    <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۶ ماهه (تومان):</label><input type="number" id="prem6" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
-                    <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۱ ساله (تومان):</label><input type="number" id="prem12" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
-                    <div><label class="block text-slate-400 mb-1 font-bold">نرخ هر ۱ استارز (تومان):</label><input type="number" id="ratePerStar" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۳ ماهه:</label><input type="number" id="prem3" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۶ ماهه:</label><input type="number" id="prem6" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">پرمیوم ۱ ساله:</label><input type="number" id="prem12" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
+                    <div><label class="block text-slate-400 mb-1 font-bold">هر ۱ استارز:</label><input type="number" id="ratePerStar" class="input-box w-full rounded-xl p-2 text-center font-bold"></div>
                 </div>
                 <div class="pt-1">
-                    <label class="block text-slate-400 mb-1 font-bold">مبلغ پایه اجاره ماهانه گیفت (تومان):</label>
+                    <label class="block text-slate-400 mb-1 font-bold">مبلغ پایه اجاره گیفت:</label>
                     <input type="number" id="giftMonthlyPrice" class="input-box w-full rounded-xl p-2 font-bold">
                 </div>
             </div>
-
-            <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-xl transition">
-                ذخیره تنظیمات در دیتابیس
-            </button>
+            <button type="button" onclick="saveAllSettings()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-xl shadow-xl">ذخیره تنظیمات در دیتابیس</button>
         </div>
 
-        <!-- تب ۶: پیام همگانی و آمار -->
+        <!-- تب ۷: پیام همگانی و آمار -->
         <div id="adminTab-broadcast" class="hidden space-y-4">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
-                    <p class="text-[11px] text-slate-400 font-bold">درآمد کل تاییدشده</p>
-                    <p id="statRevenue" class="text-lg font-black text-emerald-400 mt-1">0 تومان</p>
-                </div>
-                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
-                    <p class="text-[11px] text-slate-400 font-bold">تعداد کل سفارشات</p>
-                    <p id="statOrders" class="text-lg font-black text-cyan-400 mt-1">0</p>
-                </div>
-                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center">
-                    <p class="text-[11px] text-slate-400 font-bold">کل کاربران ربات</p>
-                    <p id="statUsers" class="text-lg font-black text-amber-400 mt-1">0 نفر</p>
-                </div>
+                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center"><p class="text-[11px] text-slate-400 font-bold">درآمد کل</p><p id="statRevenue" class="text-lg font-black text-emerald-400 mt-1">0 تومان</p></div>
+                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center"><p class="text-[11px] text-slate-400 font-bold">تعداد سفارشات</p><p id="statOrders" class="text-lg font-black text-cyan-400 mt-1">0</p></div>
+                <div class="p-4 rounded-2xl bg-white/[0.02] border border-white/5 text-center"><p class="text-[11px] text-slate-400 font-bold">کاربران ربات</p><p id="statUsers" class="text-lg font-black text-amber-400 mt-1">0 نفر</p></div>
             </div>
-
             <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
-                <h3 class="text-xs font-black text-cyan-400"><i class="fa-solid fa-bullhorn ml-1.5"></i>ارسال پیام همگانی به اعضای ربات</h3>
+                <h3 class="text-xs font-black text-cyan-400"><i class="fa-solid fa-bullhorn ml-1.5"></i>ارسال پیام همگانی</h3>
                 <textarea id="broadcastText" rows="3" placeholder="متن پیام خود را بنویسید..." class="input-box w-full rounded-xl p-3 text-xs"></textarea>
-                <div class="flex justify-end">
-                    <button type="button" id="sendBroadcastBtn" onclick="sendBroadcast()" class="px-5 py-2.5 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">ارسال به همه کاربران</button>
-                </div>
+                <div class="flex justify-end"><button type="button" id="sendBroadcastBtn" onclick="sendBroadcast()" class="px-5 py-2.5 bg-cyan-400 text-slate-950 rounded-xl text-xs font-black">ارسال پیام</button></div>
             </div>
         </div>
     </div>
@@ -226,7 +224,7 @@
         }
 
         function switchAdminTab(tab) {
-            ['orders', 'services', 'discounts', 'wheel', 'settings', 'broadcast'].forEach(t => {
+            ['orders', 'hunter', 'services', 'discounts', 'wheel', 'settings', 'broadcast'].forEach(t => {
                 document.getElementById('adminTab-' + t).classList.toggle('hidden', t !== tab);
                 document.getElementById('tabBtn-' + t).classList.toggle('active', t === tab);
             });
@@ -239,9 +237,7 @@
             document.getElementById("dashboardCard").classList.remove("hidden");
 
             try {
-                const aRes = await fetch(`${WORKER_URL}/api/admin/analytics`, {
-                    headers: { "Authorization": `Bearer ${checkToken()}` }
-                });
+                const aRes = await fetch(`${WORKER_URL}/api/admin/analytics`, { headers: { "Authorization": `Bearer ${checkToken()}` } });
                 if (aRes.ok) {
                     const a = await aRes.json();
                     document.getElementById("statRevenue").innerText = Number(a.totalRevenue || 0).toLocaleString('en-US') + " تومان";
@@ -259,6 +255,14 @@
                 document.getElementById("adminChatId").value = localSettings.adminChatId || "";
                 document.getElementById("tutorialVideoLink").value = localSettings.tutorialVideoLink || "";
 
+                // لود فیلترهای شکارچی هوشمند
+                const hunter = localSettings.hunterConfig || {};
+                document.getElementById("hunterCollection").value = hunter.collection || "";
+                document.getElementById("hunterMinPrice").value = hunter.minPrice || "";
+                document.getElementById("hunterMaxPrice").value = hunter.maxPrice || "0.01";
+                document.getElementById("hunterMinDiscount").value = hunter.minDiscount || 5;
+                document.getElementById("hunterMaxDiscount").value = hunter.maxDiscount || 50;
+
                 document.getElementById("prem3").value = localSettings.prem3 || 620000;
                 document.getElementById("prem6").value = localSettings.prem6 || 950000;
                 document.getElementById("prem12").value = localSettings.prem12 || 1690000;
@@ -272,38 +276,58 @@
             }
         }
 
+        async function saveHunterSettings() {
+            const token = checkToken();
+            if (!token) return alert("ابتدا وارد شوید");
+
+            localSettings.hunterConfig = {
+                collection: document.getElementById("hunterCollection").value.trim(),
+                minPrice: document.getElementById("hunterMinPrice").value.trim(),
+                maxPrice: document.getElementById("hunterMaxPrice").value.trim(),
+                minDiscount: parseInt(document.getElementById("hunterMinDiscount").value, 10) || 5,
+                maxDiscount: parseInt(document.getElementById("hunterMaxDiscount").value, 10) || 50
+            };
+
+            const res = await fetch(`${WORKER_URL}/api/admin/settings`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+                body: JSON.stringify(localSettings)
+            });
+            if (res.ok) {
+                alert("🎯 فیلترهای شکارچی هوشمند با موفقیت ذخیره شدند!\nدر اجرای بعدی اسکرپر، نتایج مطابق با این فیلترها برای شما استخراج خواهند شد.");
+            } else {
+                alert("خطا در ذخیره‌سازی");
+            }
+        }
+
         function renderCustomServicesAdmin() {
             const container = document.getElementById("customCategoriesContainer");
             if (!localSettings.customServices) {
                 localSettings.customServices = [
-                    {
-                        id: "cat_boost", title: "بوست تلگرام",
-                        items: [{ id: "b1", name: "بوست کانال (سطح ۱)", duration: "۳۰ روزه", price: 65000, minQty: 1, inputPrompt: "لینک کانال یا لینک بوست" }]
-                    }
+                    { id: "cat_boost", title: "بوست تلگرام", items: [{ id: "b1", name: "بوست کانال", duration: "۳۰ روزه", price: 65000, minQty: 1, inputPrompt: "لینک کانال" }] }
                 ];
             }
-
             container.innerHTML = localSettings.customServices.map((cat, catIdx) => `
                 <div class="p-4 rounded-2xl bg-white/[0.02] border border-cyan-500/20 space-y-3">
                     <div class="flex items-center justify-between border-b border-white/5 pb-2">
                         <div class="flex items-center gap-2 flex-1 max-w-xs">
-                            <label class="text-xs font-bold text-cyan-400 whitespace-nowrap">عنوان تب:</label>
+                            <label class="text-xs font-bold text-cyan-400">عنوان تب:</label>
                             <input type="text" value="${cat.title}" oninput="localSettings.customServices[${catIdx}].title=this.value" class="input-box w-full rounded-xl p-2 text-xs font-black">
                         </div>
                         <div class="flex items-center gap-2">
                             <button type="button" onclick="addCustomServiceItem(${catIdx})" class="px-3 py-1.5 bg-cyan-400/20 text-cyan-300 rounded-lg text-xs font-bold">+ افزودن سرویس</button>
-                            <button type="button" onclick="removeCustomCategory(${catIdx})" class="px-2.5 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">حذف تب</button>
+                            <button type="button" onclick="localSettings.customServices.splice(${catIdx},1); renderCustomServicesAdmin();" class="px-2.5 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">حذف تب</button>
                         </div>
                     </div>
                     <div class="space-y-2">
                         ${(cat.items || []).map((item, itemIdx) => `
                             <div class="p-3 bg-black/40 border border-white/5 rounded-xl grid grid-cols-1 sm:grid-cols-6 gap-2 text-xs items-center">
-                                <div><label class="block text-slate-400 text-[10px] mb-0.5">نام سرویس:</label><input type="text" value="${item.name}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].name=this.value" class="input-box w-full rounded-lg p-1.5 text-xs font-bold"></div>
-                                <div><label class="block text-slate-400 text-[10px] mb-0.5">توضیحات/مدت:</label><input type="text" value="${item.duration || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].duration=this.value" class="input-box w-full rounded-lg p-1.5 text-xs"></div>
-                                <div><label class="block text-slate-400 text-[10px] mb-0.5">قیمت واحد (تومان):</label><input type="number" value="${item.price}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].price=parseInt(this.value)||0" class="input-box w-full rounded-lg p-1.5 text-xs text-amber-400 font-bold"></div>
-                                <div><label class="block text-slate-400 text-[10px] mb-0.5">حداقل خرید:</label><input type="number" min="1" value="${item.minQty || 1}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].minQty=parseInt(this.value)||1" class="input-box w-full rounded-lg p-1.5 text-xs text-center font-bold"></div>
-                                <div><label class="block text-slate-400 text-[10px] mb-0.5">عنوان ورودی مشتری:</label><input type="text" value="${item.inputPrompt || ''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].inputPrompt=this.value" class="input-box w-full rounded-lg p-1.5 text-xs"></div>
-                                <div class="flex justify-end items-end h-full"><button type="button" onclick="removeCustomServiceItem(${catIdx}, ${itemIdx})" class="px-2 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">✕ حذف</button></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">نام:</label><input type="text" value="${item.name}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].name=this.value" class="input-box w-full rounded-lg p-1.5 text-xs font-bold"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">مدت:</label><input type="text" value="${item.duration||''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].duration=this.value" class="input-box w-full rounded-lg p-1.5 text-xs"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">قیمت:</label><input type="number" value="${item.price}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].price=parseInt(this.value)||0" class="input-box w-full rounded-lg p-1.5 text-xs text-amber-400 font-bold"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">حداقل:</label><input type="number" value="${item.minQty||1}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].minQty=parseInt(this.value)||1" class="input-box w-full rounded-lg p-1.5 text-xs text-center font-bold"></div>
+                                <div><label class="block text-slate-400 text-[10px] mb-0.5">ورودی:</label><input type="text" value="${item.inputPrompt||''}" oninput="localSettings.customServices[${catIdx}].items[${itemIdx}].inputPrompt=this.value" class="input-box w-full rounded-lg p-1.5 text-xs"></div>
+                                <div class="flex justify-end items-end h-full"><button type="button" onclick="localSettings.customServices[${catIdx}].items.splice(${itemIdx},1); renderCustomServicesAdmin();" class="px-2 py-1.5 bg-rose-500/20 text-rose-300 rounded-lg text-xs font-bold">✕</button></div>
                             </div>
                         `).join('')}
                     </div>
@@ -312,97 +336,63 @@
         }
 
         function addCustomCategory() {
-            const name = prompt("نام دسته را وارد کنید:");
+            const name = prompt("نام تب جدید را بنویسید:");
             if (!name) return;
             if (!localSettings.customServices) localSettings.customServices = [];
-            localSettings.customServices.push({
-                id: "cat_" + Date.now(), title: name,
-                items: [{ id: "item_" + Date.now(), name: "سرویس جدید", duration: "۳۰ روزه", price: 50000, minQty: 1, inputPrompt: "لینک یا آیدی" }]
-            });
+            localSettings.customServices.push({ id: "cat_" + Date.now(), title: name, items: [] });
             renderCustomServicesAdmin();
         }
-        function removeCustomCategory(idx) { if (confirm("حذف شود؟")) { localSettings.customServices.splice(idx, 1); renderCustomServicesAdmin(); } }
-        function addCustomServiceItem(cIdx) { localSettings.customServices[cIdx].items.push({ id: "item_" + Date.now(), name: "سرویس جدید", duration: "۳۰ روزه", price: 50000, minQty: 1, inputPrompt: "لینک مقصد" }); renderCustomServicesAdmin(); }
-        function removeCustomServiceItem(cIdx, iIdx) { localSettings.customServices[cIdx].items.splice(iIdx, 1); renderCustomServicesAdmin(); }
+        function addCustomServiceItem(cIdx) {
+            localSettings.customServices[cIdx].items.push({ id: "i_" + Date.now(), name: "سرویس جدید", duration: "۳۰ روزه", price: 50000, minQty: 1, inputPrompt: "لینک یا آیدی" });
+            renderCustomServicesAdmin();
+        }
 
         async function loadAdminOrders() {
             const container = document.getElementById("ordersTableContainer");
-            container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">در حال دریافت لیست سفارشات...</p>';
+            container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">در حال دریافت سفارشات...</p>';
             try {
                 const res = await fetch(`${WORKER_URL}/api/admin/orders`, { headers: { "Authorization": `Bearer ${checkToken()}` } });
                 const orders = await res.json();
                 if (!orders || orders.length === 0) {
-                    container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">هنوز سفارشی ثبت نشده است.</p>';
+                    container.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">هیچ سفارشی ثبت نشده است.</p>';
                     return;
                 }
-                container.innerHTML = orders.map(o => {
-                    let badge = '<span class="text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded-lg">⏳ در انتظار فیش</span>';
-                    if (o.status === 'processing') badge = '<span class="text-cyan-400 font-bold bg-cyan-400/10 px-2.5 py-1 rounded-lg">⚙️ در حال آماده‌سازی</span>';
-                    if (o.status === 'waiting_fragment') badge = '<span class="text-purple-400 font-bold bg-purple-400/10 px-2.5 py-1 rounded-lg">🔗 در انتظار لینک فرگمنت</span>';
-                    if (o.status === 'completed') badge = '<span class="text-emerald-400 font-bold bg-emerald-400/10 px-2.5 py-1 rounded-lg">✅ تحویل شده</span>';
-                    if (o.status === 'rejected') badge = '<span class="text-rose-400 font-bold bg-rose-400/10 px-2.5 py-1 rounded-lg">❌ رد شده</span>';
-
-                    return `
-                        <div class="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2 text-xs">
-                            <div class="flex items-center justify-between border-b border-white/5 pb-2">
-                                <div>
-                                    <span class="font-mono font-bold text-cyan-400">${o.id}</span>
-                                    <span class="text-slate-400 mr-2">مشتری: ${o.userName} (${o.userId})</span>
-                                    ${o.targetUsername ? `<span class="text-amber-300 font-bold mr-2">📌 مقصد: ${o.targetUsername}</span>` : ''}
-                                </div>
-                                <div>${badge}</div>
-                            </div>
-                            <div class="text-slate-300 text-[11px] whitespace-pre-line py-1">${o.itemsText}</div>
-                            ${o.fragmentLink ? `<div class="p-2 rounded-xl bg-purple-950/40 border border-purple-500/20 text-purple-300 font-mono text-[10px] break-all">🔗 لینک ارسالی فرگمنت: ${o.fragmentLink}</div>` : ''}
-                            <div class="flex items-center justify-between pt-2 border-t border-white/5">
-                                <span class="font-black text-amber-400">${Number(o.totalPrice).toLocaleString('en-US')} تومان</span>
-                                <div class="flex gap-2">
-                                    ${o.status === 'pending_receipt' ? `
-                                        <button onclick="changeOrderStatus('${o.id}', 'appr')" class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg font-bold">تایید فیش</button>
-                                        <button onclick="changeOrderStatus('${o.id}', 'rejc')" class="px-3 py-1 bg-rose-500/20 text-rose-300 rounded-lg font-bold">رد فیش</button>
-                                    ` : ''}
-                                    ${(o.status === 'processing' || o.status === 'waiting_fragment') ? `
-                                        <button onclick="changeOrderStatus('${o.id}', 'done')" class="px-3 py-1 bg-cyan-400 text-slate-950 rounded-lg font-bold">🚀 تحویل شد</button>
-                                    ` : ''}
-                                </div>
+                container.innerHTML = orders.map(o => `
+                    <div class="p-4 rounded-2xl bg-black/40 border border-white/5 space-y-2 text-xs">
+                        <div class="flex items-center justify-between border-b border-white/5 pb-2">
+                            <div><span class="font-mono font-bold text-cyan-400">${o.id}</span> - ${o.userName} (${o.userId})</div>
+                            <span class="text-amber-400 font-bold">${o.status}</span>
+                        </div>
+                        <div class="text-slate-300 text-[11px] whitespace-pre-line">${o.itemsText}</div>
+                        ${o.fragmentLink ? `<div class="p-2 bg-purple-950/40 rounded text-purple-300 font-mono text-[10px]">🔗 لینک فرگمنت: ${o.fragmentLink}</div>` : ''}
+                        <div class="flex items-center justify-between pt-2 border-t border-white/5">
+                            <span class="font-black text-amber-400">${Number(o.totalPrice).toLocaleString('en-US')} تومان</span>
+                            <div class="flex gap-2">
+                                ${o.status === 'pending_receipt' ? `<button onclick="changeOrderStatus('${o.id}', 'appr')" class="px-3 py-1 bg-emerald-500/20 text-emerald-300 rounded-lg font-bold">تایید فیش</button>` : ''}
+                                ${(o.status === 'processing' || o.status === 'waiting_fragment') ? `<button onclick="changeOrderStatus('${o.id}', 'done')" class="px-3 py-1 bg-cyan-400 text-slate-950 rounded-lg font-bold">🚀 تحویل شد</button>` : ''}
                             </div>
                         </div>
-                    `;
-                }).join('');
-            } catch(e) {
-                container.innerHTML = '<p class="text-xs text-rose-400 text-center py-4">خطا در دریافت سفارشات</p>';
-            }
+                    </div>
+                `).join('');
+            } catch(e) { container.innerHTML = '<p class="text-xs text-rose-400 text-center py-4">خطا در دریافت سفارشات</p>'; }
         }
 
         async function changeOrderStatus(orderId, action) {
-            if (!confirm("آیا از تغییر وضعیت این سفارش مطمئن هستید؟")) return;
+            if (!confirm("آیا مطمئن هستید؟")) return;
             const res = await fetch(`${WORKER_URL}/api/admin/order-action`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${checkToken()}` },
                 body: JSON.stringify({ orderId, action })
             });
-            if (res.ok) {
-                alert("وضعیت سفارش تغییر کرد!");
-                loadAdminOrders();
-            } else {
-                alert("خطا در تغییر وضعیت سفارش");
-            }
+            if (res.ok) { alert("وضعیت سفارش تغییر کرد!"); loadAdminOrders(); }
         }
 
         function renderCoupons() {
             const coupons = localSettings.discountCodes || [];
-            const container = document.getElementById("couponsListContainer");
-            if (coupons.length === 0) {
-                container.innerHTML = '<p class="text-xs text-slate-500 text-center py-2">هیچ کد تخفیفی ثبت نشده است.</p>';
-                return;
-            }
-            container.innerHTML = coupons.map((c, i) => `
+            document.getElementById("couponsListContainer").innerHTML = coupons.map((c, i) => `
                 <div class="p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center justify-between text-xs">
-                    <div>
-                        <span class="font-mono font-bold text-cyan-400 text-sm">${c.code}</span>
-                        <span class="text-slate-300 mr-3">${c.percent}% تخفیف (حداکثر ${Number(c.maxLimit || 0).toLocaleString('en-US')} تومان)</span>
-                    </div>
-                    <button onclick="localSettings.discountCodes.splice(${i},1); saveAllSettings();" class="text-rose-400 font-bold px-2">حذف</button>
+                    <div><span class="font-mono font-bold text-cyan-400 text-sm">${c.code}</span> <span class="text-slate-300 mr-2">${c.percent}% تخفیف</span></div>
+                    <button onclick="localSettings.discountCodes.splice(${i},1); saveAllSettings();" class="text-rose-400 font-bold">حذف</button>
                 </div>
             `).join('');
         }
@@ -411,25 +401,18 @@
             const code = document.getElementById("couponCode").value.trim().toUpperCase();
             const percent = parseInt(document.getElementById("couponPercent").value, 10);
             const maxLimit = parseInt(document.getElementById("couponMaxLimit").value, 10) || 50000;
-            if (!code || !percent) return alert("کد و درصد تخفیف الزامی است");
+            if (!code || !percent) return alert("کد و درصد را وارد کنید");
             if (!localSettings.discountCodes) localSettings.discountCodes = [];
             localSettings.discountCodes.push({ code, percent, maxLimit });
             saveAllSettings();
-            document.getElementById("couponCode").value = "";
-            document.getElementById("couponPercent").value = "";
         }
 
         function renderWheelSlices() {
-            const slices = localSettings.spinWheelOptions || [
-                { label: "۱۰٪ تخفیف خرید", code: "DUCK10" },
-                { label: "۱۵٪ تخفیف پرمیوم", code: "PREM15" },
-                { label: "۵۰ هزار تومان هدیه", code: "GIFT50" }
-            ];
-            localSettings.spinWheelOptions = slices;
+            const slices = localSettings.spinWheelOptions || [{ label: "۱۰٪ تخفیف", code: "DUCK10" }];
             document.getElementById("wheelSlicesContainer").innerHTML = slices.map((s, i) => `
-                <div class="p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center gap-3 text-xs">
-                    <input type="text" value="${s.label}" onchange="localSettings.spinWheelOptions[${i}].label=this.value" placeholder="عنوان جایزه" class="input-box flex-1 rounded-lg p-2 font-bold">
-                    <input type="text" value="${s.code || ''}" onchange="localSettings.spinWheelOptions[${i}].code=this.value" placeholder="کد جایزه" class="input-box w-36 rounded-lg p-2 font-mono text-center font-bold">
+                <div class="p-3 bg-white/[0.02] border border-white/5 rounded-xl flex items-center gap-2 text-xs">
+                    <input type="text" value="${s.label}" oninput="localSettings.spinWheelOptions[${i}].label=this.value" class="input-box flex-1 rounded-lg p-2 font-bold">
+                    <input type="text" value="${s.code||''}" oninput="localSettings.spinWheelOptions[${i}].code=this.value" class="input-box w-28 rounded-lg p-2 font-mono text-center">
                     <button onclick="localSettings.spinWheelOptions.splice(${i},1); renderWheelSlices();" class="text-rose-400 font-bold px-2">✕</button>
                 </div>
             `).join('');
@@ -462,35 +445,21 @@
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
                 body: JSON.stringify(localSettings)
             });
-            if (res.ok) {
-                alert("✅ تمامی تنظیمات و لینک آموزش با موفقیت ذخیره شدند!");
-                renderCoupons();
-                renderCustomServicesAdmin();
-            } else {
-                alert("خطا در ذخیره‌سازی");
-            }
+            if (res.ok) alert("✅ تنظیمات ذخیره شدند!");
         }
 
         async function sendBroadcast() {
             const text = document.getElementById("broadcastText").value.trim();
-            if (!text) return alert("متن پیام را وارد کنید");
-            if (!confirm("ارسال شود؟")) return;
-
+            if (!text) return alert("متن پیام را بنویسید");
             const btn = document.getElementById("sendBroadcastBtn");
-            btn.disabled = true; btn.innerText = "در حال ارسال...";
+            btn.disabled = true;
             const res = await fetch(`${WORKER_URL}/api/admin/broadcast`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json", "Authorization": `Bearer ${checkToken()}` },
                 body: JSON.stringify({ message: text })
             });
-            const d = await res.json();
-            btn.disabled = false; btn.innerText = "ارسال به همه کاربران";
-            if (res.ok) {
-                alert(`✅ پیام برای ${d.sent} نفر ارسال شد!`);
-                document.getElementById("broadcastText").value = "";
-            } else {
-                alert("خطا در ارسال پیام");
-            }
+            btn.disabled = false;
+            if (res.ok) { alert("پیام ارسال شد!"); document.getElementById("broadcastText").value = ""; }
         }
 
         document.getElementById("loginBtn").onclick = login;
