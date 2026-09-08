@@ -20,7 +20,7 @@ CONFIG = {
     "EXPORT_HTML": "index.html",
     "EXPORT_JSON": "discounts.json",
     "EXPORT_CSV": "discounts.csv",
-    "WORKER_URL": "https://duck-api.ali-zanjani2007.workers.dev",
+    "WORKER_URL": "https://duck-store-a.ali-zanjani2007.workers.dev",
     "TELEGRAM_BOT_TOKEN": os.getenv("TELEGRAM_BOT_TOKEN", ""),
     "TELEGRAM_CHAT_ID": os.getenv("TELEGRAM_CHAT_ID", ""),
     "GITHUB_REPOSITORY": os.getenv("GITHUB_REPOSITORY", ""),
