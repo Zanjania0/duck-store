@@ -1,1 +1,1 @@
-# duck-store
+# duck-store.
