@@ -10,16 +10,16 @@ import urllib.request
 from playwright.async_api import async_playwright
 
 # ==========================================================
-# ⚙️ تنظیمات پایه اسکرپر Duck Store (شکار دو فازه)
+# ⚙️ تنظیمات بهینه‌شده اسکرپر Duck Store
 # ==========================================================
 CONFIG = {
     "BASE_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_desc&subtab=gifts&view=grid",
     "TARGET_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_desc&subtab=gifts&view=grid&max_price=0.01",
     "CHEAP_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_asc&subtab=gifts&view=grid&max_price=0.005",
-    "TARGET_DEALS_COUNT": 200,       # ۲۰۰ گیفت تخفیفی
-    "CHEAP_DEALS_COUNT": 100,        # ۱۰۰ گیفت با قیمت <= 0.005
-    "MIN_DISCOUNT": 5,
-    "MAX_DISCOUNT": 50,
+    "TARGET_DEALS_COUNT": 150,       # ۱۵۰ گیفت تخفیفی (۵ تا ۵۰ درصد)
+    "CHEAP_DEALS_COUNT": 100,        # ۱۰۰ گیفت کف قیمت (<= 0.005 TON)
+    "MIN_DISCOUNT": 5,               # حداقل ۵ درصد
+    "MAX_DISCOUNT": 50,              # حداکثر ۵۰ درصد
     "TARGET_COLLECTION": "",
     "BASE_DOMAIN": "https://marketapp.org",
     "EXPORT_HTML": "index.html",
@@ -30,27 +30,23 @@ CONFIG = {
     "TELEGRAM_CHAT_ID": os.getenv("TELEGRAM_CHAT_ID", ""),
 }
 
-# دریافت داینامیک تنظیمات شکارچی هوشمند
 def load_hunter_config_from_worker():
     global CONFIG
     try:
         req = urllib.request.Request(f"{CONFIG['WORKER_URL']}/api/settings", headers={"User-Agent": "DuckHunter"})
-        with urllib.request.urlopen(req, timeout=10) as resp:
+        with urllib.request.urlopen(req, timeout=8) as resp:
             data = json.loads(resp.read().decode("utf-8"))
             hunter = data.get("hunterConfig", {})
             if hunter:
-                print("🎯 تنظیمات شکارچی هوشمند از پنل بارگذاری شد:")
+                print("🎯 تنظیمات شکارچی از پنل دریافت شد:")
                 col = hunter.get("collection", "").strip()
                 min_p = hunter.get("minPrice", "").strip()
                 max_p = hunter.get("maxPrice", "").strip()
-                min_d = int(hunter.get("minDiscount", 5))
-                max_d = int(hunter.get("maxDiscount", 50))
-                target_cnt = int(hunter.get("targetCount", 200))
-
+                
                 CONFIG["TARGET_COLLECTION"] = col
-                CONFIG["MIN_DISCOUNT"] = min_d
-                CONFIG["MAX_DISCOUNT"] = max_d
-                CONFIG["TARGET_DEALS_COUNT"] = target_cnt
+                CONFIG["MIN_DISCOUNT"] = int(hunter.get("minDiscount", 5))
+                CONFIG["MAX_DISCOUNT"] = int(hunter.get("maxDiscount", 50))
+                CONFIG["TARGET_DEALS_COUNT"] = int(hunter.get("targetCount", 150))
 
                 query_parts = []
                 if max_p: query_parts.append(f"max_price={max_p}")
@@ -61,17 +57,17 @@ def load_hunter_config_from_worker():
                 else:
                     CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&max_price=0.01"
 
-                print(f"   • هدف فاز اول: {target_cnt} گیفت تخفیفی")
-                print(f"   • هدف فاز دوم: ۱۰۰ گیفت با قیمت <= 0.005 TON")
+                print(f"   • هدف فاز ۱: {CONFIG['TARGET_DEALS_COUNT']} گیفت تخفیفی (۵ تا ۵۰٪)")
+                print(f"   • هدف فاز ۲: {CONFIG['CHEAP_DEALS_COUNT']} گیفت کف قیمت (<= 0.005 TON)")
                 return
     except Exception as e:
-        print(f"⚠️ دریافت تنظیمات شکارچی با خطا مواجه شد: {e}")
+        print(f"⚠️ دریافت تنظیمات با خطا مواجه شد (استفاده از مقادیر پیش‌فرض): {e}")
 
     CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&max_price=0.01"
 
 load_hunter_config_from_worker()
 
-# کاتالوگ پشتیبان دائمی و باکیفیت
+# کاتالوگ پشتیبان با تصاویر فعال
 REAL_TELEGRAM_FALLBACK_GIFTS = [
     {
         "name": "Plush Pepe #2825",
@@ -94,17 +90,6 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#28161b",
         "rarity": "💎 زیر 10000",
-    },
-    {
-        "name": "Astronaut Duck #412",
-        "gift_title": "Astronaut Duck",
-        "number": "412",
-        "price_ton": "0.005",
-        "image_url": "https://nft.fragment.com/gift/astronaut-duck.webp",
-        "tg_link": "https://t.me/nft/AstronautDuck-412",
-        "market_link": "https://marketapp.org/rent/?subtab=gifts",
-        "bg_color": "#16202c",
-        "rarity": "💎 زیر 1000",
     }
 ]
 
@@ -225,14 +210,12 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ۱. صفحه لودینگ حرفه‌ای با درصد واقعی -->
-<div id="splashScreen" class="fixed inset-0 z-[100] bg-[#07080c] flex flex-col items-center justify-center space-y-5 transition-opacity duration-700">
-    <div class="relative">
-      <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-cyan-500 to-blue-500 text-slate-950 flex items-center justify-center text-5xl font-black shadow-2xl duck-glow">🦆</div>
-    </div>
+<!-- ۱. صفحه لودینگ با درصد متحرک -->
+<div id="splashScreen" class="fixed inset-0 z-[100] bg-[#07080c] flex flex-col items-center justify-center space-y-5 transition-opacity duration-500">
+    <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-cyan-500 to-blue-500 text-slate-950 flex items-center justify-center text-5xl font-black shadow-2xl duck-glow">🦆</div>
     <div class="text-center space-y-1">
         <h2 class="text-lg font-black text-white tracking-wider">DUCK STORE</h2>
-        <p class="text-xs text-slate-400 font-bold" id="splashStatus">در حال دریافت جدیدترین گیفت‌های تلگرام...</p>
+        <p class="text-xs text-slate-400 font-bold">در حال بارگذاری جدیدترین گیفت‌های تلگرام...</p>
     </div>
     <div class="w-48 h-2 rounded-full bg-white/10 overflow-hidden relative">
         <div id="splashBar" class="h-full bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-300 w-0 rounded-full"></div>
@@ -240,20 +223,20 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <span id="splashPercent" class="text-xs font-mono font-bold text-cyan-400">0%</span>
 </div>
 
-<!-- ۲. پاپ‌آپ خوش‌آمدگویی و معرفی («بزن بریم!») -->
+<!-- ۲. مودال پاپ‌آپ خوش‌آمدگویی («بزن بریم!») -->
 <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
     <div class="glass w-full max-w-sm p-6 text-center space-y-4 bg-[#0d1017] border border-cyan-500/30 shadow-2xl rounded-3xl">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">🚀</div>
         <div class="space-y-2">
             <h3 class="text-base font-black text-white">خوش آمدید به Duck Store!</h3>
             <p class="text-xs text-slate-300 leading-relaxed">
-                ویترین خرید و اجاره گیفت‌های تلگرام، خرید استارز (حداقل ۵۰ عدد)، پرمیوم و خدمات کانال با محاسبه لحظه‌ای و تسویه آسان.
+                ویترین خرید و اجاره جدیدترین گیفت‌های تلگرام، استارز (حداقل ۵۰ عدد)، پرمیوم و خدمات کانال با تسویه فوری.
             </p>
         </div>
         <div class="p-3 bg-white/[0.03] border border-white/5 rounded-2xl text-[11px] text-slate-400 text-right space-y-1.5">
-            <div>⭐ <b>استارز و پرمیوم:</b> تحویل فوری روی آیدی اکانت شما</div>
-            <div>🎁 <b>گیفت‌های NFT:</b> راهنمای کامل ۹ مرحله‌ای اتصال فرگمنت</div>
-            <div>🎰 <b>گردونه شانس:</b> هر روز یک کد تخفیف رایگان هدیه بگیرید</div>
+            <div>⭐ <b>استارز و پرمیوم:</b> تحویل مستقیم روی آیدی تلگرام</div>
+            <div>🎁 <b>گیفت‌های NFT:</b> راهنمای ۹ مرحله‌ای اتصال آنی ولت فرگمنت</div>
+            <div>🎰 <b>گردونه روزانه:</b> هر روز یک هدیه و کد تخفیف ویژه</div>
         </div>
         <button onclick="dismissOnboarding()" class="w-full py-3.5 bg-gradient-to-r from-cyan-400 to-blue-500 text-slate-950 font-black text-xs rounded-2xl shadow-xl hover:opacity-90 active:scale-95 transition">
             بزن بریم! 🚀
@@ -303,7 +286,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 
   <div>
-    <h3 class="text-xs font-black mb-2 px-1 text-slate-300">تازه‌ترین گیفت‌های شکارشده تلگرام</h3>
+    <h3 class="text-xs font-black mb-2 px-1 text-slate-300">جدیدترین گیفت‌های اضافه‌شده</h3>
     <div id="homeGiftScroll" class="flex gap-2.5 overflow-x-auto pb-1 -mx-4 px-4"></div>
   </div>
 </section>
@@ -327,14 +310,14 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
 </section>
 
-<!-- ۳. خدمات (همراه با حداقل خرید ۵۰ استارز و رعایت دقیق minQty) -->
+<!-- ۳. خدمات -->
 <section id="view-services" class="hidden space-y-4">
   <div id="servicesTabsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
     <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn chip">پرمیوم</button>
   </div>
 
-  <!-- بخش استارز: حداقل ۵۰ عدد -->
+  <!-- بخش استارز (حداقل ۵۰ عدد) -->
   <div id="subview-stars" class="space-y-3">
     <div class="glass glass-tight p-4 space-y-3">
       <div class="flex justify-between items-center">
@@ -447,7 +430,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </div>
 
-<!-- ناوبری پایین -->
 <nav class="fixed bottom-3 inset-x-4 max-w-xl mx-auto z-40 glass px-2 py-2 flex items-center justify-around rounded-full bg-[#0d0f15]/95">
   <button onclick="switchView('home')" id="nav-home" class="nav-tab active px-3 py-1 flex flex-col items-center gap-1 text-[10px] font-bold"><i class="fa-solid fa-house"></i><span>خانه</span></button>
   <button onclick="switchView('market')" id="nav-market" class="nav-tab px-3 py-1 flex flex-col items-center gap-1 text-[10px] font-bold"><i class="fa-solid fa-gift"></i><span>گیفت‌ها</span></button>
@@ -456,7 +438,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   <button onclick="switchView('profile')" id="nav-profile" class="nav-tab px-3 py-1 flex flex-col items-center gap-1 text-[10px] font-bold"><i class="fa-solid fa-user"></i><span>حساب</span></button>
 </nav>
 
-<!-- گردونه شانس -->
 <div id="spinModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
   <div class="glass w-full max-w-xs p-5 text-center space-y-3 bg-[#11131a]">
     <div class="text-3xl">🎰</div>
@@ -469,7 +450,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </div>
 
-<!-- مودال جزئیات گیفت -->
 <div id="quickViewSheet" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
   <div class="glass w-full max-w-xs p-4 bg-[#11131a] space-y-3 text-right">
     <div class="relative w-full h-44 flex items-center justify-center rounded-xl bg-white/5" id="qvImageWrap">
@@ -494,7 +474,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </div>
 
-<!-- مودال کالکشن‌ها -->
 <div id="collectionModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
   <div class="glass w-full max-w-sm max-h-[75vh] flex flex-col p-4 bg-[#11131a]">
     <div class="flex justify-between items-center pb-2 border-b border-white/10 text-xs font-bold">
@@ -541,14 +520,14 @@ function getTgUser() {
   return { id: "649632759", first_name: "کاربر", last_name: "آزمایشی", username: "guest" };
 }
 
-// فرآیند شبیه‌سازی لودینگ واقعی + باز شدن پاپ‌آپ معرفی
+// انیمیشن لودینگ روان و واقعی
 window.addEventListener('DOMContentLoaded', () => {
     const splashBar = document.getElementById("splashBar");
     const splashPercent = document.getElementById("splashPercent");
     const splash = document.getElementById("splashScreen");
     let p = 0;
     const interval = setInterval(() => {
-        p += Math.floor(Math.random() * 15) + 10;
+        p += Math.floor(Math.random() * 15) + 12;
         if (p >= 100) {
             p = 100;
             clearInterval(interval);
@@ -559,22 +538,21 @@ window.addEventListener('DOMContentLoaded', () => {
                     splash.classList.add("opacity-0");
                     setTimeout(() => {
                         splash.remove();
-                        // نمایش پاپ‌آپ معرفی
-                        if (!localStorage.getItem("duck_welcomed_v12")) {
+                        if (!localStorage.getItem("duck_welcomed_v15")) {
                             document.getElementById("onboardingModal").classList.remove("hidden");
                         }
-                    }, 600);
+                    }, 500);
                 }
-            }, 300);
+            }, 250);
         } else {
             if (splashBar) splashBar.style.width = p + '%';
             if (splashPercent) splashPercent.innerText = p + '%';
         }
-    }, 90);
+    }, 70);
 });
 
 function dismissOnboarding() {
-    localStorage.setItem("duck_welcomed_v12", "true");
+    localStorage.setItem("duck_welcomed_v15", "true");
     document.getElementById("onboardingModal").classList.add("hidden");
 }
 
@@ -589,7 +567,6 @@ function toast(msg) {
 
 function fmtMoney(n) { return Math.round(Number(n)||0).toLocaleString('en-US'); }
 
-// محاسبه زنده استارز با بررسی دقیق حداقل ۵۰ عدد
 function calcLiveStarsPrice() {
   const inputEl = document.getElementById('customStarsInput');
   const qty = parseInt(inputEl.value, 10) || 0;
@@ -612,7 +589,6 @@ function calcLiveStarsPrice() {
   priceDisplay.innerText = fmtMoney(total) + " تومان";
 }
 
-// محاسبه قیمت سرویس سفارشی با چک کردن minQty
 function calcLiveCustomPrice(catIdx, itemIdx) {
   const cat = (SETTINGS.customServices || [])[catIdx];
   if (!cat) return;
@@ -855,7 +831,7 @@ function checkoutCart() {
   submitOrderToBot(cart, finalTotal, itemsText);
 }
 
-// ثبت استارز با بررسی سفت و سخت حداقل ۵۰ عدد
+// اعتبارسنجی قطعی حداقل ۵۰ استارز
 function submitCustomStars() {
   const targetId = document.getElementById("starsTargetId").value.trim();
   if (!targetId) return alert("⚠️ لطفاً آیدی مقصد را وارد کنید.");
@@ -974,7 +950,6 @@ function renderCustomCategory(idx) {
   `}).join('');
 }
 
-// ثبت خدمات اختصاصی با اعتبارسنجی قطعی minQty
 function orderCustomService(catIdx, itemIdx) {
   const cat = SETTINGS.customServices[catIdx];
   const item = cat.items[itemIdx];
@@ -1197,14 +1172,14 @@ def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
         top_deals_text += f"\n• <b>{d['name']}</b> ({d.get('price_ton', 'N/A')} TON)\n  👉 <a href='{d['market_link']}'>خرید در مارکت‌اپ</a> | <a href='{d['tg_link']}'>لینک تلگرام</a>"
 
     full_text = (
-        f"🎯 <b>گزارش شکار ۲ فازه Duck Store</b>\n"
+        f"🎯 <b>گزارش شکار توربو Duck Store</b>\n"
         f"📅 <i>{timestamp}</i>\n"
         f"━━━━━━━━━━━━━━━━━━\n"
         f"🔍 <b>فیلتر کالکشن:</b> {target_col}\n"
         f"💰 <b>بازه تخفیف:</b> {CONFIG['MIN_DISCOUNT']}٪ تا {CONFIG['MAX_DISCOUNT']}٪\n"
-        f"✅ <b>مجموع گیفت‌های استخراج‌شده:</b> {len(deals)} عدد\n"
+        f"✅ <b>مجموع کل شکارشده:</b> {len(deals)} عدد\n"
         f"━━━━━━━━━━━━━━━━━━\n"
-        f"<b>نمونه‌ای از گزینه‌های شکارشده:</b>\n"
+        f"<b>جدیدترین گزینه‌های شکارشده:</b>\n"
         f"{top_deals_text}\n\n"
         f"🌐 <i>ویترین فروشگاه به‌روزرسانی شد.</i>"
     )
@@ -1217,15 +1192,26 @@ def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
     except Exception as e:
         print(f"⚠️ خطا در ارسال گزارش به تلگرام: {e}")
 
-# تابع فرعی استخراج کارت‌ها از صفحه
-async def scrape_cards_from_page(page, target_count, deals_found, seen_links, filter_mode="discount"):
+# تابع فوق سریع استخراج با سقف زمانی و اسکرول هوشمند
+async def scrape_cards_from_page(page, target_count, deals_found, seen_links, filter_mode="discount", max_scrolls=40):
+    start_time = asyncio.get_event_loop().time()
+    max_duration = 140  # حداکثر ۲.۳ دقیقه برای هر فاز (دیگر امکان ندارد گیر کند!)
+    scrolls = 0
     consecutive_no_change = 0
-    while len(deals_found) < target_count:
+
+    while len(deals_found) < target_count and scrolls < max_scrolls:
+        if asyncio.get_event_loop().time() - start_time > max_duration:
+            print(f"⏱️ سقف زمان این فاز به اتمام رسید. تا این لحظه {len(deals_found)} آیتم ثبت شد.")
+            break
+
+        scrolls += 1
         deals_before = len(deals_found)
+
+        # اجرای استخراج سبک و بهینه از کارت‌های موجود
         raw_cards = await page.evaluate("""() => {
             const cards = [];
-            const elements = Array.from(document.querySelectorAll("a, div"));
-            for (const el of elements) {
+            const anchors = Array.from(document.querySelectorAll("a, div"));
+            for (const el of anchors) {
                 const text = el.innerText || '';
                 if (text.includes('#') && (text.includes('Per day') || text.includes('Days:') || text.includes('Rent floor') || text.includes('Min. price') || text.includes('%'))) {
                     const img = el.querySelector('img');
@@ -1258,7 +1244,6 @@ async def scrape_cards_from_page(page, target_count, deals_found, seen_links, fi
                 if not (CONFIG["MIN_DISCOUNT"] <= discount_val <= CONFIG["MAX_DISCOUNT"]):
                     continue
             elif filter_mode == "cheap":
-                # فیلتر اختصاصی قیمت روزانه <= 0.005 TON
                 if price_ton > 0.005:
                     continue
 
@@ -1314,21 +1299,25 @@ async def scrape_cards_from_page(page, target_count, deals_found, seen_links, fi
 
         if len(deals_found) >= target_count: break
 
+        # اسکرول سریع‌تر با وقفه کوتاه
         prev_height = await page.evaluate("document.body.scrollHeight")
         await page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
-        await page.wait_for_timeout(1000)
+        await page.wait_for_timeout(450)
         new_height = await page.evaluate("document.body.scrollHeight")
 
         if new_height == prev_height and len(deals_found) == deals_before:
             consecutive_no_change += 1
-            await page.evaluate("window.scrollBy(0, -300);")
-            await page.wait_for_timeout(350)
+            await page.evaluate("window.scrollBy(0, -250);")
+            await page.wait_for_timeout(250)
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
-            await page.wait_for_timeout(1200)
-            if consecutive_no_change >= 10:
+            await page.wait_for_timeout(450)
+            if consecutive_no_change >= 6:
+                print(f"🔚 انتهای محتوای فعلی مارکت‌اپ حاصل شد. خروج برای سرعت بیشتر.")
                 break
         else:
             consecutive_no_change = 0
+
+        print(f"⏳ پیشرفت اسکرپ: {len(deals_found)} از {target_count} گیفت ثبت شد...")
 
 async def main():
     deals_found: List[Dict[str, Any]] = []
@@ -1336,7 +1325,7 @@ async def main():
     browser = None
 
     print("\n" + "═" * 65)
-    print("  🦆 DUCK STORE TURBO HUNTER: 200 DISCOUNTED + 100 ULTRA-CHEAP 🦆")
+    print("  🚀 DUCK STORE TURBO SCRAPER (150 DISCOUNTED + 100 ULTRA-CHEAP) 🚀")
     print("═" * 65 + "\n")
 
     launch_args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
@@ -1347,30 +1336,33 @@ async def main():
             page = await browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
 
             # ---------------------------------------------------------
-            # 🎯 فاز ۱: شکار ۲۰۰ گیفت تخفیف‌دار
+            # 🎯 فاز ۱: شکار ۱۵۰ گیفت تخفیفی (۵ تا ۵۰٪)
             # ---------------------------------------------------------
-            print(f"🚀 فاز ۱: استخراج تا {CONFIG['TARGET_DEALS_COUNT']} گیفت تخفیفی...")
-            await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=45000)
-            await page.wait_for_timeout(3000)
-            await scrape_cards_from_page(page, CONFIG["TARGET_DEALS_COUNT"], deals_found, seen_links, filter_mode="discount")
-            print(f"✅ فاز ۱ انجام شد: {len(deals_found)} گیفت تخفیفی ثبت گردید.")
+            print(f"🚀 فاز ۱: استخراج ۱۵۰ گیفت تخفیفی (۵ تا ۵۰٪)...")
+            await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=35000)
+            await page.wait_for_timeout(2000)
+            await scrape_cards_from_page(page, CONFIG["TARGET_DEALS_COUNT"], deals_found, seen_links, filter_mode="discount", max_scrolls=40)
+            print(f"✅ فاز ۱ تکمیل شد: {len(deals_found)} گیفت تخفیف‌دار ثبت گردید.")
 
             # ---------------------------------------------------------
-            # 🎯 فاز ۲: شکار ۱۰۰ گیفت کف‌قیمت (Price Per Day <= 0.005 TON)
+            # 🎯 فاز ۲: شکار ۱۰۰ گیفت کف‌قیمت (<= 0.005 TON)
             # ---------------------------------------------------------
             cheap_target_total = len(deals_found) + CONFIG["CHEAP_DEALS_COUNT"]
-            print(f"\n🚀 فاز ۲: استخراج ۱۰۰ گیفت اقتصادی (Price <= 0.005 TON)...")
-            await page.goto(CONFIG["CHEAP_URL"], wait_until="domcontentloaded", timeout=45000)
-            await page.wait_for_timeout(3000)
-            await scrape_cards_from_page(page, cheap_target_total, deals_found, seen_links, filter_mode="cheap")
-            print(f"✅ فاز ۲ انجام شد: مجموع کل گیفت‌های آماده به {len(deals_found)} عدد رسید.")
+            print(f"\n🚀 فاز ۲: استخراج ۱۰۰ گیفت کف‌قیمت (Price <= 0.005 TON)...")
+            await page.goto(CONFIG["CHEAP_URL"], wait_until="domcontentloaded", timeout=35000)
+            await page.wait_for_timeout(2000)
+            await scrape_cards_from_page(page, cheap_target_total, deals_found, seen_links, filter_mode="cheap", max_scrolls=35)
+            print(f"✅ فاز ۲ تکمیل شد: مجموع گیفت‌ها به {len(deals_found)} عدد رسید.")
 
     except Exception as e:
-        print(f"⚠️ وضعیت اسکرپ: {e}")
+        print(f"⚠️ وضعیت ارتباط: {e}")
     finally:
         if browser: await browser.close()
 
+    # مرتب‌سازی: جدیدترین‌ها در بالا
     final_deals = deals_found if len(deals_found) >= 2 else REAL_TELEGRAM_FALLBACK_GIFTS
+    final_deals.reverse()
+
     generate_duck_store_html(final_deals)
     print(f"\n🎉 ویترین فروشگاه آماده شد! موجودی نهایی: {len(final_deals)} عدد")
 
