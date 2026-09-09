@@ -10,16 +10,16 @@ import urllib.request
 from playwright.async_api import async_playwright
 
 # ==========================================================
-# ⚙️ تنظیمات بهینه‌شده اسکرپر Duck Store
+# ⚙️ تنظیمات اسکرپر Duck Store
 # ==========================================================
 CONFIG = {
     "BASE_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_desc&subtab=gifts&view=grid",
     "TARGET_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_desc&subtab=gifts&view=grid&max_price=0.01",
     "CHEAP_URL": "https://marketapp.org/rent/?tab=market&sort_by=price_per_day_asc&subtab=gifts&view=grid&max_price=0.005",
-    "TARGET_DEALS_COUNT": 150,       # ۱۵۰ گیفت تخفیفی (۵ تا ۵۰ درصد)
+    "TARGET_DEALS_COUNT": 150,       # ۱۵۰ گیفت تخفیفی
     "CHEAP_DEALS_COUNT": 100,        # ۱۰۰ گیفت کف قیمت (<= 0.005 TON)
-    "MIN_DISCOUNT": 5,               # حداقل ۵ درصد
-    "MAX_DISCOUNT": 50,              # حداکثر ۵۰ درصد
+    "MIN_DISCOUNT": 5,
+    "MAX_DISCOUNT": 50,
     "TARGET_COLLECTION": "",
     "BASE_DOMAIN": "https://marketapp.org",
     "EXPORT_HTML": "index.html",
@@ -30,6 +30,7 @@ CONFIG = {
     "TELEGRAM_CHAT_ID": os.getenv("TELEGRAM_CHAT_ID", ""),
 }
 
+# دریافت تنظیمات از ورکر
 def load_hunter_config_from_worker():
     global CONFIG
     try:
@@ -38,11 +39,11 @@ def load_hunter_config_from_worker():
             data = json.loads(resp.read().decode("utf-8"))
             hunter = data.get("hunterConfig", {})
             if hunter:
-                print("🎯 تنظیمات شکارچی از پنل دریافت شد:")
+                print("🎯 تنظیمات شکارچی از پنل لود شد:")
                 col = hunter.get("collection", "").strip()
                 min_p = hunter.get("minPrice", "").strip()
                 max_p = hunter.get("maxPrice", "").strip()
-                
+
                 CONFIG["TARGET_COLLECTION"] = col
                 CONFIG["MIN_DISCOUNT"] = int(hunter.get("minDiscount", 5))
                 CONFIG["MAX_DISCOUNT"] = int(hunter.get("maxDiscount", 50))
@@ -57,24 +58,24 @@ def load_hunter_config_from_worker():
                 else:
                     CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&max_price=0.01"
 
-                print(f"   • هدف فاز ۱: {CONFIG['TARGET_DEALS_COUNT']} گیفت تخفیفی (۵ تا ۵۰٪)")
-                print(f"   • هدف فاز ۲: {CONFIG['CHEAP_DEALS_COUNT']} گیفت کف قیمت (<= 0.005 TON)")
+                print(f"   • هدف فاز ۱: {CONFIG['TARGET_DEALS_COUNT']} گیفت تخفیفی")
+                print(f"   • هدف فاز ۲: {CONFIG['CHEAP_DEALS_COUNT']} گیفت کف قیمت (<= 0.005)")
                 return
     except Exception as e:
-        print(f"⚠️ دریافت تنظیمات با خطا مواجه شد (استفاده از مقادیر پیش‌فرض): {e}")
+        print(f"⚠️ دریافت تنظیمات با خطا مواجه شد: {e}")
 
     CONFIG["TARGET_URL"] = CONFIG["BASE_URL"] + "&max_price=0.01"
 
 load_hunter_config_from_worker()
 
-# کاتالوگ پشتیبان با تصاویر فعال
+# کاتالوگ پشتیبان کامل با تصاویر واقعی و فعال WebP
 REAL_TELEGRAM_FALLBACK_GIFTS = [
     {
         "name": "Plush Pepe #2825",
         "gift_title": "Plush Pepe",
         "number": "2825",
         "price_ton": "0.005",
-        "image_url": "https://nft.fragment.com/gift/plush-pepe.webp",
+        "image_url": "https://i2.anton.market/3SHMDVNMcpuaDG5ZnWdghhw4eByUrQrzl4Lz-ysNwwA/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUE0MDFRcXBYdEJud0lhRGJGandkNXlYZlAybVlpQ3VzYkozWmN3OWVYUjlDcUwvOTBkNDNiMDBiNTVmOTA0MWQ4Y2JlOWMwNDI2N2Y4ZDgud2VicA",
         "tg_link": "https://t.me/nft/PlushPepe-2825",
         "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#182a1b",
@@ -85,11 +86,55 @@ REAL_TELEGRAM_FALLBACK_GIFTS = [
         "gift_title": "Eternal Rose",
         "number": "7077",
         "price_ton": "0.004",
-        "image_url": "https://nft.fragment.com/gift/eternal-rose.webp",
+        "image_url": "https://i2.anton.market/b32fmE813CAOkRPrFkxDLWvxupaeOwXbnF0yCjelE1I/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUR1bXkzYm5aWXpWNGJTV01TU1prbVhxeDUwWHVINWQ5UmxYX3lFaTJGTmxpdmsvZWQ0YzBmY2ZmM2IwODM4ZGNhMzEyMDAyYjVlN2ZmM2Eud2VicA",
         "tg_link": "https://t.me/nft/EternalRose-7077",
         "market_link": "https://marketapp.org/rent/?subtab=gifts",
         "bg_color": "#28161b",
         "rarity": "💎 زیر 10000",
+    },
+    {
+        "name": "Record Player #4071",
+        "gift_title": "Record Player",
+        "number": "4071",
+        "price_ton": "0.005",
+        "image_url": "https://i2.anton.market/tJrCyprPqBxIHyzPIq86lwZljkiDsLGzcaICRlzwmUE/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUNCS19KQkFTQUE1WFZ6MUQxN1BuLS1rUWFNV20wYjl3UmVWdHNFZFJPNFRneTkvZWQ1ZGQ2NmJkN2IxNzkxNjJkOTRiNmM4MDMyZGIwYmUud2VicA",
+        "tg_link": "https://t.me/nft/RecordPlayer-4071",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
+        "bg_color": "#241f17",
+        "rarity": "",
+    },
+    {
+        "name": "Astronaut Duck #412",
+        "gift_title": "Astronaut Duck",
+        "number": "412",
+        "price_ton": "0.005",
+        "image_url": "https://i2.anton.market/S8hA0eCcNKeKLNHNRblAUC-N6U1g9n2fzK4rpu1SGy4/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURJcnVTVHl4dnE2MGdVSDhqMmtrajNxem9CckJhSnk5V2tLYmVOTlJhc1dlNGovZjU0MDE1ZjYxY2ZkYmMzNjU4NDRlYzQ5MmU3NjQ0YmUud2VicA",
+        "tg_link": "https://t.me/nft/AstronautDuck-412",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
+        "bg_color": "#16202c",
+        "rarity": "💎 زیر 1000",
+    },
+    {
+        "name": "Santa Hat #88",
+        "gift_title": "Santa Hat",
+        "number": "88",
+        "price_ton": "0.005",
+        "image_url": "https://i2.anton.market/f8GBAj549v1rZmzzpYSz7eIBy7M_G5lV6SH4LOSVTQs/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUN5QU1rYjZiTnlObEtQSDB0SmJ1YmsxVlZqQVNxeXE5c1p3a0o4QWJ4TWt4eFUvNWRhMjliZjcyMjFjZTkxYTA5ZDg2NzY0ZTc0Y2VkZTQud2VicA",
+        "tg_link": "https://t.me/nft/SantaHat-88",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
+        "bg_color": "#281717",
+        "rarity": "👑 زیر 100",
+    },
+    {
+        "name": "Diamond Ring #1024",
+        "gift_title": "Diamond Ring",
+        "number": "1024",
+        "price_ton": "0.004",
+        "image_url": "https://i2.anton.market/tPaFlmsoXLLxuGRMZeyViQOpr80PBsyZbjavilZTkks/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vYjFjY2FiMTI0NWEyYTYwYjUwZTNmZDExZWZiNzFmZGYud2VicA",
+        "tg_link": "https://t.me/nft/DiamondRing-1024",
+        "market_link": "https://marketapp.org/rent/?subtab=gifts",
+        "bg_color": "#1e182a",
+        "rarity": "",
     }
 ]
 
@@ -139,7 +184,7 @@ def extract_price_ton(text: str) -> float:
     if num_match:
         try: return float(num_match.group(0))
         except Exception: pass
-    return 0.01
+    return 0.005
 
 def generate_tg_nft_link(name: str, number: str) -> str:
     clean_name = re.sub(r"[^a-zA-Z0-9\s]", "", name)
@@ -172,6 +217,7 @@ def generate_duck_store_html(deals: List[Dict[str, Any]]):
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<!-- جلوگیری از مسدود شدن لود تصاویر CDN -->
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Duck Store | خدمات و گیفت‌های تلگرام</title>
@@ -210,7 +256,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ۱. صفحه لودینگ با درصد متحرک -->
+<!-- لودینگ -->
 <div id="splashScreen" class="fixed inset-0 z-[100] bg-[#07080c] flex flex-col items-center justify-center space-y-5 transition-opacity duration-500">
     <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-cyan-500 to-blue-500 text-slate-950 flex items-center justify-center text-5xl font-black shadow-2xl duck-glow">🦆</div>
     <div class="text-center space-y-1">
@@ -223,7 +269,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <span id="splashPercent" class="text-xs font-mono font-bold text-cyan-400">0%</span>
 </div>
 
-<!-- ۲. مودال پاپ‌آپ خوش‌آمدگویی («بزن بریم!») -->
+<!-- مودال معرفی -->
 <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
     <div class="glass w-full max-w-sm p-6 text-center space-y-4 bg-[#0d1017] border border-cyan-500/30 shadow-2xl rounded-3xl">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">🚀</div>
@@ -244,7 +290,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     </div>
 </div>
 
-<!-- هدر بالا -->
 <header class="sticky top-0 z-30 px-4 py-3 bg-[#08090b]/90 backdrop-blur-xl border-b border-white/5">
   <div class="max-w-xl mx-auto flex items-center justify-between">
     <div class="flex items-center gap-2.5">
@@ -267,7 +312,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
 
-<!-- ۱. تب خانه -->
 <section id="view-home" class="space-y-4">
   <div class="grid grid-cols-3 gap-2 text-center">
     <div class="glass glass-tight p-3"><p class="text-base font-black">__TOTAL_COUNT__</p><p class="text-[10px] text-slate-400">گیفت فعال</p></div>
@@ -291,7 +335,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- ۲. بازار گیفت‌ها -->
 <section id="view-market" class="hidden space-y-3">
   <div class="glass glass-tight p-2.5 flex items-center gap-2">
     <div class="relative flex-1">
@@ -310,14 +353,13 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
 </section>
 
-<!-- ۳. خدمات -->
 <section id="view-services" class="hidden space-y-4">
   <div id="servicesTabsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
     <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn chip">پرمیوم</button>
   </div>
 
-  <!-- بخش استارز (حداقل ۵۰ عدد) -->
+  <!-- استارز با بررسی دقیق حداقل ۵۰ عدد -->
   <div id="subview-stars" class="space-y-3">
     <div class="glass glass-tight p-4 space-y-3">
       <div class="flex justify-between items-center">
@@ -339,7 +381,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <div id="starsPackagesList" class="space-y-2"></div>
   </div>
 
-  <!-- بخش پرمیوم -->
   <div id="subview-premium" class="hidden space-y-3">
     <div class="glass glass-tight p-3 space-y-1">
       <label class="block text-[10px] text-slate-400 font-bold">آیدی اکانت تلگرام جهت فعال‌سازی پرمیوم:</label>
@@ -348,13 +389,11 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <div id="premiumOptionsList" class="space-y-2.5"></div>
   </div>
 
-  <!-- بخش خدمات سفارشی -->
   <div id="subview-custom" class="hidden space-y-3">
     <div id="customCategoryItemsList" class="space-y-3"></div>
   </div>
 </section>
 
-<!-- ۴. سبد خرید -->
 <section id="view-cart" class="hidden space-y-4">
   <div class="glass glass-tight p-4 space-y-3">
     <div class="flex items-center justify-between border-b pb-3 border-white/10">
@@ -384,7 +423,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- ۵. حساب کاربری -->
 <section id="view-profile" class="hidden space-y-4">
   <div class="glass p-5 space-y-4">
     <div class="flex items-center gap-3">
@@ -413,7 +451,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 </main>
 
-<!-- نوار شناور سبد خرید -->
 <div id="floatingCartBar" class="fixed bottom-20 inset-x-4 max-w-lg mx-auto z-40 bg-[#0d1017]/95 backdrop-blur-xl border border-cyan-500/40 p-3 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-44 opacity-0 flex items-center justify-between">
   <div class="flex items-center gap-3">
     <div class="w-8 h-8 rounded-xl bg-cyan-400 text-black flex items-center justify-center font-black text-xs">
@@ -520,7 +557,6 @@ function getTgUser() {
   return { id: "649632759", first_name: "کاربر", last_name: "آزمایشی", username: "guest" };
 }
 
-// انیمیشن لودینگ روان و واقعی
 window.addEventListener('DOMContentLoaded', () => {
     const splashBar = document.getElementById("splashBar");
     const splashPercent = document.getElementById("splashPercent");
@@ -538,7 +574,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     splash.classList.add("opacity-0");
                     setTimeout(() => {
                         splash.remove();
-                        if (!localStorage.getItem("duck_welcomed_v15")) {
+                        if (!localStorage.getItem("duck_welcomed_v17")) {
                             document.getElementById("onboardingModal").classList.remove("hidden");
                         }
                     }, 500);
@@ -552,7 +588,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function dismissOnboarding() {
-    localStorage.setItem("duck_welcomed_v15", "true");
+    localStorage.setItem("duck_welcomed_v17", "true");
     document.getElementById("onboardingModal").classList.add("hidden");
 }
 
@@ -831,7 +867,6 @@ function checkoutCart() {
   submitOrderToBot(cart, finalTotal, itemsText);
 }
 
-// اعتبارسنجی قطعی حداقل ۵۰ استارز
 function submitCustomStars() {
   const targetId = document.getElementById("starsTargetId").value.trim();
   if (!targetId) return alert("⚠️ لطفاً آیدی مقصد را وارد کنید.");
@@ -1159,6 +1194,33 @@ calcLiveStarsPrice();
                 "market_link": d.get("market_link", CONFIG["TARGET_URL"]),
             })
 
+# ارسال فایل اکسل (CSV) به چت تلگرام ادمین با متد Multipart
+def send_telegram_document(token: str, chat_id: str, file_path: str, caption: str = ""):
+    if not os.path.exists(file_path): return
+    boundary = "----WebKitFormBoundary" + datetime.now().strftime("%Y%m%d%H%M%S")
+    filename = os.path.basename(file_path)
+
+    with open(file_path, "rb") as f:
+        file_data = f.read()
+
+    body = bytearray()
+    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"chat_id\"\r\n\r\n{chat_id}\r\n".encode("utf-8"))
+    if caption:
+        body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"caption\"\r\n\r\n{caption}\r\n".encode("utf-8"))
+        body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"parse_mode\"\r\n\r\nHTML\r\n".encode("utf-8"))
+    body.extend(f"--{boundary}\r\nContent-Disposition: form-data; name=\"document\"; filename=\"{filename}\"\r\nContent-Type: text/csv; charset=utf-8\r\n\r\n".encode("utf-8"))
+    body.extend(file_data)
+    body.extend(f"\r\n--{boundary}--\r\n".encode("utf-8"))
+
+    req = urllib.request.Request(f"https://api.telegram.org/bot{token}/sendDocument", data=bytes(body))
+    req.add_header("Content-Type", f"multipart/form-data; boundary={boundary}")
+    try:
+        with urllib.request.urlopen(req, timeout=30): pass
+        print("📊 فایل اکسل موجودی گیفت‌ها با موفقیت به تلگرام ادمین ارسال شد.")
+    except Exception as e:
+        print(f"⚠️ خطای ارسال فایل اکسل به تلگرام: {e}")
+
+# ارسال پیام گزارش متنی شکار
 def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
     token = CONFIG.get("TELEGRAM_BOT_TOKEN", "").strip()
     chat_id = CONFIG.get("TELEGRAM_CHAT_ID", "").strip()
@@ -1169,7 +1231,7 @@ def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
 
     top_deals_text = ""
     for d in deals[:10]:
-        top_deals_text += f"\n• <b>{d['name']}</b> ({d.get('price_ton', 'N/A')} TON)\n  👉 <a href='{d['market_link']}'>خرید در مارکت‌اپ</a> | <a href='{d['tg_link']}'>لینک تلگرام</a>"
+        top_deals_text += f"\n• <b>{d['name']}</b> ({d.get('price_ton', '0.005')} TON)\n  👉 <a href='{d['market_link']}'>خرید در مارکت‌اپ</a> | <a href='{d['tg_link']}'>لینک تلگرام</a>"
 
     full_text = (
         f"🎯 <b>گزارش شکار توربو Duck Store</b>\n"
@@ -1177,7 +1239,7 @@ def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
         f"━━━━━━━━━━━━━━━━━━\n"
         f"🔍 <b>فیلتر کالکشن:</b> {target_col}\n"
         f"💰 <b>بازه تخفیف:</b> {CONFIG['MIN_DISCOUNT']}٪ تا {CONFIG['MAX_DISCOUNT']}٪\n"
-        f"✅ <b>مجموع کل شکارشده:</b> {len(deals)} عدد\n"
+        f"✅ <b>مجموع گیفت‌های شکارشده:</b> {len(deals)} عدد\n"
         f"━━━━━━━━━━━━━━━━━━\n"
         f"<b>جدیدترین گزینه‌های شکارشده:</b>\n"
         f"{top_deals_text}\n\n"
@@ -1190,30 +1252,31 @@ def send_telegram_hunter_report(deals: List[Dict[str, Any]]):
         req = urllib.request.Request(url, data=payload)
         with urllib.request.urlopen(req, timeout=15): pass
     except Exception as e:
-        print(f"⚠️ خطا در ارسال گزارش به تلگرام: {e}")
+        print(f"⚠️ خطا در ارسال گزارش متنی به تلگرام: {e}")
 
-# تابع فوق سریع استخراج با سقف زمانی و اسکرول هوشمند
+    # ارسال مستقیم فایل اکسل به تلگرام
+    send_telegram_document(token, chat_id, CONFIG["EXPORT_CSV"], "📊 <b>فایل کامل اکسل موجودی گیفت‌های شکارشده</b>")
+
+# استخراج پرسرعت و پایدار
 async def scrape_cards_from_page(page, target_count, deals_found, seen_links, filter_mode="discount", max_scrolls=40):
     start_time = asyncio.get_event_loop().time()
-    max_duration = 140  # حداکثر ۲.۳ دقیقه برای هر فاز (دیگر امکان ندارد گیر کند!)
+    max_duration = 140
     scrolls = 0
     consecutive_no_change = 0
 
     while len(deals_found) < target_count and scrolls < max_scrolls:
         if asyncio.get_event_loop().time() - start_time > max_duration:
-            print(f"⏱️ سقف زمان این فاز به اتمام رسید. تا این لحظه {len(deals_found)} آیتم ثبت شد.")
             break
 
         scrolls += 1
         deals_before = len(deals_found)
 
-        # اجرای استخراج سبک و بهینه از کارت‌های موجود
         raw_cards = await page.evaluate("""() => {
             const cards = [];
-            const anchors = Array.from(document.querySelectorAll("a, div"));
-            for (const el of anchors) {
+            const elements = Array.from(document.querySelectorAll("a, div"));
+            for (const el of elements) {
                 const text = el.innerText || '';
-                if (text.includes('#') && (text.includes('Per day') || text.includes('Days:') || text.includes('Rent floor') || text.includes('Min. price') || text.includes('%'))) {
+                if (text.includes('#') && (text.includes('Per day') || text.includes('Days:') || text.includes('Rent floor') || text.includes('Min. price') || text.includes('%') || text.includes('TON'))) {
                     const img = el.querySelector('img');
                     if (img && img.src && (img.src.includes('anton.market') || img.src.includes('marketapp') || img.src.includes('http'))) {
                         if (el.querySelectorAll('img').length === 1) {
@@ -1241,7 +1304,7 @@ async def scrape_cards_from_page(page, target_count, deals_found, seen_links, fi
 
             if filter_mode == "discount":
                 discount_val = extract_discount_percentage(text)
-                if not (CONFIG["MIN_DISCOUNT"] <= discount_val <= CONFIG["MAX_DISCOUNT"]):
+                if discount_val > 0 and not (CONFIG["MIN_DISCOUNT"] <= discount_val <= CONFIG["MAX_DISCOUNT"]):
                     continue
             elif filter_mode == "cheap":
                 if price_ton > 0.005:
@@ -1299,7 +1362,6 @@ async def scrape_cards_from_page(page, target_count, deals_found, seen_links, fi
 
         if len(deals_found) >= target_count: break
 
-        # اسکرول سریع‌تر با وقفه کوتاه
         prev_height = await page.evaluate("document.body.scrollHeight")
         await page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
         await page.wait_for_timeout(450)
@@ -1312,12 +1374,9 @@ async def scrape_cards_from_page(page, target_count, deals_found, seen_links, fi
             await page.evaluate("window.scrollTo(0, document.body.scrollHeight);")
             await page.wait_for_timeout(450)
             if consecutive_no_change >= 6:
-                print(f"🔚 انتهای محتوای فعلی مارکت‌اپ حاصل شد. خروج برای سرعت بیشتر.")
                 break
         else:
             consecutive_no_change = 0
-
-        print(f"⏳ پیشرفت اسکرپ: {len(deals_found)} از {target_count} گیفت ثبت شد...")
 
 async def main():
     deals_found: List[Dict[str, Any]] = []
@@ -1328,44 +1387,48 @@ async def main():
     print("  🚀 DUCK STORE TURBO SCRAPER (150 DISCOUNTED + 100 ULTRA-CHEAP) 🚀")
     print("═" * 65 + "\n")
 
-    launch_args = ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
+    launch_args = [
+        "--no-sandbox",
+        "--disable-setuid-sandbox",
+        "--disable-dev-shm-usage",
+        "--disable-blink-features=AutomationControlled"
+    ]
 
     try:
         async with async_playwright() as p:
             browser = await p.chromium.launch(headless=True, args=launch_args)
-            page = await browser.new_page(user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36")
+            page = await browser.new_page(
+                user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            )
 
-            # ---------------------------------------------------------
-            # 🎯 فاز ۱: شکار ۱۵۰ گیفت تخفیفی (۵ تا ۵۰٪)
-            # ---------------------------------------------------------
-            print(f"🚀 فاز ۱: استخراج ۱۵۰ گیفت تخفیفی (۵ تا ۵۰٪)...")
+            # فاز ۱: شکار ۱۵۰ گیفت تخفیف‌دار
+            print(f"🚀 فاز ۱: استخراج ۱۵۰ گیفت تخفیفی...")
             await page.goto(CONFIG["TARGET_URL"], wait_until="domcontentloaded", timeout=35000)
-            await page.wait_for_timeout(2000)
+            await page.wait_for_timeout(2500)
             await scrape_cards_from_page(page, CONFIG["TARGET_DEALS_COUNT"], deals_found, seen_links, filter_mode="discount", max_scrolls=40)
-            print(f"✅ فاز ۱ تکمیل شد: {len(deals_found)} گیفت تخفیف‌دار ثبت گردید.")
+            print(f"✅ فاز ۱ تکمیل شد: {len(deals_found)} گیفت ثبت شد.")
 
-            # ---------------------------------------------------------
-            # 🎯 فاز ۲: شکار ۱۰۰ گیفت کف‌قیمت (<= 0.005 TON)
-            # ---------------------------------------------------------
+            # فاز ۲: شکار ۱۰۰ گیفت کف‌قیمت (<= 0.005 TON)
             cheap_target_total = len(deals_found) + CONFIG["CHEAP_DEALS_COUNT"]
-            print(f"\n🚀 فاز ۲: استخراج ۱۰۰ گیفت کف‌قیمت (Price <= 0.005 TON)...")
+            print(f"\n🚀 فاز ۲: استخراج ۱۰۰ گیفت کف‌قیمت (<= 0.005 TON)...")
             await page.goto(CONFIG["CHEAP_URL"], wait_until="domcontentloaded", timeout=35000)
-            await page.wait_for_timeout(2000)
+            await page.wait_for_timeout(2500)
             await scrape_cards_from_page(page, cheap_target_total, deals_found, seen_links, filter_mode="cheap", max_scrolls=35)
             print(f"✅ فاز ۲ تکمیل شد: مجموع گیفت‌ها به {len(deals_found)} عدد رسید.")
 
     except Exception as e:
-        print(f"⚠️ وضعیت ارتباط: {e}")
+        print(f"⚠️ وضعیت ارتباط اسکرپر: {e}")
     finally:
         if browser: await browser.close()
 
-    # مرتب‌سازی: جدیدترین‌ها در بالا
-    final_deals = deals_found if len(deals_found) >= 2 else REAL_TELEGRAM_FALLBACK_GIFTS
-    final_deals.reverse()
+    # اگر اسکرپ با موفقیت انجام شد گیفت‌های زنده قرار می‌گیرند؛ در غیر این صورت کاتالوگ پشتیبان کامل ۶تایی با عکس لود می‌شود
+    final_deals = deals_found if len(deals_found) >= 5 else REAL_TELEGRAM_FALLBACK_GIFTS
+    final_deals.reverse()  # نمایش جدیدترین‌ها در ابتدا
 
     generate_duck_store_html(final_deals)
-    print(f"\n🎉 ویترین فروشگاه آماده شد! موجودی نهایی: {len(final_deals)} عدد")
+    print(f"\n🎉 ویترین آماده شد! تعداد موجودی: {len(final_deals)} عدد")
 
+    # ارسال گزارش متنی + فایل کامل اکسل به تلگرام ادمین
     send_telegram_hunter_report(final_deals)
 
 if __name__ == "__main__":
