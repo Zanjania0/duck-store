@@ -2,6 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
+<!-- جلوگیری از مسدود شدن لود تصاویر CDN -->
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Duck Store | خدمات و گیفت‌های تلگرام</title>
@@ -40,7 +41,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <div class="toast-wrap" id="toastWrap"></div>
 
-<!-- ۱. صفحه لودینگ با درصد متحرک -->
+<!-- لودینگ -->
 <div id="splashScreen" class="fixed inset-0 z-[100] bg-[#07080c] flex flex-col items-center justify-center space-y-5 transition-opacity duration-500">
     <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-cyan-500 to-blue-500 text-slate-950 flex items-center justify-center text-5xl font-black shadow-2xl duck-glow">🦆</div>
     <div class="text-center space-y-1">
@@ -53,7 +54,7 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <span id="splashPercent" class="text-xs font-mono font-bold text-cyan-400">0%</span>
 </div>
 
-<!-- ۲. مودال پاپ‌آپ خوش‌آمدگویی («بزن بریم!») -->
+<!-- مودال معرفی -->
 <div id="onboardingModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sheet-backdrop hidden">
     <div class="glass w-full max-w-sm p-6 text-center space-y-4 bg-[#0d1017] border border-cyan-500/30 shadow-2xl rounded-3xl">
         <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-600 text-slate-950 flex items-center justify-center text-3xl mx-auto shadow-lg">🚀</div>
@@ -74,7 +75,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     </div>
 </div>
 
-<!-- هدر بالا -->
 <header class="sticky top-0 z-30 px-4 py-3 bg-[#08090b]/90 backdrop-blur-xl border-b border-white/5">
   <div class="max-w-xl mx-auto flex items-center justify-between">
     <div class="flex items-center gap-2.5">
@@ -97,10 +97,9 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 <main class="max-w-xl mx-auto px-4 mt-4 space-y-4">
 
-<!-- ۱. تب خانه -->
 <section id="view-home" class="space-y-4">
   <div class="grid grid-cols-3 gap-2 text-center">
-    <div class="glass glass-tight p-3"><p class="text-base font-black">2</p><p class="text-[10px] text-slate-400">گیفت فعال</p></div>
+    <div class="glass glass-tight p-3"><p class="text-base font-black">6</p><p class="text-[10px] text-slate-400">گیفت فعال</p></div>
     <div class="glass glass-tight p-3"><p class="text-base font-black text-emerald-400">تحویل آنی</p><p class="text-[10px] text-slate-400">اتصال فرگمنت</p></div>
     <div class="glass glass-tight p-3"><p class="text-base font-black text-cyan-400">کارت‌به‌کارت</p><p class="text-[10px] text-slate-400">فاکتور ربات</p></div>
   </div>
@@ -121,7 +120,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- ۲. بازار گیفت‌ها -->
 <section id="view-market" class="hidden space-y-3">
   <div class="glass glass-tight p-2.5 flex items-center gap-2">
     <div class="relative flex-1">
@@ -132,22 +130,21 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 
   <div class="flex items-center gap-2 overflow-x-auto pb-1">
-    <button onclick="filterType('all', this)" class="type-btn chip active">همه (2)</button>
-    <button onclick="filterType('rare', this)" class="type-btn chip">💎 کمیاب (2)</button>
+    <button onclick="filterType('all', this)" class="type-btn chip active">همه (6)</button>
+    <button onclick="filterType('rare', this)" class="type-btn chip">💎 کمیاب (4)</button>
     <button onclick="filterType('favs', this)" class="type-btn chip">❤️ نشان‌شده‌ها (<span id="favCount">0</span>)</button>
   </div>
 
   <div id="dealsGrid" class="grid grid-cols-2 gap-3"></div>
 </section>
 
-<!-- ۳. خدمات -->
 <section id="view-services" class="hidden space-y-4">
   <div id="servicesTabsBar" class="flex items-center gap-1.5 overflow-x-auto pb-1">
     <button onclick="switchServiceSubTab('stars')" id="subtab-stars" class="service-subtab-btn chip active">استارز</button>
     <button onclick="switchServiceSubTab('premium')" id="subtab-premium" class="service-subtab-btn chip">پرمیوم</button>
   </div>
 
-  <!-- بخش استارز (حداقل ۵۰ عدد) -->
+  <!-- استارز با بررسی دقیق حداقل ۵۰ عدد -->
   <div id="subview-stars" class="space-y-3">
     <div class="glass glass-tight p-4 space-y-3">
       <div class="flex justify-between items-center">
@@ -169,7 +166,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <div id="starsPackagesList" class="space-y-2"></div>
   </div>
 
-  <!-- بخش پرمیوم -->
   <div id="subview-premium" class="hidden space-y-3">
     <div class="glass glass-tight p-3 space-y-1">
       <label class="block text-[10px] text-slate-400 font-bold">آیدی اکانت تلگرام جهت فعال‌سازی پرمیوم:</label>
@@ -178,13 +174,11 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
     <div id="premiumOptionsList" class="space-y-2.5"></div>
   </div>
 
-  <!-- بخش خدمات سفارشی -->
   <div id="subview-custom" class="hidden space-y-3">
     <div id="customCategoryItemsList" class="space-y-3"></div>
   </div>
 </section>
 
-<!-- ۴. سبد خرید -->
 <section id="view-cart" class="hidden space-y-4">
   <div class="glass glass-tight p-4 space-y-3">
     <div class="flex items-center justify-between border-b pb-3 border-white/10">
@@ -214,7 +208,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
   </div>
 </section>
 
-<!-- ۵. حساب کاربری -->
 <section id="view-profile" class="hidden space-y-4">
   <div class="glass p-5 space-y-4">
     <div class="flex items-center gap-3">
@@ -243,7 +236,6 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 
 </main>
 
-<!-- نوار شناور سبد خرید -->
 <div id="floatingCartBar" class="fixed bottom-20 inset-x-4 max-w-lg mx-auto z-40 bg-[#0d1017]/95 backdrop-blur-xl border border-cyan-500/40 p-3 rounded-2xl shadow-2xl transition-all duration-300 transform translate-y-44 opacity-0 flex items-center justify-between">
   <div class="flex items-center gap-3">
     <div class="w-8 h-8 rounded-xl bg-cyan-400 text-black flex items-center justify-center font-black text-xs">
@@ -315,8 +307,8 @@ input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer
 </div>
 
 <script>
-const DEALS = [{"name": "Eternal Rose #7077", "gift_title": "Eternal Rose", "number": "7077", "price_ton": "0.004", "image_url": "https://nft.fragment.com/gift/eternal-rose.webp", "tg_link": "https://t.me/nft/EternalRose-7077", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#28161b", "rarity": "💎 زیر 10000"}, {"name": "Plush Pepe #2825", "gift_title": "Plush Pepe", "number": "2825", "price_ton": "0.005", "image_url": "https://nft.fragment.com/gift/plush-pepe.webp", "tg_link": "https://t.me/nft/PlushPepe-2825", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#182a1b", "rarity": "🎯 خاص (#2825)"}];
-const COLLECTIONS = [{"name": "Eternal Rose", "image": "https://nft.fragment.com/gift/eternal-rose.webp", "count": 1}, {"name": "Plush Pepe", "image": "https://nft.fragment.com/gift/plush-pepe.webp", "count": 1}];
+const DEALS = [{"name": "Diamond Ring #1024", "gift_title": "Diamond Ring", "number": "1024", "price_ton": "0.004", "image_url": "https://i2.anton.market/tPaFlmsoXLLxuGRMZeyViQOpr80PBsyZbjavilZTkks/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vYjFjY2FiMTI0NWEyYTYwYjUwZTNmZDExZWZiNzFmZGYud2VicA", "tg_link": "https://t.me/nft/DiamondRing-1024", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#1e182a", "rarity": ""}, {"name": "Santa Hat #88", "gift_title": "Santa Hat", "number": "88", "price_ton": "0.005", "image_url": "https://i2.anton.market/f8GBAj549v1rZmzzpYSz7eIBy7M_G5lV6SH4LOSVTQs/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUN5QU1rYjZiTnlObEtQSDB0SmJ1YmsxVlZqQVNxeXE5c1p3a0o4QWJ4TWt4eFUvNWRhMjliZjcyMjFjZTkxYTA5ZDg2NzY0ZTc0Y2VkZTQud2VicA", "tg_link": "https://t.me/nft/SantaHat-88", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#281717", "rarity": "👑 زیر 100"}, {"name": "Astronaut Duck #412", "gift_title": "Astronaut Duck", "number": "412", "price_ton": "0.005", "image_url": "https://i2.anton.market/S8hA0eCcNKeKLNHNRblAUC-N6U1g9n2fzK4rpu1SGy4/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURJcnVTVHl4dnE2MGdVSDhqMmtrajNxem9CckJhSnk5V2tLYmVOTlJhc1dlNGovZjU0MDE1ZjYxY2ZkYmMzNjU4NDRlYzQ5MmU3NjQ0YmUud2VicA", "tg_link": "https://t.me/nft/AstronautDuck-412", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#16202c", "rarity": "💎 زیر 1000"}, {"name": "Record Player #4071", "gift_title": "Record Player", "number": "4071", "price_ton": "0.005", "image_url": "https://i2.anton.market/tJrCyprPqBxIHyzPIq86lwZljkiDsLGzcaICRlzwmUE/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUNCS19KQkFTQUE1WFZ6MUQxN1BuLS1rUWFNV20wYjl3UmVWdHNFZFJPNFRneTkvZWQ1ZGQ2NmJkN2IxNzkxNjJkOTRiNmM4MDMyZGIwYmUud2VicA", "tg_link": "https://t.me/nft/RecordPlayer-4071", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#241f17", "rarity": ""}, {"name": "Eternal Rose #7077", "gift_title": "Eternal Rose", "number": "7077", "price_ton": "0.004", "image_url": "https://i2.anton.market/b32fmE813CAOkRPrFkxDLWvxupaeOwXbnF0yCjelE1I/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUR1bXkzYm5aWXpWNGJTV01TU1prbVhxeDUwWHVINWQ5UmxYX3lFaTJGTmxpdmsvZWQ0YzBmY2ZmM2IwODM4ZGNhMzEyMDAyYjVlN2ZmM2Eud2VicA", "tg_link": "https://t.me/nft/EternalRose-7077", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#28161b", "rarity": "💎 زیر 10000"}, {"name": "Plush Pepe #2825", "gift_title": "Plush Pepe", "number": "2825", "price_ton": "0.005", "image_url": "https://i2.anton.market/3SHMDVNMcpuaDG5ZnWdghhw4eByUrQrzl4Lz-ysNwwA/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUE0MDFRcXBYdEJud0lhRGJGandkNXlYZlAybVlpQ3VzYkozWmN3OWVYUjlDcUwvOTBkNDNiMDBiNTVmOTA0MWQ4Y2JlOWMwNDI2N2Y4ZDgud2VicA", "tg_link": "https://t.me/nft/PlushPepe-2825", "market_link": "https://marketapp.org/rent/?subtab=gifts", "bg_color": "#182a1b", "rarity": "🎯 خاص (#2825)"}];
+const COLLECTIONS = [{"name": "Astronaut Duck", "image": "https://i2.anton.market/S8hA0eCcNKeKLNHNRblAUC-N6U1g9n2fzK4rpu1SGy4/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURJcnVTVHl4dnE2MGdVSDhqMmtrajNxem9CckJhSnk5V2tLYmVOTlJhc1dlNGovZjU0MDE1ZjYxY2ZkYmMzNjU4NDRlYzQ5MmU3NjQ0YmUud2VicA", "count": 1}, {"name": "Diamond Ring", "image": "https://i2.anton.market/tPaFlmsoXLLxuGRMZeyViQOpr80PBsyZbjavilZTkks/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURjMDhZeHpaV3RsS0FvaFN5Yk5jM2tYQWtBUFB0SGNoLWpZX0U2S01RM2IxbW4vYjFjY2FiMTI0NWEyYTYwYjUwZTNmZDExZWZiNzFmZGYud2VicA", "count": 1}, {"name": "Eternal Rose", "image": "https://i2.anton.market/b32fmE813CAOkRPrFkxDLWvxupaeOwXbnF0yCjelE1I/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUR1bXkzYm5aWXpWNGJTV01TU1prbVhxeDUwWHVINWQ5UmxYX3lFaTJGTmxpdmsvZWQ0YzBmY2ZmM2IwODM4ZGNhMzEyMDAyYjVlN2ZmM2Eud2VicA", "count": 1}, {"name": "Plush Pepe", "image": "https://i2.anton.market/3SHMDVNMcpuaDG5ZnWdghhw4eByUrQrzl4Lz-ysNwwA/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUE0MDFRcXBYdEJud0lhRGJGandkNXlYZlAybVlpQ3VzYkozWmN3OWVYUjlDcUwvOTBkNDNiMDBiNTVmOTA0MWQ4Y2JlOWMwNDI2N2Y4ZDgud2VicA", "count": 1}, {"name": "Record Player", "image": "https://i2.anton.market/tJrCyprPqBxIHyzPIq86lwZljkiDsLGzcaICRlzwmUE/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUNCS19KQkFTQUE1WFZ6MUQxN1BuLS1rUWFNV20wYjl3UmVWdHNFZFJPNFRneTkvZWQ1ZGQ2NmJkN2IxNzkxNjJkOTRiNmM4MDMyZGIwYmUud2VicA", "count": 1}, {"name": "Santa Hat", "image": "https://i2.anton.market/f8GBAj549v1rZmzzpYSz7eIBy7M_G5lV6SH4LOSVTQs/rs:fill:300:300:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUN5QU1rYjZiTnlObEtQSDB0SmJ1YmsxVlZqQVNxeXE5c1p3a0o4QWJ4TWt4eFUvNWRhMjliZjcyMjFjZTkxYTA5ZDg2NzY0ZTc0Y2VkZTQud2VicA", "count": 1}];
 
 let SETTINGS = {
   ratePerStar: 1450, prem3: 620000, prem6: 950000, prem12: 1690000, giftMonthlyPrice: 160000,
@@ -350,7 +342,6 @@ function getTgUser() {
   return { id: "649632759", first_name: "کاربر", last_name: "آزمایشی", username: "guest" };
 }
 
-// انیمیشن لودینگ روان و واقعی
 window.addEventListener('DOMContentLoaded', () => {
     const splashBar = document.getElementById("splashBar");
     const splashPercent = document.getElementById("splashPercent");
@@ -368,7 +359,7 @@ window.addEventListener('DOMContentLoaded', () => {
                     splash.classList.add("opacity-0");
                     setTimeout(() => {
                         splash.remove();
-                        if (!localStorage.getItem("duck_welcomed_v15")) {
+                        if (!localStorage.getItem("duck_welcomed_v17")) {
                             document.getElementById("onboardingModal").classList.remove("hidden");
                         }
                     }, 500);
@@ -382,7 +373,7 @@ window.addEventListener('DOMContentLoaded', () => {
 });
 
 function dismissOnboarding() {
-    localStorage.setItem("duck_welcomed_v15", "true");
+    localStorage.setItem("duck_welcomed_v17", "true");
     document.getElementById("onboardingModal").classList.add("hidden");
 }
 
@@ -661,7 +652,6 @@ function checkoutCart() {
   submitOrderToBot(cart, finalTotal, itemsText);
 }
 
-// اعتبارسنجی قطعی حداقل ۵۰ استارز
 function submitCustomStars() {
   const targetId = document.getElementById("starsTargetId").value.trim();
   if (!targetId) return alert("⚠️ لطفاً آیدی مقصد را وارد کنید.");
