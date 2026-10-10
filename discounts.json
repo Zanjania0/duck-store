@@ -200,16 +200,6 @@
     "rarity": ""
   },
   {
-    "name": "Cupid Charm #11397",
-    "gift_title": "Cupid Charm",
-    "number": "11397",
-    "tg_link": "https://t.me/nft/CupidCharm-11397",
-    "market_link": "https://marketapp.org/nft/EQBGVEUq3k_c_fNHMbJagaP-Q161rfmJTNpYakGxGnbngRAt/?to=rent",
-    "image_url": "https://i2.anton.market/NQW9eR8FCSeM9GH0FzsNKa37wlxB440J0l719zToVvc/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUEwSkJpVkNqZGdxa2lIaVltSWdUVUJiWkk2bU5iblN5bXFmMEhGQzdGaHhwdVQvbi84ZjVhYzY4MTQ1YzEwNzk2ZGFhNjRjMzAwZmJmNjVlZC53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
     "name": "Snoop Dogg #185876",
     "gift_title": "Snoop Dogg",
     "number": "185876",
@@ -1996,6 +1986,66 @@
     "tg_link": "https://t.me/nft/LightSword-78058",
     "market_link": "https://marketapp.org/nft/EQDc0tbxGb93kD-TawTKTr6JE_i2CvcrgD9qX3a-UZ-GSAWm/?to=rent",
     "image_url": "https://i2.anton.market/lvhpluFeyrCLggWWU3w46G6y39knjTZ2sJYvU1mUIPQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURScmZ3NXBnSUM0ZTZOYWZVQXg1Mlo5WW02cTFrMjZ4eGFYUl9xeDBMS0pKN0Qvbi8wMWU2MTA1NDI0Y2Q3M2FlZGMyNDliNmY5ZjgyMzE5Yi53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Light Sword #45857",
+    "gift_title": "Light Sword",
+    "number": "45857",
+    "tg_link": "https://t.me/nft/LightSword-45857",
+    "market_link": "https://marketapp.org/nft/EQBao9L2cndAG00HaoQeASfHR3ecZwQCIOtsGvw1tJHBtFNR/?to=rent",
+    "image_url": "https://i2.anton.market/5iwspQvrHr7sbT1V6W1iyzNowEszP66zegsDDUfpbCE/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURScmZ3NXBnSUM0ZTZOYWZVQXg1Mlo5WW02cTFrMjZ4eGFYUl9xeDBMS0pKN0Qvbi8xYzEzOTI5MTU3MDY2Y2YzYTVlM2QzMWZhNDlkOGFiZi53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Mad Pumpkin #6747",
+    "gift_title": "Mad Pumpkin",
+    "number": "6747",
+    "tg_link": "https://t.me/nft/MadPumpkin-6747",
+    "market_link": "https://marketapp.org/nft/EQCoBm7F66sIyOytn5hk0jZai9mFNBK7CHLSEbR_z8OA2sf0/?to=rent",
+    "image_url": "https://i2.anton.market/yf5nNkZlo40ekXobFfJ-0t8JpDmgay3_S0ulrMTg4aw/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJkbEtoTHplellGTUNXU1dUQ25ocEtDMXV5Y3phQlVPajNFdFBqY2F0VXNUckMvbi83ZTNiMzUzN2NhY2RhM2Y0MWVlZTI4OTAwMDMzYTFjNC53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Mood Pack #77760",
+    "gift_title": "Mood Pack",
+    "number": "77760",
+    "tg_link": "https://t.me/nft/MoodPack-77760",
+    "market_link": "https://marketapp.org/nft/EQAxXtDNUW-V5xSXTw0S1p1WOaCdlUHTzyLRD2TDafnPtWc9/?to=rent",
+    "image_url": "https://i2.anton.market/C8Xp4asqLWdQX2N6I03zH2Q2KKYN0PDu65F08oyv0CM/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJWNVhvektBMGUwNlo1eTZlTDdwV3JVVXBFb2xiUGhOZGNOUzBLNFpEazFqQ3Mvbi9iNmI2ODdmNGVlMWQzZDJjMzczMjkzYTY5NTQxMzI1Ny53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Swag Bag #204658",
+    "gift_title": "Swag Bag",
+    "number": "204658",
+    "tg_link": "https://t.me/nft/SwagBag-204658",
+    "market_link": "https://marketapp.org/nft/EQDHOBiaVzuxb-UHB0m4VjlJ4vCPPRKRcLJqkcErbgBQiCDB/?to=rent",
+    "image_url": "https://i2.anton.market/hFNyc3rX2UMP5Esyql87tZj8YHc6qgHB-igzd0t-ZPo/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUNnYVR4YjJ3QV8zQmk4RWM0RkZOdThDYXVvSG8wVlBwbnd4ZHJoQWdPck9YdkEvbi9lNmU3ZWE5YzFiNjdhMTM3ZDRmNzM4ZTFkNjVmMGYzNy53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Ice Cream #294379",
+    "gift_title": "Ice Cream",
+    "number": "294379",
+    "tg_link": "https://t.me/nft/IceCream-294379",
+    "market_link": "https://marketapp.org/nft/EQBQY_luCSjF9cVvbtocQQJBx7SS0S0YFJalz2P4sxeib0Qb/?to=rent",
+    "image_url": "https://i2.anton.market/if_e4PqeyQ_sMSS0o_edBnt6_jKgDTn5rx-zZTSkMsQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJVdnNrRXZtV2RwX1Y2SFgtMlR5ZnA0bUZTek16ZGc5VGFVejZ6S1Z6Nk92M2Yvbi9mNDk0MTExZGM2NTNkYWExOTA2OTEyNDY4MzNhOTU3Ni53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Timeless Book #42161",
+    "gift_title": "Timeless Book",
+    "number": "42161",
+    "tg_link": "https://t.me/nft/TimelessBook-42161",
+    "market_link": "https://marketapp.org/nft/EQAlJlOHeN65c-LWqoi_TajcuGVK3rDb7DbhN98k-VZHSnj1/?to=rent",
+    "image_url": "https://i2.anton.market/inb66Qn6ZICSpYtwIJJdnXg2srXJ3e0tUpS4kJfu7TQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUMyMTJkanJxMGdnbFFYaThNU0ZYMWJjdzRMSHczRXM2MmxLdnQxbFp6enNZdUYvbi8yM2VjN2E1MGUxNmUyNmMxNDRjZThlYjIwYTQzMzE5Zi53ZWJw",
     "bg_color": "#161d2a",
     "rarity": ""
   }
