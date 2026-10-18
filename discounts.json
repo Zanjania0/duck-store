@@ -70,16 +70,6 @@
     "rarity": ""
   },
   {
-    "name": "Top Hat #3477",
-    "gift_title": "Top Hat",
-    "number": "3477",
-    "tg_link": "https://t.me/nft/TopHat-3477",
-    "market_link": "https://marketapp.org/nft/EQBdF10IogouStQwiIwr8kafZwQhNI3m3wOOLFPBdFnf0kxt/?to=rent",
-    "image_url": "https://i2.anton.market/z-XedB-DGooqKjZzO-yduHlp5ANUJkgGhdR5v-7SDRw/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUFEdkp4TXhDSEE3ZlJsWWpvY2VCT1JmN1J3S3MwcnpqVmFLZXBRQUNNblp6Rzcvbi9jNzQ0Mzg2NGEzYzlmNjExNDg4NWY0OGE5YWI5ZDRjNy53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
     "name": "Record Player #9396",
     "gift_title": "Record Player",
     "number": "9396",
@@ -2046,6 +2036,46 @@
     "tg_link": "https://t.me/nft/ChillFlame-439038",
     "market_link": "https://marketapp.org/nft/EQBsdWiTlIQBVB8mvPBToi_W2EOcUqades54FW6Sa3iL7-Op/?to=rent",
     "image_url": "https://i2.anton.market/gmL7J5q_LIU64AQfAWKBxdKhRo56HQLWCmE4fK5wTDA/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJsQko0bjAxcG1ZZXo1VlBkOFdvNTk4czhhZ2JRQ3lWT2p1Y1hLeExEQWk5cjcvbi9kOTA5N2M5OGUzY2M0MTM3YjQxNzQ2MmRjNDU5ZTY3OS53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Chill Flame #439036",
+    "gift_title": "Chill Flame",
+    "number": "439036",
+    "tg_link": "https://t.me/nft/ChillFlame-439036",
+    "market_link": "https://marketapp.org/nft/EQBJZaLwjg48smK9Hh7Tso879U19fWkkdHozddKB2tTy98Of/?to=rent",
+    "image_url": "https://i2.anton.market/scDSw3qLtGXi2Kb9mjX2zEVJ2Rg1BLmh6hyLDLcG0yI/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJsQko0bjAxcG1ZZXo1VlBkOFdvNTk4czhhZ2JRQ3lWT2p1Y1hLeExEQWk5cjcvbi9mOGZjM2E1OWM0NDA3ZDFkZWQ1NGU1Mjk2ZjZiZDgyZi53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Chill Flame #439032",
+    "gift_title": "Chill Flame",
+    "number": "439032",
+    "tg_link": "https://t.me/nft/ChillFlame-439032",
+    "market_link": "https://marketapp.org/nft/EQCBTpjIPp7xBofvcrwxZ2iPxZDrNp6Lz1b8o0ScfMT_lfJ1/?to=rent",
+    "image_url": "https://i2.anton.market/9uqwjeXsFypqzdzvLocY3V0lhtw23qsRH06LPCxMWYs/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJsQko0bjAxcG1ZZXo1VlBkOFdvNTk4czhhZ2JRQ3lWT2p1Y1hLeExEQWk5cjcvbi9iZmZhZWVkNWE3MzcwZTk4MzEwYmVkZmQyMDhlZGEyNC53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Chill Flame #439031",
+    "gift_title": "Chill Flame",
+    "number": "439031",
+    "tg_link": "https://t.me/nft/ChillFlame-439031",
+    "market_link": "https://marketapp.org/nft/EQCF7YCY7WTPY_kg7Y-CIYG3JhsdCzpfe49QT2t0mTz7pcei/?to=rent",
+    "image_url": "https://i2.anton.market/CXYFmmxV93Sq-oT2oFckWB2CX3rCtsfUOXrmRAiKq6U/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJsQko0bjAxcG1ZZXo1VlBkOFdvNTk4czhhZ2JRQ3lWT2p1Y1hLeExEQWk5cjcvbi82NTFlMDMzODRiYzNmM2NlY2QzMTg1YmI4YmU4Y2Y4NC53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
+    "name": "Chill Flame #439029",
+    "gift_title": "Chill Flame",
+    "number": "439029",
+    "tg_link": "https://t.me/nft/ChillFlame-439029",
+    "market_link": "https://marketapp.org/nft/EQCdcP372bPBNSQLqmktqcwtexhSMe3aM990BuV9ApMI0dbU/?to=rent",
+    "image_url": "https://i2.anton.market/avbVEJ5aO0r2Ga7n5VNMqF9i5Euav1XVuHVRP8LliGQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJsQko0bjAxcG1ZZXo1VlBkOFdvNTk4czhhZ2JRQ3lWT2p1Y1hLeExEQWk5cjcvbi8zM2NlM2FjM2E4MTcwYzhiODk4Njc3ZTQ4NDdlZWNmNy53ZWJw",
     "bg_color": "#161d2a",
     "rarity": ""
   }
