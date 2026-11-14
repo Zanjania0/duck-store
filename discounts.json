@@ -1,5 +1,15 @@
 [
   {
+    "name": "Light Sword #78058",
+    "gift_title": "Light Sword",
+    "number": "78058",
+    "tg_link": "https://t.me/nft/LightSword-78058",
+    "market_link": "https://marketapp.org/nft/EQDc0tbxGb93kD-TawTKTr6JE_i2CvcrgD9qX3a-UZ-GSAWm/?to=rent",
+    "image_url": "https://i2.anton.market/lvhpluFeyrCLggWWU3w46G6y39knjTZ2sJYvU1mUIPQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURScmZ3NXBnSUM0ZTZOYWZVQXg1Mlo5WW02cTFrMjZ4eGFYUl9xeDBMS0pKN0Qvbi8wMWU2MTA1NDI0Y2Q3M2FlZGMyNDliNmY5ZjgyMzE5Yi53ZWJw",
+    "bg_color": "#161d2a",
+    "rarity": ""
+  },
+  {
     "name": "Snoop Dogg #126255",
     "gift_title": "Snoop Dogg",
     "number": "126255",
@@ -16,16 +26,6 @@
     "tg_link": "https://t.me/nft/RecordPlayer-11699",
     "market_link": "https://marketapp.org/nft/EQC1LXuvaDj_UBxNYZh8R-RvN1IvslO9gfXybEycogEiHuae/?to=rent",
     "image_url": "https://i2.anton.market/Q7AiU8WYKxvmsZktJAqfW8v7XqlglLu0DLnAn5Y1oys/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURyNHhuNV9Hb0N6RHhoR0pNZWs3ZnYzbm02VzdiaFJ2bERTQmpjTlp1bDUydFovbi82YjA4NDk4NGRlMmEyMTQ2MDgxODAzYjM5MjlkMmZkZi53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Love Potion #9665",
-    "gift_title": "Love Potion",
-    "number": "9665",
-    "tg_link": "https://t.me/nft/LovePotion-9665",
-    "market_link": "https://marketapp.org/nft/EQD9_A9f8X0U9QOjMCAXsJhHnOMYFvwzuBbCyK_lCoRUSXw6/?to=rent",
-    "image_url": "https://i2.anton.market/s457l_Tq5b_qndlSwgsTHYsABpMtzuFGdVKwaUyaUGs/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUQ3eUR1MldDZ2Q5VXp4MWRGX0RRa1dLN0laSko0TXA5TTlnMXJHVVVpUUU0M20vbi9jY2IwZjFkZDI3ZGVjMDdjZDFiMjZlNWQzMzZkODViMC53ZWJw",
     "bg_color": "#161d2a",
     "rarity": ""
   },
@@ -506,66 +506,6 @@
     "tg_link": "https://t.me/nft/SnoopDogg-517956",
     "market_link": "https://marketapp.org/nft/EQAC7YE3Q9hfB0IjxBJyhDEtz5oIfinh4UszQ6f-x-Oj4z6v/?to=rent",
     "image_url": "https://i2.anton.market/MQEk4EjMqReVNVX8iGvry2SGJdQt_VJz22N3XddxLTM/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUFvSnc3QnBPY0JEM3k5dm9NdUVRLXFoUzNLNGd0TS02RWVQTHhrems4aVNpZlgvbi80MmUxMTUxODRkZGM2MWVmYmY3ZjcwYjljNzg0ZDJjYi53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Chill Flame #438933",
-    "gift_title": "Chill Flame",
-    "number": "438933",
-    "tg_link": "https://t.me/nft/ChillFlame-438933",
-    "market_link": "https://marketapp.org/nft/EQCZqwvEaa6_yQURk7vkW0JhOlRbIoLcINZXuSBtpYse4Iyy/?to=rent",
-    "image_url": "https://i2.anton.market/bsAwEFhqx2yYMKpZHsBdsZeCTD-EcB_11ckQwgkrdOI/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJsQko0bjAxcG1ZZXo1VlBkOFdvNTk4czhhZ2JRQ3lWT2p1Y1hLeExEQWk5cjcvbi9lMzkxNGIwOGVkY2ZmYTc2ZTE0OWQ1MTJkNmU0Yjg1MC53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Lush Bouquet #57600",
-    "gift_title": "Lush Bouquet",
-    "number": "57600",
-    "tg_link": "https://t.me/nft/LushBouquet-57600",
-    "market_link": "https://marketapp.org/nft/EQBv8Y8x46CLnhVw5R5vaoj9GJSroKVQ0oanp3pwRKD6FOat/?to=rent",
-    "image_url": "https://i2.anton.market/5SGxpZ89tqONboLGqs7CoYyhrdSKIACbP4LJ2dXB6wo/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUEybEhjdlpXV19iTl8yTk1LcmtFVXY5eHo2Zng4d1RFNXVwYTh1MW5lWmI2aEovbi9mZDNmMTQ2NWJmNTZiNzAxMjI0NTE2ODAxYjY0NmUyMi53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Berry Box #11213",
-    "gift_title": "Berry Box",
-    "number": "11213",
-    "tg_link": "https://t.me/nft/BerryBox-11213",
-    "market_link": "https://marketapp.org/nft/EQAWMEYMefSPwmvnvhVK71VEewDqF3KPHpZFWLC8YpDofdKr/?to=rent",
-    "image_url": "https://i2.anton.market/ZTHbsdN3EZyE93uNim4tg_4sU9RMUlQ-1o0prYhj9JQ/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUI0eDNzVDFEVmRPRHpheTNILTRWSklkT29vUzUta1RneUtjWU1aV29nUE9zaXEvbi84YWY1Nzk4OWM5MjE2NjUyN2U5OTczNWU4NDNiY2NjMS53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Ice Cream #261963",
-    "gift_title": "Ice Cream",
-    "number": "261963",
-    "tg_link": "https://t.me/nft/IceCream-261963",
-    "market_link": "https://marketapp.org/nft/EQBYarOWLIRkuiqikn9zSKUwoE6aYvm9NS2GMoaSGU4N1ZMi/?to=rent",
-    "image_url": "https://i2.anton.market/DhU-2DJvyzK7TmT3Hb0vZZ9t5PiKzDHCB_p6AyA_tco/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJVdnNrRXZtV2RwX1Y2SFgtMlR5ZnA0bUZTek16ZGc5VGFVejZ6S1Z6Nk92M2Yvbi9lNGZkODg4ZWQ1YWQyZjNmZmMwOWExZmExZTI0MmFiOS53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Stellar Rocket #21390",
-    "gift_title": "Stellar Rocket",
-    "number": "21390",
-    "tg_link": "https://t.me/nft/StellarRocket-21390",
-    "market_link": "https://marketapp.org/nft/EQCypzpHlyT_yUQGVNnI6ATuhRJ6AVvjRG2bhwq3V9jvHxHu/?to=rent",
-    "image_url": "https://i2.anton.market/IZ6D_mGC3INBDklx_WFL8IhJHvBo4TXEd3-e0MxvEl0/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUURJcnVTVHl4dnE2MGdVSDhqMmtrajNxem9CckJhSnk5V2tLYmVOTlJhc1dlNGovbi8zYTlkZmRlMDllOTE4OWUyMmIxMDdiZGQ1ZjdhNWM3My53ZWJw",
-    "bg_color": "#161d2a",
-    "rarity": ""
-  },
-  {
-    "name": "Liberty Figure #219255",
-    "gift_title": "Liberty Figure",
-    "number": "219255",
-    "tg_link": "https://t.me/nft/LibertyFigure-219255",
-    "market_link": "https://marketapp.org/nft/EQAQqqG0tfbgDm_GIk9tf6ZfAxEfpA_oVeFN3iuIstiIwj6B/?to=rent",
-    "image_url": "https://i2.anton.market/ECIt85g3MXgudk6q5LHq7iBt4YMmzzJqOPTbTZafgKc/rs:fill:500:500:1/g:ce/czM6Ly9tYXJrZXRhcHAvYy9FUUJFbmdXbGR6ZXY5b3F6Y3R1NTlHbzlhZlg4SEY4SGtzWjlwSjd4MWJSSlhzYzcvbi9jZDgzODRkZjgyY2Q5YWEzNDY2N2ZhMzM1MTZkNjQ5Yy53ZWJw",
     "bg_color": "#161d2a",
     "rarity": ""
   }
